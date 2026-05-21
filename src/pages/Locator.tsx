@@ -1,4 +1,6 @@
 import { Crosshair, ExternalLink, Loader2, MapPin, Navigation, Phone, SlidersHorizontal, Star } from 'lucide-react';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { screenings, scripts, type CancerType } from '../lib/gedi';
@@ -427,7 +429,7 @@ function MapPanel({
     <section className="card overflow-hidden">
       {mappedFacilities.length ? (
         <div>
-          <FacilityMapGraphic facilities={mappedFacilities} activeId={activeFacility?.id} onSelect={onSelect} />
+          <LeafletFacilityMap facilities={mappedFacilities} activeId={activeFacility?.id} onSelect={onSelect} />
           <div className="border-t border-[var(--color-line)] bg-white p-5">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
@@ -475,7 +477,7 @@ function MapPanel({
   );
 }
 
-function FacilityMapGraphic({
+function LeafletFacilityMap({
   facilities,
   activeId,
   onSelect,
@@ -484,47 +486,58 @@ function FacilityMapGraphic({
   activeId?: string;
   onSelect: (id: string) => void;
 }) {
-  const lats = facilities.map((facility) => facility.lat);
-  const lngs = facilities.map((facility) => facility.lng);
-  const minLat = Math.min(...lats);
-  const maxLat = Math.max(...lats);
-  const minLng = Math.min(...lngs);
-  const maxLng = Math.max(...lngs);
-  const latSpan = Math.max(maxLat - minLat, 0.01);
-  const lngSpan = Math.max(maxLng - minLng, 0.01);
+  const mapRef = useRef<HTMLDivElement | null>(null);
 
-  function pointStyle(facility: Facility & { lat: number; lng: number }) {
-    const left = 8 + ((facility.lng - minLng) / lngSpan) * 84;
-    const top = 8 + ((maxLat - facility.lat) / latSpan) * 84;
-    return { left: `${left}%`, top: `${top}%` };
-  }
+  useEffect(() => {
+    if (!mapRef.current) return;
+
+    const map = L.map(mapRef.current, {
+      attributionControl: true,
+      dragging: true,
+      scrollWheelZoom: false,
+      touchZoom: true,
+      zoomControl: false,
+    });
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap contributors',
+    }).addTo(map);
+
+    const bounds = L.latLngBounds(facilities.map((facility) => [facility.lat, facility.lng]));
+    facilities.forEach((facility, index) => {
+      const marker = L.marker([facility.lat, facility.lng], {
+        icon: L.divIcon({
+          className: '',
+          html: `<span class="gedi-map-marker ${facility.id === activeId ? 'gedi-map-marker-active' : ''}">${index + 1}</span>`,
+          iconSize: [34, 34],
+          iconAnchor: [17, 17],
+        }),
+      }).addTo(map);
+      const tooltip = document.createElement('span');
+      tooltip.textContent = facility.name;
+      marker.bindTooltip(tooltip, { direction: 'top', offset: [0, -14], opacity: 0.95 });
+      marker.on('click', () => onSelect(facility.id));
+    });
+
+    map.fitBounds(bounds.pad(0.18), {
+      maxZoom: facilities.length === 1 ? 14 : 13,
+      padding: [28, 28],
+    });
+
+    return () => {
+      map.remove();
+    };
+  }, [activeId, facilities, onSelect]);
 
   return (
     <div className="bg-[var(--color-brand-sky)]/20 p-3 sm:p-5">
-      <div className="relative min-h-[300px] overflow-hidden rounded-[20px] border border-[var(--color-line)] bg-[var(--color-surface-elevated)] sm:min-h-[430px]">
-        <div className="absolute inset-0 opacity-70" aria-hidden="true">
-          <div className="h-full w-full bg-[linear-gradient(90deg,rgba(23,59,94,0.12)_1px,transparent_1px),linear-gradient(rgba(23,59,94,0.12)_1px,transparent_1px)] bg-[size:42px_42px] sm:bg-[size:56px_56px]" />
+      <div className="relative overflow-hidden rounded-[20px] border border-[var(--color-line)] bg-[var(--color-surface-elevated)]">
+        <div ref={mapRef} className="h-[340px] w-full sm:h-[470px]" aria-label="OpenStreetMap screening center map" />
+        <div className="pointer-events-none absolute inset-x-3 top-3 z-[450] rounded-2xl bg-white/95 p-3 shadow-[var(--shadow-gedi)] sm:inset-x-4 sm:top-4">
+          <p className="text-sm font-black text-[var(--color-brand-aubergine)]">OpenStreetMap results</p>
+          <p className="mt-1 text-xs leading-5 text-[var(--color-ink-muted)]">Numbered markers match the facility cards below.</p>
         </div>
-        <div className="absolute inset-x-4 top-4 z-10 rounded-2xl bg-white/95 p-3 shadow-[var(--shadow-gedi)]">
-          <p className="text-sm font-black text-[var(--color-brand-aubergine)]">Map labels</p>
-          <p className="mt-1 text-xs leading-5 text-[var(--color-ink-muted)]">OpenStreetMap data, shown with GEDI labels for mobile readability.</p>
-        </div>
-        {facilities.map((facility, index) => (
-          <button
-            key={facility.id}
-            type="button"
-            onClick={() => onSelect(facility.id)}
-            className={`absolute z-20 flex h-9 w-9 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 text-xs font-black shadow-[var(--shadow-gedi)] ${
-              activeId === facility.id
-                ? 'border-[var(--color-brand-aubergine)] bg-[var(--color-brand-primary)] text-white'
-                : 'border-white bg-[var(--color-brand-aubergine)] text-white'
-            }`}
-            style={pointStyle(facility)}
-            aria-label={`Show ${facility.name}`}
-          >
-            {index + 1}
-          </button>
-        ))}
       </div>
       <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
         {facilities.map((facility, index) => (

@@ -67,8 +67,8 @@ export default function Layout() {
   return (
     <div className="min-h-screen bg-[var(--color-surface)] text-[var(--color-ink)]">
       <header className="sticky top-0 z-50 border-b border-[var(--color-line)] bg-[rgba(241,233,218,0.92)] backdrop-blur print-hidden">
-        <div className="container-gedi flex h-28 items-center justify-between gap-6">
-          <Logo />
+        <div className="container-gedi flex h-20 items-center justify-between gap-3 md:h-24 xl:h-28 xl:gap-6">
+          <Logo compact className="min-w-0" />
           <nav className="hidden items-center gap-1 xl:flex" aria-label="Primary navigation">
             {navItems.map((item) => (
               <NavLink key={item.path} to={item.path} className={linkClass}>
@@ -82,7 +82,7 @@ export default function Layout() {
           </Link>
           <button
             type="button"
-            className="rounded-full p-3 text-[var(--color-brand-aubergine)] xl:hidden"
+            className="shrink-0 rounded-full p-2.5 text-[var(--color-brand-aubergine)] xl:hidden"
             onClick={() => setOpen((value) => !value)}
             aria-expanded={open}
             aria-controls="mobile-nav"
@@ -92,14 +92,14 @@ export default function Layout() {
           </button>
         </div>
         {open ? (
-          <div id="mobile-nav" className="border-t border-[var(--color-line)] bg-[var(--color-surface)] p-4 xl:hidden">
+          <div id="mobile-nav" className="border-t border-[var(--color-line)] bg-[var(--color-surface)] p-3 xl:hidden">
             <nav className="flex flex-col gap-2" aria-label="Mobile navigation">
               {navItems.map((item) => (
                 <NavLink key={item.path} to={item.path} onClick={() => setOpen(false)} className={linkClass}>
                   {item.label}
                 </NavLink>
               ))}
-              <Link to="/assessment" onClick={() => setOpen(false)} className="btn btn-primary mt-2">
+              <Link to="/assessment" onClick={() => setOpen(false)} className="btn btn-primary mt-2 w-full">
                 Check eligibility
                 <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </Link>

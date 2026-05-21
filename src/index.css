@@ -227,6 +227,34 @@ a {
   transform: translateY(-1px);
 }
 
+.gedi-map-marker {
+  display: flex;
+  height: 34px;
+  width: 34px;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid #fff;
+  border-radius: 999px;
+  background: var(--color-brand-aubergine);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 900;
+  box-shadow: 0 8px 20px rgba(53, 47, 61, 0.24);
+}
+
+.gedi-map-marker-active {
+  background: var(--color-brand-primary);
+  transform: scale(1.15);
+}
+
+.leaflet-container {
+  font-family: var(--font-sans);
+}
+
+.leaflet-control-attribution {
+  font-size: 10px;
+}
+
 @media (max-width: 640px) {
   .container-gedi {
     width: min(100% - 20px, 1200px);
@@ -247,13 +275,34 @@ a {
     line-height: 1.12;
   }
 
+  .body-lg {
+    font-size: 17px;
+  }
+
   .chip-label {
-    min-height: 52px;
+    min-height: 48px;
     justify-content: flex-start;
-    padding: 12px 14px;
+    padding: 10px 12px;
     line-height: 1.25;
     text-align: left;
     white-space: normal;
+  }
+
+  .assessment-question {
+    font-size: 28px;
+    line-height: 1.08;
+  }
+
+  .assessment-fact {
+    margin-top: 14px;
+    padding: 12px;
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  .assessment-fact svg {
+    height: 18px;
+    width: 18px;
   }
 }
 

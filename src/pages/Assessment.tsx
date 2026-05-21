@@ -188,7 +188,7 @@ function StepContent({ current, answers, choose, update, done, build, toggleFami
         <QuestionHeader fact="Screening recommendations change sharply by age.">
           What is your age?
         </QuestionHeader>
-        <div className="mt-7 grid gap-3 sm:grid-cols-2">
+        <div className="mt-5 grid grid-cols-2 gap-2 sm:mt-7 sm:gap-3">
           {ageOptions.map((option) => (
             <Chip key={option} name="age" checked={answers.ageBracket === option} onChange={() => choose({ ageBracket: option })} label={option} />
           ))}
@@ -203,7 +203,7 @@ function StepContent({ current, answers, choose, update, done, build, toggleFami
         <QuestionHeader fact="Family history can move a screening conversation earlier.">
           Has an immediate family member had cancer before age 65?
         </QuestionHeader>
-        <div className="mt-7 grid gap-3 sm:grid-cols-2">
+        <div className="mt-5 grid gap-2 sm:mt-7 sm:grid-cols-2 sm:gap-3">
           <Chip name="family" checked={answers.familyHistory.any === true} onChange={() => choose({ familyHistory: { ...answers.familyHistory, any: true } })} label="Yes" />
           <Chip name="family" checked={answers.familyHistory.any === false} onChange={() => choose({ familyHistory: { any: false, cancers: [] } })} label="No or not sure" />
         </div>
@@ -217,12 +217,12 @@ function StepContent({ current, answers, choose, update, done, build, toggleFami
         <QuestionHeader fact="Select every cancer type that applies. Choose Other if you are not sure.">
           Which cancers were they diagnosed with?
         </QuestionHeader>
-        <div className="mt-7 grid gap-3 sm:grid-cols-2">
+        <div className="mt-5 grid gap-2 sm:mt-7 sm:grid-cols-2 sm:gap-3">
           {(['breast', 'cervical', 'colorectal', 'lung', 'prostate', 'ovarian', 'other'] as FamilyCancer[]).map((type) => (
             <Chip key={type} name={`family-${type}`} type="checkbox" checked={answers.familyHistory.cancers.includes(type)} onChange={() => toggleFamilyCancer(type)} label={type in screenings ? screenings[type as CancerType].shortName : type === 'ovarian' ? 'Ovarian' : 'Other'} />
           ))}
         </div>
-        <button type="button" className="btn btn-primary mt-7" onClick={() => done()} disabled={!answers.familyHistory.cancers.length}>Done</button>
+        <button type="button" className="btn btn-primary mt-5 w-full sm:mt-7 sm:w-auto" onClick={() => done()} disabled={!answers.familyHistory.cancers.length}>Done</button>
       </fieldset>
     );
   }
@@ -233,7 +233,7 @@ function StepContent({ current, answers, choose, update, done, build, toggleFami
         <QuestionHeader fact="Some screening recommendations depend on anatomy.">
           What sex were you assigned at birth?
         </QuestionHeader>
-        <div className="mt-7 grid gap-3 sm:grid-cols-2">
+        <div className="mt-5 grid gap-2 sm:mt-7 sm:grid-cols-2 sm:gap-3">
           {[
             ['female', 'Female'],
             ['male', 'Male'],
@@ -253,7 +253,7 @@ function StepContent({ current, answers, choose, update, done, build, toggleFami
         <QuestionHeader fact="This makes cervical, breast, and prostate screening logic more accurate.">
           Do any of these apply?
         </QuestionHeader>
-        <div className="mt-7 grid gap-3 sm:grid-cols-2">
+        <div className="mt-5 grid gap-2 sm:mt-7 sm:grid-cols-2 sm:gap-3">
           {[
             ['breasts', 'Breasts'],
             ['cervix', 'Cervix'],
@@ -263,7 +263,7 @@ function StepContent({ current, answers, choose, update, done, build, toggleFami
           ))}
           <Chip name="organ-none" type="checkbox" checked={false} onChange={() => update({ organs: [] })} label="None of these" />
         </div>
-        <button type="button" className="btn btn-primary mt-7" onClick={() => done()}>Done</button>
+        <button type="button" className="btn btn-primary mt-5 w-full sm:mt-7 sm:w-auto" onClick={() => done()}>Done</button>
       </fieldset>
     );
   }
@@ -274,7 +274,7 @@ function StepContent({ current, answers, choose, update, done, build, toggleFami
         <QuestionHeader fact="Smoking history drives current lung screening eligibility.">
           Have you ever smoked before?
         </QuestionHeader>
-        <div className="mt-7 grid gap-3 sm:grid-cols-2">
+        <div className="mt-5 grid gap-2 sm:mt-7 sm:grid-cols-2 sm:gap-3">
           <Chip name="smoking" checked={answers.smoked100Plus === true} onChange={() => choose({ smoked100Plus: true })} label="Yes" />
           <Chip name="smoking" checked={answers.smoked100Plus === false} onChange={() => choose({ smoked100Plus: false, currentlySmokes: undefined, packsPerDay: undefined, yearsSmoked: undefined, packYears: undefined, quitYearsAgo: undefined })} label="No" />
         </div>
@@ -288,15 +288,15 @@ function StepContent({ current, answers, choose, update, done, build, toggleFami
         <QuestionHeader fact="USPSTF lung screening eligibility uses age, pack-years, and whether smoking is current or ended within the past 15 years.">
           About how much smoking history?
         </QuestionHeader>
-        <div className="mt-7 grid gap-5 sm:grid-cols-2">
+        <div className="mt-5 grid gap-4 sm:mt-7 sm:grid-cols-2 sm:gap-5">
           <label className="font-bold text-[var(--color-brand-aubergine)]">
             Packs per day
-            <input type="number" min={0} max={5} step={0.25} value={answers.packsPerDay ?? ''} onChange={(event) => updateSmokingHistory({ ...answers, packsPerDay: numberOrUndefined(event.target.value) }, update)} className="mt-2 w-full rounded-2xl border border-[var(--color-line)] bg-white px-4 py-3" />
+            <input type="number" min={0} max={5} step={0.25} value={answers.packsPerDay ?? ''} onChange={(event) => updateSmokingHistory({ ...answers, packsPerDay: numberOrUndefined(event.target.value) }, update)} className="mt-2 w-full rounded-2xl border border-[var(--color-line)] bg-white px-4 py-2.5 sm:py-3" />
             <span className="mt-2 block text-sm font-normal text-[var(--color-ink-muted)]">Use decimals if needed, like 0.5 for half a pack.</span>
           </label>
           <label className="font-bold text-[var(--color-brand-aubergine)]">
             Years smoked
-            <input type="number" min={0} max={80} step={0.5} value={answers.yearsSmoked ?? ''} onChange={(event) => updateSmokingHistory({ ...answers, yearsSmoked: numberOrUndefined(event.target.value) }, update)} className="mt-2 w-full rounded-2xl border border-[var(--color-line)] bg-white px-4 py-3" />
+            <input type="number" min={0} max={80} step={0.5} value={answers.yearsSmoked ?? ''} onChange={(event) => updateSmokingHistory({ ...answers, yearsSmoked: numberOrUndefined(event.target.value) }, update)} className="mt-2 w-full rounded-2xl border border-[var(--color-line)] bg-white px-4 py-2.5 sm:py-3" />
           </label>
         </div>
         <div className="mt-5">
@@ -331,7 +331,7 @@ function StepContent({ current, answers, choose, update, done, build, toggleFami
         {answers.currentlySmokes === false ? (
           <label className="mt-5 block font-bold text-[var(--color-brand-aubergine)]">
             How many years ago did you quit?
-            <input type="number" min={0} max={60} value={answers.quitYearsAgo ?? ''} onChange={(event) => update({ quitYearsAgo: numberOrUndefined(event.target.value) })} className="mt-2 w-full rounded-2xl border border-[var(--color-line)] bg-white px-4 py-3" />
+            <input type="number" min={0} max={60} value={answers.quitYearsAgo ?? ''} onChange={(event) => update({ quitYearsAgo: numberOrUndefined(event.target.value) })} className="mt-2 w-full rounded-2xl border border-[var(--color-line)] bg-white px-4 py-2.5 sm:py-3" />
           </label>
         ) : null}
         {answers.currentlySmokes === true ? (
@@ -342,7 +342,7 @@ function StepContent({ current, answers, choose, update, done, build, toggleFami
         <p className="mt-5 rounded-2xl bg-[var(--color-surface)] p-4 text-sm font-bold text-[var(--color-brand-aubergine)]">
           Calculated pack-years: {formatPackYears(answers.packYears)}
         </p>
-        <button type="button" className="btn btn-primary mt-7 w-full sm:w-auto" onClick={() => done()} disabled={!smokingDetailsComplete}>Use this</button>
+        <button type="button" className="btn btn-primary mt-5 w-full sm:mt-7 sm:w-auto" onClick={() => done()} disabled={!smokingDetailsComplete}>Use this</button>
       </fieldset>
     );
   }
@@ -353,7 +353,7 @@ function StepContent({ current, answers, choose, update, done, build, toggleFami
         <QuestionHeader fact="Some screenings require an order or referral.">
           Do you have a regular primary care clinician?
         </QuestionHeader>
-        <div className="mt-7 grid gap-3 sm:grid-cols-2">
+        <div className="mt-5 grid gap-2 sm:mt-7 sm:grid-cols-2 sm:gap-3">
           <Chip name="pcp" checked={answers.hasPCP === true} onChange={() => choose({ hasPCP: true })} label="Yes" />
           <Chip name="pcp" checked={answers.hasPCP === false} onChange={() => choose({ hasPCP: false })} label="No" />
         </div>
@@ -367,12 +367,12 @@ function StepContent({ current, answers, choose, update, done, build, toggleFami
         <QuestionHeader fact="Add any screening you want to learn about, even if it is not formally recommended for you.">
           Any other screenings?
         </QuestionHeader>
-        <div className="mt-7 grid gap-3 sm:grid-cols-2">
+        <div className="mt-5 grid gap-2 sm:mt-7 sm:grid-cols-2 sm:gap-3">
           {cancerTypes.map((type) => (
             <Chip key={type} name={`addon-${type}`} type="checkbox" checked={answers.additionalInterest.includes(type)} onChange={() => toggleAddon(type)} label={screenings[type].shortName} />
           ))}
         </div>
-        <button type="button" className="btn btn-primary mt-7" onClick={() => done()}>Done</button>
+        <button type="button" className="btn btn-primary mt-5 w-full sm:mt-7 sm:w-auto" onClick={() => done()}>Done</button>
       </fieldset>
     );
   }
@@ -382,7 +382,7 @@ function StepContent({ current, answers, choose, update, done, build, toggleFami
       <QuestionHeader fact="ZIP code is optional. It only pre-fills the locator. You can also use your current location on the locator page.">
         Want centers near you?
       </QuestionHeader>
-      <label className="mt-7 block font-bold text-[var(--color-brand-aubergine)]">
+      <label className="mt-5 block font-bold text-[var(--color-brand-aubergine)] sm:mt-7">
         ZIP code
         <input
           inputMode="numeric"
@@ -391,10 +391,10 @@ function StepContent({ current, answers, choose, update, done, build, toggleFami
           value={answers.zip ?? ''}
           onChange={(event) => update({ zip: event.target.value })}
           placeholder="Optional"
-          className="mt-2 w-full rounded-2xl border border-[var(--color-line)] bg-white px-4 py-3"
+          className="mt-2 w-full rounded-2xl border border-[var(--color-line)] bg-white px-4 py-2.5 sm:py-3"
         />
       </label>
-      <button type="button" className="btn btn-primary mt-7" onClick={build}>Build my guide</button>
+      <button type="button" className="btn btn-primary mt-5 w-full sm:mt-7 sm:w-auto" onClick={build}>Build my guide</button>
     </fieldset>
   );
 }
@@ -459,7 +459,7 @@ function formatPackYears(packYears?: number) {
 function QuestionHeader({ children, fact }: { children: React.ReactNode; fact: string }) {
   return (
     <>
-      <legend className="display-md w-full text-[var(--color-brand-aubergine)]">{children}</legend>
+      <legend className="assessment-question display-md w-full text-[var(--color-brand-aubergine)]">{children}</legend>
       <Fact>{fact}</Fact>
     </>
   );
@@ -467,7 +467,7 @@ function QuestionHeader({ children, fact }: { children: React.ReactNode; fact: s
 
 function Fact({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mt-5 flex items-start gap-3 rounded-2xl bg-[var(--color-surface)] p-4 text-sm font-semibold leading-6 text-[var(--color-brand-aubergine)]">
+    <div className="assessment-fact mt-5 flex items-start gap-3 rounded-2xl bg-[var(--color-surface)] p-4 text-sm font-semibold leading-6 text-[var(--color-brand-aubergine)]">
       <Info className="mt-0.5 h-5 w-5 shrink-0 text-[var(--color-brand-primary)]" aria-hidden="true" />
       <p>{children}</p>
     </div>

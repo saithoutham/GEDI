@@ -1,497 +1,513 @@
-import { Info } from 'lucide-react';
+import { AlertTriangle, ArrowRight, CheckCircle2, Info, MapPin } from 'lucide-react';
 import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { cancerTypes, derivePlan, screenings, type Answers, type CancerType, type FamilyCancer } from '../lib/gedi';
+import { Link } from 'react-router-dom';
+import {
+  calculatePackYears,
+  evaluateScreening,
+  type AssessmentAnswers,
+  type CancerType,
+  type HighRiskHistory,
+  type PriorScreeningAnswer,
+  type RoutineScreeningIntent,
+  type ScreeningResult,
+  type ScreeningStatus,
+  type SmokingPackYears,
+  type SmokingStatus,
+} from '../lib/screeningRules';
 
-type StepKey = 'age' | 'family' | 'familyCancers' | 'sex' | 'organs' | 'smoking' | 'smokingDetails' | 'pcp' | 'addons' | 'zip';
+type StepKey =
+  | 'age'
+  | 'anatomy'
+  | 'routine'
+  | 'risk'
+  | 'lungPackYears'
+  | 'packCalculator'
+  | 'smokingStatus'
+  | 'cervicalPrior'
+  | 'colorectalPrior'
+  | 'results';
 
-type DraftAnswers = Omit<Answers, 'ageBracket' | 'familyHistory' | 'sexAtBirth' | 'smoked100Plus' | 'hasPCP'> & {
-  ageBracket?: Answers['ageBracket'];
-  familyHistory: {
-    any?: boolean;
-    cancers: FamilyCancer[];
-  };
-  sexAtBirth?: Answers['sexAtBirth'];
-  smoked100Plus?: boolean;
-  hasPCP?: boolean;
+const initialAnswers: AssessmentAnswers = {
+  anatomy: {
+    breastScreeningApplies: false,
+    hasCervix: false,
+    hasProstate: false,
+    none: false,
+    unknown: false,
+  },
 };
 
-const initialAnswers: DraftAnswers = {
-  familyHistory: { cancers: [] },
-  organs: [],
-  exposureRisks: false,
-  additionalInterest: [],
+const statusClasses: Record<ScreeningStatus, string> = {
+  'appears-eligible': 'bg-[var(--color-eligible)] text-[var(--color-eligible-ink)]',
+  'shared-decision': 'bg-[var(--color-discuss)] text-[var(--color-discuss-ink)]',
+  'individual-decision': 'bg-[var(--color-discuss)] text-[var(--color-discuss-ink)]',
+  'ask-clinician': 'bg-[var(--color-discuss)] text-[var(--color-discuss-ink)]',
+  'not-routine': 'bg-[var(--color-not-recommended)] text-[var(--color-brand-aubergine)]',
+  'not-eligible': 'bg-[var(--color-not-recommended)] text-[var(--color-brand-aubergine)]',
+  info: 'bg-[var(--color-brand-sky)] text-[var(--color-brand-navy)]',
 };
 
-const ageOptions: Answers['ageBracket'][] = ['18-20', '21-24', '25-29', '30-39', '40-44', '45-49', '50-54', '55-64', '65-69', '70-74', '75-80', '81+'];
+const cancerLabels: Record<CancerType, string> = {
+  breast: 'Breast',
+  cervical: 'Cervical',
+  colorectal: 'Colorectal',
+  lung: 'Lung',
+  prostate: 'Prostate',
+};
 
 export default function Assessment() {
-  const [started, setStarted] = useState(false);
-  const [answers, setAnswers] = useState<DraftAnswers>(initialAnswers);
-  const [step, setStep] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const [answers, setAnswers] = useState<AssessmentAnswers>(initialAnswers);
+  const [step, setStep] = useState<StepKey>('age');
+  const [error, setError] = useState('');
+  const [hasPrimaryCare, setHasPrimaryCare] = useState<boolean | undefined>();
+  const [zip, setZip] = useState('');
 
-  const steps = useMemo<StepKey[]>(() => {
-    const list: StepKey[] = ['age', 'family'];
-    if (answers.familyHistory.any === true) list.push('familyCancers');
-    list.push('sex');
-    if (answers.sexAtBirth === 'intersex' || answers.sexAtBirth === 'prefer-not') list.push('organs');
-    list.push('smoking');
-    if (answers.smoked100Plus === true) list.push('smokingDetails');
-    list.push('pcp', 'addons', 'zip');
-    return list;
-  }, [answers.familyHistory.any, answers.sexAtBirth, answers.smoked100Plus]);
+  const steps = useMemo(() => buildSteps(answers), [answers]);
+  const stepIndex = Math.max(0, steps.indexOf(step));
+  const progress = Math.round(((stepIndex + 1) / steps.length) * 100);
+  const evaluation = useMemo(() => evaluateScreening({ ...answers, hasPrimaryCare, zip }), [answers, hasPrimaryCare, zip]);
 
-  const current = steps[Math.min(step, steps.length - 1)];
-  const progress = Math.round(((Math.min(step, steps.length - 1) + 1) / steps.length) * 100);
-
-  function advance(delay = 180) {
-    window.setTimeout(() => {
-      if (step < steps.length - 1) setStep((value) => value + 1);
-      else submit();
-    }, delay);
-  }
-
-  function update(partial: Partial<DraftAnswers>) {
+  function update(partial: Partial<AssessmentAnswers>) {
     setAnswers((prev) => ({ ...prev, ...partial }));
+    setError('');
   }
 
-  function choose(partial: Partial<DraftAnswers>) {
-    update(partial);
-    advance();
+  function goNext() {
+    const message = validateStep(step, answers);
+    if (message) {
+      setError(message);
+      return;
+    }
+    const currentSteps = buildSteps(answers);
+    const currentIndex = currentSteps.indexOf(step);
+    setStep(currentSteps[Math.min(currentIndex + 1, currentSteps.length - 1)]);
+    setError('');
   }
 
-  function toggleFamilyCancer(type: FamilyCancer) {
-    setAnswers((prev) => ({
-      ...prev,
-      familyHistory: {
-        ...prev.familyHistory,
-        cancers: prev.familyHistory.cancers.includes(type)
-          ? prev.familyHistory.cancers.filter((item) => item !== type)
-          : [...prev.familyHistory.cancers, type],
-      },
-    }));
+  function goBack() {
+    const currentSteps = buildSteps(answers);
+    const currentIndex = currentSteps.indexOf(step);
+    setStep(currentSteps[Math.max(currentIndex - 1, 0)]);
+    setError('');
   }
 
-  function toggleAddon(type: CancerType) {
-    setAnswers((prev) => ({
-      ...prev,
-      additionalInterest: prev.additionalInterest.includes(type)
-        ? prev.additionalInterest.filter((item) => item !== type)
-        : [...prev.additionalInterest, type],
-    }));
+  function setAge(value: string) {
+    const parsed = Number(value);
+    update({ age: Number.isFinite(parsed) && parsed > 0 ? Math.floor(parsed) : undefined });
   }
 
-  function toggleOrgan(organ: 'breasts' | 'cervix' | 'prostate') {
-    setAnswers((prev) => ({
-      ...prev,
-      organs: prev.organs.includes(organ) ? prev.organs.filter((item) => item !== organ) : [...prev.organs, organ],
-    }));
+  function toggleAnatomy(key: keyof AssessmentAnswers['anatomy']) {
+    setAnswers((prev) => {
+      const anatomy = { ...prev.anatomy };
+      if (key === 'none' || key === 'unknown') {
+        const nextValue = !anatomy[key];
+        return {
+          ...prev,
+          anatomy: {
+            breastScreeningApplies: false,
+            hasCervix: false,
+            hasProstate: false,
+            none: key === 'none' ? nextValue : false,
+            unknown: key === 'unknown' ? nextValue : false,
+          },
+        };
+      }
+      anatomy[key] = !anatomy[key];
+      anatomy.none = false;
+      anatomy.unknown = false;
+      return { ...prev, anatomy };
+    });
+    setError('');
   }
 
-  function submit() {
-    const finalAnswers = normalizeAnswers(answers);
-    if (!finalAnswers) return;
-    setLoading(true);
-    const uuid = crypto.randomUUID();
-    const plan = derivePlan(finalAnswers);
-    sessionStorage.setItem('gedi-guide-id', uuid);
-    sessionStorage.setItem(`gedi-guide-${uuid}`, JSON.stringify({ answers: finalAnswers, plan, createdAt: new Date().toISOString() }));
-    window.setTimeout(() => navigate('/guide'), 1500);
-  }
-
-  if (!started) {
-    return (
-      <section className="min-h-[calc(100vh-112px)] bg-[var(--color-surface)] px-4 py-8 sm:py-14">
-        <div className="container-gedi grid gap-6 lg:grid-cols-[1fr_0.8fr] lg:items-center">
-          <div>
-            <p className="eyebrow text-[var(--color-brand-primary)]">Assessment</p>
-            <h1 className="display-lg mt-4 text-[var(--color-brand-aubergine)]">A screening plan without the scavenger hunt.</h1>
-            <p className="body-lg mt-5 max-w-2xl text-[var(--color-ink-muted)]">
-              Answer a few questions. GEDI checks multiple screening pathways at once and saves the plan in this browser session.
-            </p>
-            <button type="button" className="btn btn-primary mt-8 w-full sm:w-auto" onClick={() => setStarted(true)}>
-              Start
-            </button>
-          </div>
-          <figure className="overflow-hidden rounded-[20px] border border-[var(--color-line)] bg-white shadow-[var(--shadow-gedi)] sm:rounded-[28px]">
-            <img src="/community/alcsi-outreach.jpeg" alt="ALCSI volunteers holding a lung cancer awareness ribbon" className="aspect-square w-full object-cover" />
-          </figure>
-        </div>
-      </section>
-    );
-  }
-
-  if (loading) {
-    return (
-      <section className="flex min-h-[calc(100vh-112px)] items-center justify-center bg-[var(--color-surface)] px-6" aria-live="polite">
-        <div className="card max-w-xl p-8 text-center">
-          <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-[var(--color-brand-primary-soft)]">
-            <span className="font-display text-4xl text-[var(--color-brand-primary)]">G</span>
-          </div>
-          <h1 className="display-md mt-8 text-[var(--color-brand-aubergine)]">Building your plan...</h1>
-          <p className="mt-3 text-[var(--color-ink-muted)]">Your answers stay in this browser session.</p>
-        </div>
-      </section>
-    );
-  }
+  const packYears = calculatePackYears(answers.packsPerDay, answers.yearsSmoked);
+  const locateTypes = evaluation.results
+    .filter((item) => item.status === 'appears-eligible' || item.status === 'shared-decision' || item.status === 'individual-decision')
+    .map((item) => item.cancerType);
+  const locateParams = new URLSearchParams();
+  if (locateTypes.length) locateParams.set('types', locateTypes.join(','));
+  if (zip.trim()) locateParams.set('zip', zip.trim());
+  const locateHref = `/locate${locateParams.toString() ? `?${locateParams.toString()}` : ''}`;
 
   return (
-    <section className="min-h-[calc(100vh-112px)] bg-[var(--color-brand-primary-soft)]/45">
-      <div className="sticky top-20 z-20 border-b border-[var(--color-line)] bg-[rgba(241,233,218,0.96)] backdrop-blur md:top-28">
-        <div className="container-gedi flex h-12 items-center gap-3 sm:h-14 sm:gap-4">
-          <div className="h-2 flex-1 rounded-full bg-white" role="progressbar" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100} aria-label={`Step ${step + 1} of ${steps.length}`}>
-            <div className="h-full rounded-full bg-[var(--color-brand-primary)] transition-all" style={{ width: `${progress}%` }} />
-          </div>
-          <span className="text-sm font-bold tabular-nums">{step + 1}/{steps.length}</span>
+    <section className="min-h-[calc(100vh-96px)] bg-[var(--color-brand-primary-soft)]/40 py-5 sm:py-8 md:py-12">
+      <div className="container-gedi">
+        <div className="mx-auto max-w-4xl">
+          <p className="eyebrow text-[var(--color-brand-primary)]">Assessment</p>
+          <h1 className="display-md mt-3 text-[var(--color-brand-aubergine)]">Check routine screening guidance in a few questions.</h1>
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--color-ink-muted)] sm:text-base">
+            GEDI estimates routine USPSTF-style screening guidance for breast, cervical, colorectal, lung, and prostate cancer. It does not diagnose cancer.
+          </p>
         </div>
-      </div>
 
-      <div className="container-gedi flex min-h-[calc(100vh-156px)] items-start justify-center py-5 sm:py-8 md:min-h-[calc(100vh-166px)] md:items-center md:py-10">
-        <div className="card w-full max-w-3xl rounded-[18px] p-4 sm:p-6 md:rounded-[24px] md:p-10" role="form" aria-live="polite">
-          <StepContent
-            current={current}
-            answers={answers}
-            choose={choose}
-            update={update}
-            done={advance}
-            build={submit}
-            toggleFamilyCancer={toggleFamilyCancer}
-            toggleAddon={toggleAddon}
-            toggleOrgan={toggleOrgan}
-          />
+        <div className="mx-auto mt-5 max-w-4xl rounded-3xl border border-[var(--color-line)] bg-white shadow-[var(--shadow-gedi)]">
+          <div className="border-b border-[var(--color-line)] p-4 sm:p-5">
+            <div className="flex items-center gap-3">
+              <div className="h-2 flex-1 rounded-full bg-[var(--color-surface)]" role="progressbar" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100}>
+                <div className="h-full rounded-full bg-[var(--color-brand-primary)] transition-all" style={{ width: `${progress}%` }} />
+              </div>
+              <span className="text-xs font-black tabular-nums text-[var(--color-brand-aubergine)]">{stepIndex + 1}/{steps.length}</span>
+            </div>
+          </div>
+
+          <div className="p-4 sm:p-6 md:p-8">
+            {step === 'age' ? (
+              <QuestionShell title="What is your age?" hint="Use your exact age. Age is required.">
+                <label htmlFor="age" className="block font-bold text-[var(--color-brand-aubergine)]">
+                  Age
+                  <input
+                    id="age"
+                    type="number"
+                    inputMode="numeric"
+                    min={1}
+                    max={120}
+                    value={answers.age ?? ''}
+                    onChange={(event) => setAge(event.target.value)}
+                    className="mt-2 w-full rounded-2xl border border-[var(--color-line)] px-4 py-3 text-lg"
+                  />
+                </label>
+              </QuestionShell>
+            ) : null}
+
+            {step === 'anatomy' ? (
+              <QuestionShell title="Which of these apply to you? Select all that you know." hint="GEDI uses anatomy-based screening logic instead of relying only on sex assigned at birth.">
+                <fieldset>
+                  <legend className="sr-only">Anatomy and prior surgery options</legend>
+                  <div className="grid gap-2">
+                    <CheckboxOption checked={answers.anatomy.breastScreeningApplies} onChange={() => toggleAnatomy('breastScreeningApplies')} label="I was assigned female at birth and have not had both breasts removed" />
+                    <CheckboxOption checked={answers.anatomy.hasCervix} onChange={() => toggleAnatomy('hasCervix')} label="I currently have a cervix" />
+                    <CheckboxOption checked={answers.anatomy.hasProstate} onChange={() => toggleAnatomy('hasProstate')} label="I currently have a prostate" />
+                    <CheckboxOption checked={answers.anatomy.none} onChange={() => toggleAnatomy('none')} label="None of these" />
+                    <CheckboxOption checked={answers.anatomy.unknown} onChange={() => toggleAnatomy('unknown')} label="I'm not sure / prefer not to say" />
+                  </div>
+                </fieldset>
+              </QuestionShell>
+            ) : null}
+
+            {step === 'routine' ? (
+              <RadioGroup<RoutineScreeningIntent>
+                title="Is this for routine screening, or do you have symptoms or a previous cancer diagnosis?"
+                name="routineIntent"
+                value={answers.routineIntent}
+                onChange={(value) => update({ routineIntent: value })}
+                options={[
+                  ['routine', 'Routine screening only, no symptoms'],
+                  ['symptoms', "I have symptoms I'm worried about"],
+                  ['prior-cancer', 'I have had cancer before'],
+                  ['not-sure', "I'm not sure"],
+                ]}
+              />
+            ) : null}
+
+            {step === 'risk' ? (
+              <RadioGroup<HighRiskHistory>
+                title="Have you ever been told you have a high-risk cancer syndrome or need special screening?"
+                name="highRiskHistory"
+                value={answers.highRiskHistory}
+                onChange={(value) => update({ highRiskHistory: value })}
+                options={[
+                  ['inherited-syndrome', 'Yes, BRCA1/2, Lynch syndrome, FAP, or another inherited cancer syndrome'],
+                  ['strong-family-history', 'Strong family history of breast, ovarian, tubal, peritoneal, colorectal, or pancreatic cancer'],
+                  ['no', 'No'],
+                  ['not-sure', 'Not sure'],
+                ]}
+              />
+            ) : null}
+
+            {step === 'lungPackYears' ? (
+              <RadioGroup<SmokingPackYears>
+                title="Have you smoked at least 20 pack-years?"
+                hint="A pack-year means 1 pack per day for 1 year. Examples: 1 pack/day for 20 years, 2 packs/day for 10 years, or 1/2 pack/day for 40 years."
+                name="lungPackYears"
+                value={answers.lungPackYears}
+                onChange={(value) => update({ lungPackYears: value, packsPerDay: undefined, yearsSmoked: undefined, smokingStatus: undefined })}
+                options={[
+                  ['yes-20-plus', 'Yes, 20 pack-years or more'],
+                  ['no', 'No'],
+                  ['not-sure-calculate', 'Not sure, help me calculate'],
+                ]}
+              />
+            ) : null}
+
+            {step === 'packCalculator' ? (
+              <QuestionShell title="Estimate your pack-years" hint="GEDI calculates pack-years as average packs per day times total years smoked.">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <label htmlFor="packs-per-day" className="font-bold text-[var(--color-brand-aubergine)]">
+                    Average packs per day
+                    <input id="packs-per-day" type="number" min={0} max={10} step={0.25} value={answers.packsPerDay ?? ''} onChange={(event) => update({ packsPerDay: numericValue(event.target.value) })} className="mt-2 w-full rounded-2xl border border-[var(--color-line)] px-4 py-3" />
+                  </label>
+                  <label htmlFor="years-smoked" className="font-bold text-[var(--color-brand-aubergine)]">
+                    Total years smoked
+                    <input id="years-smoked" type="number" min={0} max={100} step={0.5} value={answers.yearsSmoked ?? ''} onChange={(event) => update({ yearsSmoked: numericValue(event.target.value) })} className="mt-2 w-full rounded-2xl border border-[var(--color-line)] px-4 py-3" />
+                  </label>
+                </div>
+                <p className="mt-4 rounded-2xl bg-[var(--color-surface)] p-4 text-sm font-black text-[var(--color-brand-aubergine)]">
+                  Calculated pack-years: {packYears === undefined ? 'enter both values' : packYears.toFixed(1)}
+                </p>
+              </QuestionShell>
+            ) : null}
+
+            {step === 'smokingStatus' ? (
+              <RadioGroup<SmokingStatus>
+                title="Which best describes your smoking now?"
+                name="smokingStatus"
+                value={answers.smokingStatus}
+                onChange={(value) => update({ smokingStatus: value })}
+                options={[
+                  ['current', 'I currently smoke'],
+                  ['quit-within-15', 'I quit within the past 15 years'],
+                  ['quit-more-than-15', 'I quit more than 15 years ago'],
+                  ['not-sure', "I'm not sure"],
+                ]}
+              />
+            ) : null}
+
+            {step === 'cervicalPrior' ? (
+              <RadioGroup<PriorScreeningAnswer>
+                title="Have you had regular normal Pap or HPV tests before?"
+                name="priorCervicalScreening"
+                value={answers.priorCervicalScreening}
+                onChange={(value) => update({ priorCervicalScreening: value })}
+                options={[
+                  ['yes', 'Yes'],
+                  ['no', 'No'],
+                  ['not-sure', 'Not sure'],
+                ]}
+              />
+            ) : null}
+
+            {step === 'colorectalPrior' ? (
+              <RadioGroup<PriorScreeningAnswer>
+                title="Have you been screened for colorectal cancer before?"
+                name="priorColorectalScreening"
+                value={answers.priorColorectalScreening}
+                onChange={(value) => update({ priorColorectalScreening: value })}
+                options={[
+                  ['yes', 'Yes'],
+                  ['no', 'No'],
+                  ['not-sure', 'Not sure'],
+                ]}
+              />
+            ) : null}
+
+            {step === 'results' ? (
+              <ResultsView
+                results={evaluation.results}
+                alerts={evaluation.alerts}
+                hasPrimaryCare={hasPrimaryCare}
+                setHasPrimaryCare={setHasPrimaryCare}
+                zip={zip}
+                setZip={setZip}
+                locateHref={locateHref}
+              />
+            ) : null}
+
+            {error ? (
+              <p className="mt-4 rounded-2xl bg-[var(--color-discuss)] p-3 text-sm font-bold text-[var(--color-discuss-ink)]" role="alert" aria-live="assertive">
+                {error}
+              </p>
+            ) : null}
+
+            {step !== 'results' ? (
+              <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
+                <button type="button" className="btn btn-secondary w-full sm:w-auto" onClick={goBack} disabled={stepIndex === 0}>
+                  Back
+                </button>
+                <button type="button" className="btn btn-primary w-full sm:w-auto" onClick={goNext}>
+                  Continue <ArrowRight className="h-4 w-4" />
+                </button>
+              </div>
+            ) : null}
+          </div>
         </div>
       </div>
     </section>
   );
 }
 
-type StepContentProps = {
-  current: StepKey;
-  answers: DraftAnswers;
-  choose: (partial: Partial<DraftAnswers>) => void;
-  update: (partial: Partial<DraftAnswers>) => void;
-  done: () => void;
-  build: () => void;
-  toggleFamilyCancer: (type: FamilyCancer) => void;
-  toggleAddon: (type: CancerType) => void;
-  toggleOrgan: (organ: 'breasts' | 'cervix' | 'prostate') => void;
-};
-
-function StepContent({ current, answers, choose, update, done, build, toggleFamilyCancer, toggleAddon, toggleOrgan }: StepContentProps) {
-  const smokingDetailsComplete = isSmokingDetailsComplete(answers);
-
-  if (current === 'age') {
-    return (
-      <fieldset>
-        <QuestionHeader fact="Screening recommendations change sharply by age.">
-          What is your age?
-        </QuestionHeader>
-        <div className="mt-5 grid grid-cols-2 gap-2 sm:mt-7 sm:gap-3">
-          {ageOptions.map((option) => (
-            <Chip key={option} name="age" checked={answers.ageBracket === option} onChange={() => choose({ ageBracket: option })} label={option} />
-          ))}
-        </div>
-      </fieldset>
-    );
+function buildSteps(answers: AssessmentAnswers): StepKey[] {
+  const steps: StepKey[] = ['age', 'anatomy', 'routine', 'risk'];
+  const age = answers.age;
+  if (age !== undefined && age >= 50 && age <= 80) {
+    steps.push('lungPackYears');
+    if (answers.lungPackYears === 'not-sure-calculate') steps.push('packCalculator');
+    const packYears = answers.lungPackYears === 'yes-20-plus' ? 20 : calculatePackYears(answers.packsPerDay, answers.yearsSmoked);
+    if ((packYears ?? 0) >= 20) steps.push('smokingStatus');
   }
+  if (age !== undefined && age >= 66 && answers.anatomy.hasCervix) steps.push('cervicalPrior');
+  if (age !== undefined && age >= 76 && age <= 85) steps.push('colorectalPrior');
+  steps.push('results');
+  return steps;
+}
 
-  if (current === 'family') {
-    return (
-      <fieldset>
-        <QuestionHeader fact="Family history can move a screening conversation earlier.">
-          Has an immediate family member had cancer before age 65?
-        </QuestionHeader>
-        <div className="mt-5 grid gap-2 sm:mt-7 sm:grid-cols-2 sm:gap-3">
-          <Chip name="family" checked={answers.familyHistory.any === true} onChange={() => choose({ familyHistory: { ...answers.familyHistory, any: true } })} label="Yes" />
-          <Chip name="family" checked={answers.familyHistory.any === false} onChange={() => choose({ familyHistory: { any: false, cancers: [] } })} label="No or not sure" />
-        </div>
-      </fieldset>
-    );
+function validateStep(step: StepKey, answers: AssessmentAnswers) {
+  if (step === 'age') {
+    if (answers.age === undefined || answers.age < 1 || answers.age > 120) return 'Enter an age between 1 and 120.';
   }
-
-  if (current === 'familyCancers') {
-    return (
-      <fieldset>
-        <QuestionHeader fact="Select every cancer type that applies. Choose Other if you are not sure.">
-          Which cancers were they diagnosed with?
-        </QuestionHeader>
-        <div className="mt-5 grid gap-2 sm:mt-7 sm:grid-cols-2 sm:gap-3">
-          {(['breast', 'cervical', 'colorectal', 'lung', 'prostate', 'ovarian', 'other'] as FamilyCancer[]).map((type) => (
-            <Chip key={type} name={`family-${type}`} type="checkbox" checked={answers.familyHistory.cancers.includes(type)} onChange={() => toggleFamilyCancer(type)} label={type in screenings ? screenings[type as CancerType].shortName : type === 'ovarian' ? 'Ovarian' : 'Other'} />
-          ))}
-        </div>
-        <button type="button" className="btn btn-primary mt-5 w-full sm:mt-7 sm:w-auto" onClick={() => done()} disabled={!answers.familyHistory.cancers.length}>Done</button>
-      </fieldset>
-    );
+  if (step === 'anatomy') {
+    const values = Object.values(answers.anatomy);
+    if (!values.some(Boolean)) return 'Select at least one option.';
   }
-
-  if (current === 'sex') {
-    return (
-      <fieldset>
-        <QuestionHeader fact="Some screening recommendations depend on anatomy.">
-          What sex were you assigned at birth?
-        </QuestionHeader>
-        <div className="mt-5 grid gap-2 sm:mt-7 sm:grid-cols-2 sm:gap-3">
-          {[
-            ['female', 'Female'],
-            ['male', 'Male'],
-            ['intersex', 'Intersex / DSD'],
-            ['prefer-not', 'Prefer not to say'],
-          ].map(([value, label]) => (
-            <Chip key={value} name="sex" checked={answers.sexAtBirth === value} onChange={() => choose({ sexAtBirth: value as Answers['sexAtBirth'] })} label={label} />
-          ))}
-        </div>
-      </fieldset>
-    );
+  if (step === 'routine' && !answers.routineIntent) return 'Choose the option that best fits.';
+  if (step === 'risk' && !answers.highRiskHistory) return 'Choose the option that best fits.';
+  if (step === 'lungPackYears' && !answers.lungPackYears) return 'Choose a pack-year option.';
+  if (step === 'packCalculator') {
+    if ((answers.packsPerDay ?? 0) <= 0 || (answers.yearsSmoked ?? 0) <= 0) return 'Enter packs per day and total years smoked.';
   }
+  if (step === 'smokingStatus' && !answers.smokingStatus) return 'Choose the option that best fits.';
+  if (step === 'cervicalPrior' && !answers.priorCervicalScreening) return 'Choose the option that best fits.';
+  if (step === 'colorectalPrior' && !answers.priorColorectalScreening) return 'Choose the option that best fits.';
+  return '';
+}
 
-  if (current === 'organs') {
-    return (
-      <fieldset>
-        <QuestionHeader fact="This makes cervical, breast, and prostate screening logic more accurate.">
-          Do any of these apply?
-        </QuestionHeader>
-        <div className="mt-5 grid gap-2 sm:mt-7 sm:grid-cols-2 sm:gap-3">
-          {[
-            ['breasts', 'Breasts'],
-            ['cervix', 'Cervix'],
-            ['prostate', 'Prostate'],
-          ].map(([value, label]) => (
-            <Chip key={value} name={`organ-${value}`} type="checkbox" checked={answers.organs.includes(value as 'breasts' | 'cervix' | 'prostate')} onChange={() => toggleOrgan(value as 'breasts' | 'cervix' | 'prostate')} label={label} />
-          ))}
-          <Chip name="organ-none" type="checkbox" checked={false} onChange={() => update({ organs: [] })} label="None of these" />
-        </div>
-        <button type="button" className="btn btn-primary mt-5 w-full sm:mt-7 sm:w-auto" onClick={() => done()}>Done</button>
-      </fieldset>
-    );
-  }
-
-  if (current === 'smoking') {
-    return (
-      <fieldset>
-        <QuestionHeader fact="Smoking history drives current lung screening eligibility.">
-          Have you ever smoked before?
-        </QuestionHeader>
-        <div className="mt-5 grid gap-2 sm:mt-7 sm:grid-cols-2 sm:gap-3">
-          <Chip name="smoking" checked={answers.smoked100Plus === true} onChange={() => choose({ smoked100Plus: true })} label="Yes" />
-          <Chip name="smoking" checked={answers.smoked100Plus === false} onChange={() => choose({ smoked100Plus: false, currentlySmokes: undefined, packsPerDay: undefined, yearsSmoked: undefined, packYears: undefined, quitYearsAgo: undefined })} label="No" />
-        </div>
-      </fieldset>
-    );
-  }
-
-  if (current === 'smokingDetails') {
-    return (
-      <fieldset>
-        <QuestionHeader fact="USPSTF lung screening eligibility uses age, pack-years, and whether smoking is current or ended within the past 15 years.">
-          About how much smoking history?
-        </QuestionHeader>
-        <div className="mt-5 grid gap-4 sm:mt-7 sm:grid-cols-2 sm:gap-5">
-          <label className="font-bold text-[var(--color-brand-aubergine)]">
-            Packs per day
-            <input type="number" min={0} max={5} step={0.25} value={answers.packsPerDay ?? ''} onChange={(event) => updateSmokingHistory({ ...answers, packsPerDay: numberOrUndefined(event.target.value) }, update)} className="mt-2 w-full rounded-2xl border border-[var(--color-line)] bg-white px-4 py-2.5 sm:py-3" />
-            <span className="mt-2 block text-sm font-normal text-[var(--color-ink-muted)]">Use decimals if needed, like 0.5 for half a pack.</span>
-          </label>
-          <label className="font-bold text-[var(--color-brand-aubergine)]">
-            Years smoked
-            <input type="number" min={0} max={80} step={0.5} value={answers.yearsSmoked ?? ''} onChange={(event) => updateSmokingHistory({ ...answers, yearsSmoked: numberOrUndefined(event.target.value) }, update)} className="mt-2 w-full rounded-2xl border border-[var(--color-line)] bg-white px-4 py-2.5 sm:py-3" />
-          </label>
-        </div>
-        <div className="mt-5">
-          <p className="font-bold text-[var(--color-brand-aubergine)]">Which best describes your smoking now?</p>
-          <div className="mt-3 grid gap-3 sm:grid-cols-2">
-            <button
-              type="button"
-              aria-pressed={answers.currentlySmokes === true}
-              className={`min-h-14 rounded-2xl border px-4 text-left font-black ${
-                answers.currentlySmokes === true
-                  ? 'border-[var(--color-brand-primary)] bg-[var(--color-brand-primary-soft)] text-[var(--color-brand-aubergine)]'
-                  : 'border-[var(--color-line)] bg-white text-[var(--color-brand-aubergine)]'
-              }`}
-              onClick={() => update({ currentlySmokes: true, quitYearsAgo: 0 })}
-            >
-              I smoke now
-            </button>
-            <button
-              type="button"
-              aria-pressed={answers.currentlySmokes === false}
-              className={`min-h-14 rounded-2xl border px-4 text-left font-black ${
-                answers.currentlySmokes === false
-                  ? 'border-[var(--color-brand-primary)] bg-[var(--color-brand-primary-soft)] text-[var(--color-brand-aubergine)]'
-                  : 'border-[var(--color-line)] bg-white text-[var(--color-brand-aubergine)]'
-              }`}
-              onClick={() => update({ currentlySmokes: false, quitYearsAgo: undefined })}
-            >
-              I quit
-            </button>
-          </div>
-        </div>
-        {answers.currentlySmokes === false ? (
-          <label className="mt-5 block font-bold text-[var(--color-brand-aubergine)]">
-            How many years ago did you quit?
-            <input type="number" min={0} max={60} value={answers.quitYearsAgo ?? ''} onChange={(event) => update({ quitYearsAgo: numberOrUndefined(event.target.value) })} className="mt-2 w-full rounded-2xl border border-[var(--color-line)] bg-white px-4 py-2.5 sm:py-3" />
-          </label>
-        ) : null}
-        {answers.currentlySmokes === true ? (
-          <p className="mt-5 rounded-2xl bg-[var(--color-surface)] p-4 text-sm font-bold text-[var(--color-brand-aubergine)]">
-            Smoking now selected. No quit-year entry is needed.
-          </p>
-        ) : null}
-        <p className="mt-5 rounded-2xl bg-[var(--color-surface)] p-4 text-sm font-bold text-[var(--color-brand-aubergine)]">
-          Calculated pack-years: {formatPackYears(answers.packYears)}
-        </p>
-        <button type="button" className="btn btn-primary mt-5 w-full sm:mt-7 sm:w-auto" onClick={() => done()} disabled={!smokingDetailsComplete}>Use this</button>
-      </fieldset>
-    );
-  }
-
-  if (current === 'pcp') {
-    return (
-      <fieldset>
-        <QuestionHeader fact="Some screenings require an order or referral.">
-          Do you have a regular primary care clinician?
-        </QuestionHeader>
-        <div className="mt-5 grid gap-2 sm:mt-7 sm:grid-cols-2 sm:gap-3">
-          <Chip name="pcp" checked={answers.hasPCP === true} onChange={() => choose({ hasPCP: true })} label="Yes" />
-          <Chip name="pcp" checked={answers.hasPCP === false} onChange={() => choose({ hasPCP: false })} label="No" />
-        </div>
-      </fieldset>
-    );
-  }
-
-  if (current === 'addons') {
-    return (
-      <fieldset>
-        <QuestionHeader fact="Add any screening you want to learn about, even if it is not formally recommended for you.">
-          Any other screenings?
-        </QuestionHeader>
-        <div className="mt-5 grid gap-2 sm:mt-7 sm:grid-cols-2 sm:gap-3">
-          {cancerTypes.map((type) => (
-            <Chip key={type} name={`addon-${type}`} type="checkbox" checked={answers.additionalInterest.includes(type)} onChange={() => toggleAddon(type)} label={screenings[type].shortName} />
-          ))}
-        </div>
-        <button type="button" className="btn btn-primary mt-5 w-full sm:mt-7 sm:w-auto" onClick={() => done()}>Done</button>
-      </fieldset>
-    );
-  }
-
+function QuestionShell({ title, hint, children }: { title: string; hint?: string; children: React.ReactNode }) {
   return (
     <fieldset>
-      <QuestionHeader fact="ZIP code is optional. It only pre-fills the locator. You can also use your current location on the locator page.">
-        Want centers near you?
-      </QuestionHeader>
-      <label className="mt-5 block font-bold text-[var(--color-brand-aubergine)] sm:mt-7">
-        ZIP code
-        <input
-          inputMode="numeric"
-          pattern="[0-9]*"
-          maxLength={10}
-          value={answers.zip ?? ''}
-          onChange={(event) => update({ zip: event.target.value })}
-          placeholder="Optional"
-          className="mt-2 w-full rounded-2xl border border-[var(--color-line)] bg-white px-4 py-2.5 sm:py-3"
-        />
-      </label>
-      <button type="button" className="btn btn-primary mt-5 w-full sm:mt-7 sm:w-auto" onClick={build}>Build my guide</button>
+      <legend className="assessment-question display-md text-[var(--color-brand-aubergine)]">{title}</legend>
+      {hint ? <p className="mt-3 rounded-2xl bg-[var(--color-surface)] p-4 text-sm font-semibold leading-6 text-[var(--color-brand-aubergine)]">{hint}</p> : null}
+      <div className="mt-5">{children}</div>
     </fieldset>
   );
 }
 
-function normalizeAnswers(answers: DraftAnswers): Answers | null {
-  if (!answers.ageBracket || answers.familyHistory.any === undefined || !answers.sexAtBirth || answers.smoked100Plus === undefined || answers.hasPCP === undefined) {
-    return null;
-  }
-
-  const quitYearsAgo = answers.smoked100Plus
-    ? answers.currentlySmokes
-      ? 0
-      : answers.quitYearsAgo
-    : undefined;
-
-  return {
-    ...answers,
-    ageBracket: answers.ageBracket,
-    familyHistory: {
-      any: answers.familyHistory.any,
-      cancers: answers.familyHistory.any ? answers.familyHistory.cancers : [],
-    },
-    sexAtBirth: answers.sexAtBirth,
-    smoked100Plus: answers.smoked100Plus,
-    currentlySmokes: answers.smoked100Plus ? answers.currentlySmokes : undefined,
-    packYears: answers.smoked100Plus ? calculatePackYears(answers.packsPerDay, answers.yearsSmoked) : undefined,
-    quitYearsAgo,
-    hasPCP: answers.hasPCP,
-  };
-}
-
-function numberOrUndefined(value: string) {
-  if (value.trim() === '') return undefined;
-  const parsed = Number(value);
-  return Number.isFinite(parsed) ? parsed : undefined;
-}
-
-function calculatePackYears(packsPerDay?: number, yearsSmoked?: number) {
-  if (packsPerDay === undefined || yearsSmoked === undefined) return undefined;
-  return Math.round(packsPerDay * yearsSmoked * 10) / 10;
-}
-
-function isSmokingDetailsComplete(answers: DraftAnswers) {
-  const hasPackYears = (answers.packsPerDay ?? 0) > 0 && (answers.yearsSmoked ?? 0) > 0;
-  const hasCurrentStatus = answers.currentlySmokes === true || answers.currentlySmokes === false;
-  const hasQuitYears = answers.currentlySmokes === true || (answers.quitYearsAgo !== undefined && answers.quitYearsAgo >= 0);
-  return hasPackYears && hasCurrentStatus && hasQuitYears;
-}
-
-function updateSmokingHistory(next: DraftAnswers, update: (partial: Partial<DraftAnswers>) => void) {
-  update({
-    packsPerDay: next.packsPerDay,
-    yearsSmoked: next.yearsSmoked,
-    packYears: calculatePackYears(next.packsPerDay, next.yearsSmoked),
-  });
-}
-
-function formatPackYears(packYears?: number) {
-  return packYears === undefined ? 'Enter packs per day and years smoked' : packYears.toFixed(1);
-}
-
-function QuestionHeader({ children, fact }: { children: React.ReactNode; fact: string }) {
+function RadioGroup<T extends string>({
+  title,
+  hint,
+  name,
+  value,
+  onChange,
+  options,
+}: {
+  title: string;
+  hint?: string;
+  name: string;
+  value?: T;
+  onChange: (value: T) => void;
+  options: Array<[T, string]>;
+}) {
   return (
-    <>
-      <legend className="assessment-question display-md w-full text-[var(--color-brand-aubergine)]">{children}</legend>
-      <Fact>{fact}</Fact>
-    </>
+    <QuestionShell title={title} hint={hint}>
+      <div className="grid gap-2" role="radiogroup" aria-label={title}>
+        {options.map(([optionValue, label]) => (
+          <label key={optionValue}>
+            <input className="chip-input" type="radio" name={name} checked={value === optionValue} onChange={() => onChange(optionValue)} />
+            <span className="chip-label">{label}</span>
+          </label>
+        ))}
+      </div>
+    </QuestionShell>
   );
 }
 
-function Fact({ children }: { children: React.ReactNode }) {
+function CheckboxOption({ checked, onChange, label }: { checked: boolean; onChange: () => void; label: string }) {
   return (
-    <div className="assessment-fact mt-5 flex items-start gap-3 rounded-2xl bg-[var(--color-surface)] p-4 text-sm font-semibold leading-6 text-[var(--color-brand-aubergine)]">
-      <Info className="mt-0.5 h-5 w-5 shrink-0 text-[var(--color-brand-primary)]" aria-hidden="true" />
-      <p>{children}</p>
+    <label>
+      <input className="chip-input" type="checkbox" checked={checked} onChange={onChange} />
+      <span className="chip-label">{label}</span>
+    </label>
+  );
+}
+
+function ResultsView({
+  results,
+  alerts,
+  hasPrimaryCare,
+  setHasPrimaryCare,
+  zip,
+  setZip,
+  locateHref,
+}: {
+  results: ScreeningResult[];
+  alerts: ReturnType<typeof evaluateScreening>['alerts'];
+  hasPrimaryCare?: boolean;
+  setHasPrimaryCare: (value: boolean) => void;
+  zip: string;
+  setZip: (value: string) => void;
+  locateHref: string;
+}) {
+  return (
+    <div>
+      <div className="flex items-start gap-3">
+        <CheckCircle2 className="mt-1 h-7 w-7 shrink-0 text-[var(--color-brand-primary)]" />
+        <div>
+          <h2 className="display-md text-[var(--color-brand-aubergine)]">Your routine screening information</h2>
+          <p className="mt-2 text-sm leading-6 text-[var(--color-ink-muted)]">
+            This tool is educational and does not diagnose cancer or replace medical advice. Screening recommendations can change based on symptoms, personal history, family history, prior test results, and insurance details.
+          </p>
+        </div>
+      </div>
+
+      {alerts.length ? (
+        <div className="mt-6 grid gap-3">
+          {alerts.map((alert) => (
+            <div key={alert.id} className="flex gap-3 rounded-2xl bg-[var(--color-discuss)] p-4 text-[var(--color-discuss-ink)]">
+              <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0" />
+              <p className="text-sm font-bold leading-6">{alert.message}</p>
+            </div>
+          ))}
+        </div>
+      ) : null}
+
+      <div className="mt-6 grid gap-4">
+        {results.map((item) => (
+          <ResultCard key={item.cancerType} item={item} />
+        ))}
+      </div>
+
+      <section className="mt-8 rounded-3xl bg-[var(--color-surface)] p-4 sm:p-5">
+        <h3 className="text-lg font-black text-[var(--color-brand-aubergine)]">Next steps</h3>
+        <fieldset className="mt-4">
+          <legend className="font-bold text-[var(--color-brand-aubergine)]">Do you have a regular primary care clinician?</legend>
+          <div className="mt-3 grid gap-2 sm:grid-cols-2">
+            <button type="button" aria-pressed={hasPrimaryCare === true} className={`rounded-2xl border p-3 text-left font-bold ${hasPrimaryCare === true ? 'border-[var(--color-brand-primary)] bg-[var(--color-brand-primary-soft)]' : 'border-[var(--color-line)] bg-white'}`} onClick={() => setHasPrimaryCare(true)}>Yes</button>
+            <button type="button" aria-pressed={hasPrimaryCare === false} className={`rounded-2xl border p-3 text-left font-bold ${hasPrimaryCare === false ? 'border-[var(--color-brand-primary)] bg-[var(--color-brand-primary-soft)]' : 'border-[var(--color-line)] bg-white'}`} onClick={() => setHasPrimaryCare(false)}>No</button>
+          </div>
+        </fieldset>
+
+        <label htmlFor="result-zip" className="mt-5 block font-bold text-[var(--color-brand-aubergine)]">
+          Want help finding screening centers near you?
+          <input id="result-zip" value={zip} onChange={(event) => setZip(event.target.value)} placeholder="ZIP code, optional" className="mt-2 w-full rounded-2xl border border-[var(--color-line)] bg-white px-4 py-3" />
+        </label>
+
+        <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+          <Link to={locateHref} className="btn btn-primary">
+            Find screening locations <MapPin className="h-4 w-4" />
+          </Link>
+          <Link to="/assessment" reloadDocument className="btn btn-secondary">Start over</Link>
+        </div>
+      </section>
     </div>
   );
 }
 
-function Chip({
-  label,
-  name,
-  checked,
-  onChange,
-  type = 'radio',
-}: {
-  label: string;
-  name: string;
-  checked: boolean;
-  onChange: () => void;
-  type?: 'radio' | 'checkbox';
-}) {
-  const id = `${name}-${label}`.replace(/\s+/g, '-').toLowerCase();
+function ResultCard({ item }: { item: ScreeningResult }) {
   return (
-    <label>
-      <input id={id} className="chip-input" type={type} name={name} checked={checked} onChange={onChange} />
-      <span className="chip-label">{label}</span>
-    </label>
+    <article className="rounded-3xl border border-[var(--color-line)] bg-white p-5 shadow-[var(--shadow-gedi)]">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <p className="eyebrow text-[var(--color-brand-primary)]">{cancerLabels[item.cancerType]}</p>
+          <h3 className="mt-1 text-xl font-black text-[var(--color-brand-aubergine)]">{item.title}</h3>
+        </div>
+        <span className={`w-max rounded-full px-3 py-1.5 text-xs font-black ${statusClasses[item.status]}`}>{item.statusLabel}</span>
+      </div>
+      {item.routineInfoOnly ? (
+        <p className="mt-4 inline-flex items-center gap-2 rounded-2xl bg-[var(--color-brand-sky)]/35 px-3 py-2 text-xs font-black text-[var(--color-brand-navy)]">
+          <Info className="h-4 w-4" /> Routine screening information only
+        </p>
+      ) : null}
+      <p className="mt-4 leading-7 text-[var(--color-ink-muted)]">{item.explanation}</p>
+      <p className="mt-4 rounded-2xl bg-[var(--color-surface)] p-3 text-sm font-bold text-[var(--color-brand-aubergine)]">
+        Suggested next step: {item.nextStep}
+      </p>
+      <p className="mt-3 text-sm leading-6 text-[var(--color-ink-muted)]">
+        If this is preventive screening, it may be covered at no cost depending on your health plan, network, and whether the visit is preventive or diagnostic.
+      </p>
+    </article>
   );
+}
+
+function numericValue(value: string) {
+  if (value.trim() === '') return undefined;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : undefined;
 }

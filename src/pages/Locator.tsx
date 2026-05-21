@@ -270,7 +270,7 @@ export default function Locator() {
           </div>
         </section>
 
-        <MapPanel facilities={facilities} selectedId={selectedFacility} mapSearchUrl={mapSearchUrl} zip={debouncedZip} coords={coords} />
+        <MapPanel facilities={facilities} selectedId={selectedFacility} onSelect={setSelectedFacility} mapSearchUrl={mapSearchUrl} zip={debouncedZip} coords={coords} />
 
         <section className="card p-5 md:p-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -285,10 +285,11 @@ export default function Locator() {
           {loading ? <p className="mt-4 rounded-2xl bg-[var(--color-surface)] p-4 font-semibold text-[var(--color-ink-muted)]">Searching OpenStreetMap...</p> : null}
           {!loading && facilities.length ? (
             <div className="mt-5 grid gap-4 md:grid-cols-2">
-              {facilities.map((facility) => (
+              {facilities.map((facility, index) => (
                 <FacilityCard
                   key={facility.id}
                   facility={facility}
+                  index={index + 1}
                   selected={selected}
                   active={selectedFacility === facility.id}
                   onSelect={() => setSelectedFacility(facility.id)}
@@ -310,13 +311,16 @@ export default function Locator() {
   );
 }
 
-function FacilityCard({ facility, selected, active, onSelect }: { facility: Facility; selected: CancerType[]; active: boolean; onSelect: () => void }) {
+function FacilityCard({ facility, index, selected, active, onSelect }: { facility: Facility; index: number; selected: CancerType[]; active: boolean; onSelect: () => void }) {
   return (
     <article className={`rounded-3xl border p-5 ${active ? 'border-[var(--color-brand-primary)] bg-[var(--color-brand-primary-soft)]' : 'border-[var(--color-line)] bg-white'}`}>
       <button type="button" className="block w-full text-left" onClick={onSelect}>
         <div className="flex items-start justify-between gap-4">
-          <div>
-            <h3 className="text-lg font-black text-[var(--color-brand-aubergine)]">{facility.name}</h3>
+          <div className="min-w-0">
+            <div className="flex items-start gap-3">
+              <span className="mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--color-brand-aubergine)] text-xs font-black text-white">{index}</span>
+              <h3 className="min-w-0 text-lg font-black leading-snug text-[var(--color-brand-aubergine)]">{facility.name}</h3>
+            </div>
             <p className="mt-2 text-sm leading-6 text-[var(--color-ink-muted)]">{facility.address}</p>
           </div>
           {facility.distanceMiles ? <span className="rounded-full bg-[var(--color-brand-sage)] px-3 py-1 text-xs font-black text-[var(--color-eligible-ink)]">{facility.distanceMiles} mi</span> : null}
@@ -336,19 +340,19 @@ function FacilityCard({ facility, selected, active, onSelect }: { facility: Faci
       </div>
       <div className="mt-4 flex flex-wrap gap-2">
         {facility.phone ? (
-          <a href={`tel:${facility.phone.replace(/[^\d+]/g, '')}`} className="btn btn-secondary min-h-11 px-4 text-sm">
+          <a href={`tel:${facility.phone.replace(/[^\d+]/g, '')}`} className="btn btn-secondary min-h-11 w-full px-4 text-sm sm:w-auto">
             <Phone className="h-4 w-4" />
             Call
           </a>
         ) : null}
         {facility.mapsUrl ? (
-          <a href={facility.mapsUrl} target="_blank" rel="noreferrer" className="btn btn-secondary min-h-11 px-4 text-sm">
+          <a href={facility.mapsUrl} target="_blank" rel="noreferrer" className="btn btn-secondary min-h-11 w-full px-4 text-sm sm:w-auto">
             <Navigation className="h-4 w-4" />
             Directions
           </a>
         ) : null}
         {facility.websiteUrl ? (
-          <a href={facility.websiteUrl} target="_blank" rel="noreferrer" className="btn btn-secondary min-h-11 px-4 text-sm">
+          <a href={facility.websiteUrl} target="_blank" rel="noreferrer" className="btn btn-secondary min-h-11 w-full px-4 text-sm sm:w-auto">
             Website
           </a>
         ) : null}
@@ -404,34 +408,31 @@ function CallScriptBlock({ selected }: { selected: CancerType[] }) {
 function MapPanel({
   facilities,
   selectedId,
+  onSelect,
   mapSearchUrl,
   zip,
   coords,
 }: {
   facilities: Facility[];
   selectedId: string | null;
+  onSelect: (id: string) => void;
   mapSearchUrl: string;
   zip: string;
   coords: { lat: number; lng: number } | null;
 }) {
-  const mappedFacilities = facilities.filter((facility) => facility.lat && facility.lng);
+  const mappedFacilities = facilities.filter((facility): facility is Facility & { lat: number; lng: number } => Boolean(facility.lat && facility.lng));
   const activeFacility = mappedFacilities.find((facility) => facility.id === selectedId) || mappedFacilities[0];
 
   return (
-    <section className="card min-h-[520px] overflow-hidden">
+    <section className="card overflow-hidden">
       {mappedFacilities.length ? (
-        <div className="grid min-h-[520px] grid-rows-[1fr_auto]">
-          <iframe
-            title="Screening center OpenStreetMap"
-            src={openStreetMapEmbedUrl(mappedFacilities, activeFacility)}
-            className="h-full min-h-[360px] w-full border-0 sm:min-h-[460px]"
-            loading="lazy"
-          />
+        <div>
+          <FacilityMapGraphic facilities={mappedFacilities} activeId={activeFacility?.id} onSelect={onSelect} />
           <div className="border-t border-[var(--color-line)] bg-white p-5">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h2 className="font-black text-[var(--color-brand-aubergine)]">Nearby results are listed</h2>
-                <p className="mt-1 text-sm text-[var(--color-ink-muted)]">Select a facility card to focus the map, or open the full map search.</p>
+                <h2 className="font-black text-[var(--color-brand-aubergine)]">Nearby results are labeled</h2>
+                <p className="mt-1 text-sm text-[var(--color-ink-muted)]">Tap a number to match the map with the facility cards below.</p>
               </div>
               <a href={mapSearchUrl} target="_blank" rel="noreferrer" className="btn btn-primary shrink-0">
                 Open in OpenStreetMap <ExternalLink className="h-4 w-4" />
@@ -474,20 +475,76 @@ function MapPanel({
   );
 }
 
-function openStreetMapEmbedUrl(facilities: Facility[], active?: Facility) {
-  const points = facilities.filter((facility): facility is Facility & { lat: number; lng: number } => Boolean(facility.lat && facility.lng));
-  const center = active && active.lat && active.lng ? active : points[0];
-  const lats = points.map((facility) => facility.lat);
-  const lngs = points.map((facility) => facility.lng);
+function FacilityMapGraphic({
+  facilities,
+  activeId,
+  onSelect,
+}: {
+  facilities: Array<Facility & { lat: number; lng: number }>;
+  activeId?: string;
+  onSelect: (id: string) => void;
+}) {
+  const lats = facilities.map((facility) => facility.lat);
+  const lngs = facilities.map((facility) => facility.lng);
   const minLat = Math.min(...lats);
   const maxLat = Math.max(...lats);
   const minLng = Math.min(...lngs);
   const maxLng = Math.max(...lngs);
-  const padLat = Math.max((maxLat - minLat) * 0.25, 0.03);
-  const padLng = Math.max((maxLng - minLng) * 0.25, 0.03);
-  const bbox = [minLng - padLng, minLat - padLat, maxLng + padLng, maxLat + padLat].join(',');
-  const marker = center ? `&marker=${center.lat},${center.lng}` : '';
-  return `https://www.openstreetmap.org/export/embed.html?bbox=${encodeURIComponent(bbox)}&layer=mapnik${marker}`;
+  const latSpan = Math.max(maxLat - minLat, 0.01);
+  const lngSpan = Math.max(maxLng - minLng, 0.01);
+
+  function pointStyle(facility: Facility & { lat: number; lng: number }) {
+    const left = 8 + ((facility.lng - minLng) / lngSpan) * 84;
+    const top = 8 + ((maxLat - facility.lat) / latSpan) * 84;
+    return { left: `${left}%`, top: `${top}%` };
+  }
+
+  return (
+    <div className="bg-[var(--color-brand-sky)]/20 p-3 sm:p-5">
+      <div className="relative min-h-[300px] overflow-hidden rounded-[20px] border border-[var(--color-line)] bg-[var(--color-surface-elevated)] sm:min-h-[430px]">
+        <div className="absolute inset-0 opacity-70" aria-hidden="true">
+          <div className="h-full w-full bg-[linear-gradient(90deg,rgba(23,59,94,0.12)_1px,transparent_1px),linear-gradient(rgba(23,59,94,0.12)_1px,transparent_1px)] bg-[size:42px_42px] sm:bg-[size:56px_56px]" />
+        </div>
+        <div className="absolute inset-x-4 top-4 z-10 rounded-2xl bg-white/95 p-3 shadow-[var(--shadow-gedi)]">
+          <p className="text-sm font-black text-[var(--color-brand-aubergine)]">Map labels</p>
+          <p className="mt-1 text-xs leading-5 text-[var(--color-ink-muted)]">OpenStreetMap data, shown with GEDI labels for mobile readability.</p>
+        </div>
+        {facilities.map((facility, index) => (
+          <button
+            key={facility.id}
+            type="button"
+            onClick={() => onSelect(facility.id)}
+            className={`absolute z-20 flex h-9 w-9 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 text-xs font-black shadow-[var(--shadow-gedi)] ${
+              activeId === facility.id
+                ? 'border-[var(--color-brand-aubergine)] bg-[var(--color-brand-primary)] text-white'
+                : 'border-white bg-[var(--color-brand-aubergine)] text-white'
+            }`}
+            style={pointStyle(facility)}
+            aria-label={`Show ${facility.name}`}
+          >
+            {index + 1}
+          </button>
+        ))}
+      </div>
+      <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+        {facilities.map((facility, index) => (
+          <button
+            key={facility.id}
+            type="button"
+            onClick={() => onSelect(facility.id)}
+            className={`flex min-h-12 items-center gap-3 rounded-2xl border px-3 py-2 text-left text-sm font-bold ${
+              activeId === facility.id
+                ? 'border-[var(--color-brand-primary)] bg-[var(--color-brand-primary-soft)] text-[var(--color-brand-aubergine)]'
+                : 'border-[var(--color-line)] bg-white text-[var(--color-brand-aubergine)]'
+            }`}
+          >
+            <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--color-brand-aubergine)] text-xs text-white">{index + 1}</span>
+            <span className="min-w-0">{facility.name}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 function MapPlaceholder({ mapSearchUrl }: { mapSearchUrl: string }) {

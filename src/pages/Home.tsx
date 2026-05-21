@@ -27,8 +27,8 @@ export default function Home() {
           <div className="grid gap-8 rounded-[32px] bg-[var(--color-brand-primary-soft)] p-5 sm:p-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:p-10">
             <div className="min-w-0 text-left">
               <h1 className="display-xl max-w-5xl text-[var(--color-brand-aubergine)]">
-                <span className="block">Catch it before</span>
-                <span className="block">it catches you<span className="text-[var(--color-brand-primary)]">.</span></span>
+                <span className="block">Find cancer earlier</span>
+                <span className="block">with a plan made for you<span className="text-[var(--color-brand-primary)]">.</span></span>
               </h1>
               <p className="body-lg reveal mt-6 max-w-2xl text-[var(--color-ink-muted)] [animation-delay:120ms]">
                 GEDI builds a personalized screening plan in under a minute. Then it helps you book the next step.

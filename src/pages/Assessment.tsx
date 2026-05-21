@@ -23,7 +23,7 @@ const initialAnswers: DraftAnswers = {
   additionalInterest: [],
 };
 
-const ageOptions: Answers['ageBracket'][] = ['18-24', '25-39', '40-44', '45-49', '50-54', '55-64', '65-79', '80+'];
+const ageOptions: Answers['ageBracket'][] = ['18-20', '21-24', '25-29', '30-39', '40-44', '45-49', '50-54', '55-64', '65-69', '70-74', '75-80', '81+'];
 
 export default function Assessment() {
   const [started, setStarted] = useState(false);
@@ -103,19 +103,19 @@ export default function Assessment() {
 
   if (!started) {
     return (
-      <section className="min-h-[calc(100vh-112px)] bg-[var(--color-surface)] px-4 py-14">
-        <div className="container-gedi grid gap-8 lg:grid-cols-[1fr_0.8fr] lg:items-center">
+      <section className="min-h-[calc(100vh-112px)] bg-[var(--color-surface)] px-4 py-8 sm:py-14">
+        <div className="container-gedi grid gap-6 lg:grid-cols-[1fr_0.8fr] lg:items-center">
           <div>
             <p className="eyebrow text-[var(--color-brand-primary)]">Assessment</p>
             <h1 className="display-lg mt-4 text-[var(--color-brand-aubergine)]">A screening plan without the scavenger hunt.</h1>
             <p className="body-lg mt-5 max-w-2xl text-[var(--color-ink-muted)]">
               Answer a few questions. GEDI checks multiple screening pathways at once and saves the plan in this browser session.
             </p>
-            <button type="button" className="btn btn-primary mt-8" onClick={() => setStarted(true)}>
+            <button type="button" className="btn btn-primary mt-8 w-full sm:w-auto" onClick={() => setStarted(true)}>
               Start
             </button>
           </div>
-          <figure className="overflow-hidden rounded-[28px] border border-[var(--color-line)] bg-white shadow-[var(--shadow-gedi)]">
+          <figure className="overflow-hidden rounded-[20px] border border-[var(--color-line)] bg-white shadow-[var(--shadow-gedi)] sm:rounded-[28px]">
             <img src="/community/alcsi-outreach.jpeg" alt="ALCSI volunteers holding a lung cancer awareness ribbon" className="aspect-square w-full object-cover" />
           </figure>
         </div>
@@ -139,8 +139,8 @@ export default function Assessment() {
 
   return (
     <section className="min-h-[calc(100vh-112px)] bg-[var(--color-brand-primary-soft)]/45">
-      <div className="sticky top-28 z-20 border-b border-[var(--color-line)] bg-[rgba(241,233,218,0.94)] backdrop-blur">
-        <div className="container-gedi flex h-14 items-center gap-4">
+      <div className="sticky top-20 z-20 border-b border-[var(--color-line)] bg-[rgba(241,233,218,0.96)] backdrop-blur md:top-28">
+        <div className="container-gedi flex h-12 items-center gap-3 sm:h-14 sm:gap-4">
           <div className="h-2 flex-1 rounded-full bg-white" role="progressbar" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100} aria-label={`Step ${step + 1} of ${steps.length}`}>
             <div className="h-full rounded-full bg-[var(--color-brand-primary)] transition-all" style={{ width: `${progress}%` }} />
           </div>
@@ -148,8 +148,8 @@ export default function Assessment() {
         </div>
       </div>
 
-      <div className="container-gedi flex min-h-[calc(100vh-166px)] items-center justify-center py-10">
-        <div className="card w-full max-w-3xl p-6 md:p-10" role="form" aria-live="polite">
+      <div className="container-gedi flex min-h-[calc(100vh-156px)] items-start justify-center py-5 sm:py-8 md:min-h-[calc(100vh-166px)] md:items-center md:py-10">
+        <div className="card w-full max-w-3xl rounded-[18px] p-4 sm:p-6 md:rounded-[24px] md:p-10" role="form" aria-live="polite">
           <StepContent
             current={current}
             answers={answers}
@@ -272,7 +272,7 @@ function StepContent({ current, answers, choose, update, done, build, toggleFami
     return (
       <fieldset>
         <QuestionHeader fact="Smoking history drives current lung screening eligibility.">
-          Have you smoked at least 100 cigarettes in your life?
+          Have you ever smoked before?
         </QuestionHeader>
         <div className="mt-7 grid gap-3 sm:grid-cols-2">
           <Chip name="smoking" checked={answers.smoked100Plus === true} onChange={() => choose({ smoked100Plus: true })} label="Yes" />
@@ -285,7 +285,7 @@ function StepContent({ current, answers, choose, update, done, build, toggleFami
   if (current === 'smokingDetails') {
     return (
       <fieldset>
-        <QuestionHeader fact="GEDI calculates pack-years as packs per day times years smoked, then checks whether you currently smoke or quit recently enough for lung screening criteria.">
+        <QuestionHeader fact="USPSTF lung screening eligibility uses age, pack-years, and whether smoking is current or ended within the past 15 years.">
           About how much smoking history?
         </QuestionHeader>
         <div className="mt-7 grid gap-5 sm:grid-cols-2">
@@ -300,7 +300,7 @@ function StepContent({ current, answers, choose, update, done, build, toggleFami
           </label>
         </div>
         <div className="mt-5">
-          <p className="font-bold text-[var(--color-brand-aubergine)]">Do you currently smoke cigarettes?</p>
+          <p className="font-bold text-[var(--color-brand-aubergine)]">Which best describes your smoking now?</p>
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
             <button
               type="button"
@@ -312,7 +312,7 @@ function StepContent({ current, answers, choose, update, done, build, toggleFami
               }`}
               onClick={() => update({ currentlySmokes: true, quitYearsAgo: 0 })}
             >
-              I currently smoke
+              I smoke now
             </button>
             <button
               type="button"
@@ -324,7 +324,7 @@ function StepContent({ current, answers, choose, update, done, build, toggleFami
               }`}
               onClick={() => update({ currentlySmokes: false, quitYearsAgo: undefined })}
             >
-              I quit smoking
+              I quit
             </button>
           </div>
         </div>
@@ -336,16 +336,13 @@ function StepContent({ current, answers, choose, update, done, build, toggleFami
         ) : null}
         {answers.currentlySmokes === true ? (
           <p className="mt-5 rounded-2xl bg-[var(--color-surface)] p-4 text-sm font-bold text-[var(--color-brand-aubergine)]">
-            Current smoker selected. No quit-year entry is needed.
+            Smoking now selected. No quit-year entry is needed.
           </p>
         ) : null}
-        <p className="mt-4 text-sm font-semibold leading-6 text-[var(--color-ink-muted)]">
-          If you have not smoked at least 100 cigarettes in your life, go back and choose No on the previous question.
-        </p>
         <p className="mt-5 rounded-2xl bg-[var(--color-surface)] p-4 text-sm font-bold text-[var(--color-brand-aubergine)]">
           Calculated pack-years: {formatPackYears(answers.packYears)}
         </p>
-        <button type="button" className="btn btn-primary mt-7" onClick={() => done()} disabled={!smokingDetailsComplete}>Use this</button>
+        <button type="button" className="btn btn-primary mt-7 w-full sm:w-auto" onClick={() => done()} disabled={!smokingDetailsComplete}>Use this</button>
       </fieldset>
     );
   }

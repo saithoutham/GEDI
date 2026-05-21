@@ -227,6 +227,36 @@ a {
   transform: translateY(-1px);
 }
 
+@media (max-width: 640px) {
+  .container-gedi {
+    width: min(100% - 20px, 1200px);
+  }
+
+  .display-xl {
+    font-size: 42px;
+    line-height: 1.04;
+  }
+
+  .display-lg {
+    font-size: 34px;
+    line-height: 1.08;
+  }
+
+  .display-md {
+    font-size: 29px;
+    line-height: 1.12;
+  }
+
+  .chip-label {
+    min-height: 52px;
+    justify-content: flex-start;
+    padding: 12px 14px;
+    line-height: 1.25;
+    text-align: left;
+    white-space: normal;
+  }
+}
+
 fieldset {
   min-width: 0;
   margin: 0;

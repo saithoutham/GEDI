@@ -10,7 +10,7 @@ export type CancerType =
 
 export type RecStatus = 'eligible' | 'discuss' | 'info';
 
-export type AgeBracket = '18-24' | '25-39' | '40-44' | '45-49' | '50-54' | '55-64' | '65-79' | '80+';
+export type AgeBracket = '18-20' | '21-24' | '25-29' | '30-39' | '40-44' | '45-49' | '50-54' | '55-64' | '65-69' | '70-74' | '75-80' | '81+';
 export type FamilyCancer = CancerType | 'ovarian' | 'other';
 
 export type Answers = {
@@ -91,21 +91,21 @@ export const screenings: Record<CancerType, Screening> = {
     name: 'Breast cancer',
     shortName: 'Breast',
     test: 'Mammogram',
-    ageRange: '40+ depending on risk and preference',
-    source: 'ACS screening guideline',
-    sourceUrl: 'https://www.cancer.org/cancer/types/breast-cancer/screening-tests-and-early-detection.html',
+    ageRange: '40-74 for average-risk screening',
+    source: 'USPSTF 2024',
+    sourceUrl: 'https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/breast-cancer-screening',
     description: 'A mammogram is a low-dose X-ray that can find tumors before they are large enough to feel.',
     detail:
-      'ACS guidance supports optional screening at 40-44, annual screening from 45-54, and continued screening every 1-2 years after 55 when life expectancy supports it.',
+      'USPSTF guidance recommends biennial screening mammography for people assigned female at birth from ages 40-74 at average risk.',
   },
   cervical: {
     id: 'cervical',
     name: 'Cervical cancer',
     shortName: 'Cervical',
-    test: 'Primary HPV test or Pap/HPV testing',
-    ageRange: '25-65 with a cervix',
-    source: 'ACS screening guideline',
-    sourceUrl: 'https://www.cancer.org/cancer/types/cervical-cancer/detection-diagnosis-staging/cervical-cancer-screening-guidelines.html',
+    test: 'Pap test, HPV test, or co-testing',
+    ageRange: '21-65 with a cervix',
+    source: 'USPSTF 2018',
+    sourceUrl: 'https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/cervical-cancer-screening',
     description: 'HPV and Pap testing can find cervical cancer early or prevent it by finding precancerous changes.',
     detail:
       'GEDI uses organ presence, not gender identity, when deciding whether cervical screening information should appear.',
@@ -127,9 +127,9 @@ export const screenings: Record<CancerType, Screening> = {
     name: 'Prostate cancer',
     shortName: 'Prostate',
     test: 'PSA blood test discussion',
-    ageRange: '50+ or 45+ with family history',
-    source: 'ACS and USPSTF shared decision-making',
-    sourceUrl: 'https://www.cancer.org/cancer/types/prostate-cancer/detection-diagnosis-staging/acs-recommendations.html',
+    ageRange: '55-69 shared decision-making',
+    source: 'USPSTF 2018',
+    sourceUrl: 'https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/prostate-cancer-screening',
     description: 'A PSA blood test can help detect prostate cancer, but the decision should include benefits and harms.',
     detail:
       'GEDI treats PSA as a discussion, not an automatic order. Family history moves that conversation earlier.',
@@ -186,14 +186,18 @@ export const statusClasses: Record<RecStatus, string> = {
 
 export function ageFromBracket(bracket: AgeBracket): number {
   const ages: Record<AgeBracket, number> = {
-    '18-24': 21,
-    '25-39': 30,
+    '18-20': 19,
+    '21-24': 22,
+    '25-29': 27,
+    '30-39': 35,
     '40-44': 42,
     '45-49': 47,
     '50-54': 52,
     '55-64': 60,
-    '65-79': 70,
-    '80+': 81,
+    '65-69': 67,
+    '70-74': 72,
+    '75-80': 77,
+    '81+': 82,
   };
   return ages[bracket];
 }
@@ -220,19 +224,25 @@ function rec(cancerType: CancerType, status: RecStatus, rationale: string, cavea
   };
 }
 
+function setRecommendation(recommendations: Map<CancerType, ScreeningRec>, recommendation: ScreeningRec) {
+  const existing = recommendations.get(recommendation.cancerType);
+  if (existing?.status === 'eligible' && recommendation.status !== 'eligible') return;
+  recommendations.set(recommendation.cancerType, recommendation);
+}
+
 export function derivePlan(answers: Answers): Plan {
   const age = ageFromBracket(answers.ageBracket);
   const recommendations = new Map<CancerType, ScreeningRec>();
   const notes: string[] = [
-    'Recommendations are informational and follow ACS and USPSTF guidance where GEDI has enough information.',
+    'Recommendations are informational and follow USPSTF guidance where GEDI has enough information.',
   ];
   const quitYears = answers.currentlySmokes ? 0 : answers.quitYearsAgo ?? 999;
   const packYears = answers.packYears ?? ((answers.packsPerDay ?? 0) * (answers.yearsSmoked ?? 0));
   const currentOrRecentSmoking = answers.currentlySmokes === true || quitYears < 15;
 
-  if (age >= 50 && age <= 79 && answers.smoked100Plus && packYears >= 20 && currentOrRecentSmoking) {
-    recommendations.set(
-      'lung',
+  if (age >= 50 && age <= 80 && answers.smoked100Plus && packYears >= 20 && currentOrRecentSmoking) {
+    setRecommendation(
+      recommendations,
       rec(
         'lung',
         'eligible',
@@ -240,9 +250,9 @@ export function derivePlan(answers: Answers): Plan {
         'Yang Lab research has shown pack-year history is an inadequate and biased eligibility measure; GEDI keeps the guideline rule but surfaces the limitation.'
       )
     );
-  } else if (age >= 50 && age <= 79 && answers.smoked100Plus) {
-    recommendations.set(
-      'lung',
+  } else if (age >= 50 && age <= 80 && answers.smoked100Plus) {
+    setRecommendation(
+      recommendations,
       rec(
         'lung',
         'info',
@@ -253,8 +263,8 @@ export function derivePlan(answers: Answers): Plan {
   }
 
   if (answers.familyHistory.cancers.includes('lung') || (age >= 50 && answers.exposureRisks)) {
-    recommendations.set(
-      'lung',
+    setRecommendation(
+      recommendations,
       rec(
         'lung',
         'discuss',
@@ -265,26 +275,24 @@ export function derivePlan(answers: Answers): Plan {
   }
 
   if (hasOrgan(answers, 'breasts')) {
-    if (age >= 45) {
-      recommendations.set(
-        'breast',
+    if (age >= 40 && age <= 74) {
+      setRecommendation(
+        recommendations,
         rec(
           'breast',
           'eligible',
-          age < 55
-            ? 'ACS guidance recommends annual mammography for ages 45-54.'
-            : 'ACS guidance recommends continued mammography every 1-2 years for adults 55+ while overall health supports screening.'
+          'USPSTF 2024 recommends biennial screening mammography for women and other people assigned female at birth ages 40-74.'
         )
       );
-    } else if (age >= 40) {
-      recommendations.set(
-        'breast',
-        rec('breast', 'discuss', 'ACS guidance says people ages 40-44 should have the option to start annual mammography.')
+    } else if (age >= 75) {
+      setRecommendation(
+        recommendations,
+        rec('breast', 'discuss', 'USPSTF says evidence is insufficient to determine the balance of benefits and harms of mammography screening at age 75 or older.')
       );
     }
     if (answers.familyHistory.cancers.includes('breast') || answers.familyHistory.cancers.includes('ovarian')) {
-      recommendations.set(
-        'breast',
+      setRecommendation(
+        recommendations,
         rec(
           'breast',
           'discuss',
@@ -296,27 +304,32 @@ export function derivePlan(answers: Answers): Plan {
   }
 
   if (hasOrgan(answers, 'cervix')) {
-    if (age >= 25 && age <= 65) {
-      recommendations.set(
-        'cervical',
-        rec('cervical', 'eligible', 'ACS guidance recommends primary HPV testing every 5 years from ages 25-65 when available.')
+    if (age >= 21 && age <= 65) {
+      setRecommendation(
+        recommendations,
+        rec('cervical', 'eligible', 'USPSTF recommends routine cervical cancer screening from ages 21-65 for people with a cervix.')
       );
     } else if (age > 65) {
-      recommendations.set(
-        'cervical',
-        rec('cervical', 'discuss', 'Most people stop cervical screening after 65 only if they have had adequate prior normal testing.')
+      setRecommendation(
+        recommendations,
+        rec('cervical', 'discuss', 'USPSTF recommends stopping cervical screening after 65 only when prior screening has been adequate and risk is not high.')
       );
     }
   }
 
-  if (age >= 45) {
-    recommendations.set(
-      'colorectal',
+  if (age >= 45 && age <= 75) {
+    setRecommendation(
+      recommendations,
       rec('colorectal', 'eligible', 'USPSTF 2021 recommends colorectal cancer screening for adults ages 45-75.')
     );
+  } else if (age >= 76 && age <= 85) {
+    setRecommendation(
+      recommendations,
+      rec('colorectal', 'discuss', 'USPSTF recommends selectively offering colorectal cancer screening from ages 76-85 based on prior screening, health, and preferences.')
+    );
   } else if (answers.familyHistory.cancers.includes('colorectal')) {
-    recommendations.set(
-      'colorectal',
+    setRecommendation(
+      recommendations,
       rec(
         'colorectal',
         'discuss',
@@ -326,14 +339,24 @@ export function derivePlan(answers: Answers): Plan {
   }
 
   if (hasOrgan(answers, 'prostate')) {
-    if (age >= 50 || (age >= 45 && answers.familyHistory.cancers.includes('prostate'))) {
-      recommendations.set(
-        'prostate',
+    if (age >= 55 && age <= 69) {
+      setRecommendation(
+        recommendations,
         rec(
           'prostate',
           'discuss',
-          'ACS recommends discussing PSA screening at 50 for average-risk people with a prostate, and earlier for higher-risk groups including family history.'
+          'USPSTF recommends individualized decision-making about PSA-based prostate cancer screening for men ages 55-69.'
         )
+      );
+    } else if (age >= 70) {
+      setRecommendation(
+        recommendations,
+        rec('prostate', 'info', 'USPSTF recommends against routine PSA-based prostate cancer screening at age 70 or older.')
+      );
+    } else if (answers.familyHistory.cancers.includes('prostate')) {
+      setRecommendation(
+        recommendations,
+        rec('prostate', 'discuss', 'Family history is an important prostate cancer risk factor. Ask a clinician when PSA screening conversations should begin for you.')
       );
     }
   }

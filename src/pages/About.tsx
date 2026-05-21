@@ -7,7 +7,7 @@ export default function About() {
         <p className="eyebrow text-[var(--color-brand-primary)]">About GEDI</p>
         <h1 className="display-lg mt-4 text-[var(--color-brand-aubergine)]">A public screening platform built to close the action gap.</h1>
         <p className="body-lg mt-6 text-[var(--color-ink-muted)]">
-          GEDI helps people understand screening eligibility, build a multi-cancer plan, and find the next practical step. It connects guideline logic with the Yang Lab’s research and ALCSI’s community screening work.
+          GEDI helps people understand screening eligibility, build a multi-cancer plan, and find the next practical step. It follows published screening guidelines and was inspired in part by the Yang Lab’s research and ALCSI’s community screening work.
         </p>
       </div>
       <div className="mt-12 grid gap-5 md:grid-cols-3">

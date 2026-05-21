@@ -44,7 +44,7 @@ export default function Home() {
                 </Link>
               </div>
               <p className="mt-6 text-sm font-semibold leading-6 text-[var(--color-brand-aubergine)]">
-                Built from ACS and USPSTF screening pathways, with research context from the Yang Lab at Mass General.
+                Built from ACS and USPSTF screening pathways, with research context inspired by the Yang Lab at Mass General.
               </p>
             </div>
             <figure className="overflow-hidden rounded-[28px] border border-white/70 bg-white shadow-[var(--shadow-gedi)]">
@@ -140,7 +140,7 @@ export default function Home() {
             <p className="eyebrow text-[var(--color-brand-sky)]">Powered by research</p>
             <h2 className="display-md mt-4">The recommendations are only as good as the science behind them.</h2>
             <p className="mt-5 leading-7 text-white/75">
-              GEDI connects guideline logic to the Yang Lab’s published research on lung cancer screening eligibility, equity, and early detection.
+              GEDI follows published screening guidelines and acknowledges Yang Lab research on lung cancer screening eligibility, equity, and early detection.
             </p>
             <Link to="/research" className="btn mt-8 border border-[var(--color-brand-sky)] bg-[var(--color-brand-sky)] text-[var(--color-brand-navy)] hover:bg-white">
               See the research <ArrowRight className="h-4 w-4" aria-hidden="true" />

@@ -247,7 +247,7 @@ export function derivePlan(answers: Answers): Plan {
         'lung',
         'eligible',
         'USPSTF 2021 recommends annual LDCT lung cancer screening for adults 50-80 with at least 20 pack-years who currently smoke or quit within the past 15 years.',
-        'Yang Lab research has shown pack-year history is an inadequate and biased eligibility measure; GEDI keeps the guideline rule but surfaces the limitation.'
+        'Published research from Yang Lab collaborators has raised concerns that pack-year history can be an inadequate and biased eligibility measure; GEDI keeps the guideline rule while surfacing the limitation.'
       )
     );
   } else if (age >= 50 && age <= 80 && answers.smoked100Plus) {

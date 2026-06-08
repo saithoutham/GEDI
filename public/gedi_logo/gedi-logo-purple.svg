@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 847 197" role="img" aria-labelledby="gedi-logo-title">
+  <title id="gedi-logo-title">GEDI Global Early Detection Initiative</title>
+  <g fill="none">
+    <text
+      x="0"
+      y="175"
+      fill="#A12996"
+      font-family="Arial Black, Arial, Helvetica, sans-serif"
+      font-size="205"
+      font-weight="900"
+      letter-spacing="-13"
+    >G</text>
+    <text
+      x="142"
+      y="175"
+      fill="#BC69AF"
+      font-family="Arial Black, Arial, Helvetica, sans-serif"
+      font-size="205"
+      font-weight="900"
+      letter-spacing="-13"
+    >E</text>
+    <text
+      x="225"
+      y="175"
+      fill="#A12996"
+      font-family="Arial Black, Arial, Helvetica, sans-serif"
+      font-size="205"
+      font-weight="900"
+      letter-spacing="-13"
+    >D</text>
+    <text
+      x="337"
+      y="175"
+      fill="#BC69AF"
+      font-family="Arial Black, Arial, Helvetica, sans-serif"
+      font-size="205"
+      font-weight="900"
+      letter-spacing="-13"
+    >I</text>
+    <text
+      x="382"
+      y="116"
+      fill="#A12996"
+      font-family="Arial, Helvetica, sans-serif"
+      font-size="42"
+      font-weight="800"
+      letter-spacing="0"
+      textLength="310"
+      lengthAdjust="spacingAndGlyphs"
+    >GLOBAL EARLY</text>
+    <text
+      x="382"
+      y="174"
+      fill="#A12996"
+      font-family="Arial, Helvetica, sans-serif"
+      font-size="42"
+      font-weight="800"
+      letter-spacing="0"
+      textLength="465"
+      lengthAdjust="spacingAndGlyphs"
+    >DETECTION INITIATIVE</text>
+  </g>
+</svg>

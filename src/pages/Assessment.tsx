@@ -61,16 +61,6 @@ const raceLabels: Record<RaceOption, string> = {
   unknown: 'Unknown / prefer not to say',
 };
 
-type RiskGroupKey =
-  | 'breastRisk'
-  | 'cervicalRisk'
-  | 'colorectalRisk'
-  | 'lungRisk'
-  | 'prostateRisk'
-  | 'liverRisk'
-  | 'skinRisk'
-  | 'oralRisk';
-
 type StepKey =
   | 'contact'
   | 'contactDetails'
@@ -79,18 +69,11 @@ type StepKey =
   | 'race'
   | 'raceOther'
   | 'routineIntent'
-  | 'highRisk'
   | 'anatomy'
   | 'priorCervical'
   | 'priorColorectal'
   | 'smokingStatus'
   | 'smokingNumbers'
-  | 'lungRisk'
-  | 'breastRisk'
-  | 'cervicalRisk'
-  | 'colorectalRisk'
-  | 'prostateRisk'
-  | 'liverSkinOralRisk'
   | 'results';
 
 type StepDefinition = {
@@ -163,6 +146,14 @@ export default function Assessment() {
         anatomy.hasProstate = false;
         if (key === 'none') anatomy.unknown = false;
         if (key === 'unknown') anatomy.none = false;
+        return {
+          ...prev,
+          anatomy,
+          cervicalRisk: {
+            ...prev.cervicalRisk,
+            cervixRemoved: false,
+          },
+        };
       } else {
         anatomy.none = false;
         anatomy.unknown = false;
@@ -172,17 +163,19 @@ export default function Assessment() {
     setError('');
   }
 
-  function toggleRisk(group: RiskGroupKey, key: string) {
-    setAnswers((prev) => {
-      const current = prev[group] as Record<string, boolean>;
-      return {
-        ...prev,
-        [group]: {
-          ...current,
-          [key]: !current[key],
-        },
-      } as AssessmentAnswers;
-    });
+  function toggleCervixRemoved() {
+    setAnswers((prev) => ({
+      ...prev,
+      anatomy: {
+        ...prev.anatomy,
+        none: false,
+        unknown: false,
+      },
+      cervicalRisk: {
+        ...prev.cervicalRisk,
+        cervixRemoved: !prev.cervicalRisk.cervixRemoved,
+      },
+    }));
     setError('');
   }
 
@@ -253,7 +246,7 @@ export default function Assessment() {
 
       case 'sex':
         return (
-          <QuestionShell title="What was the participant's sex assigned at birth?" hint="Some screening rules depend on anatomy and prior procedures, which are asked separately.">
+          <QuestionShell title="What was the participant's sex assigned at birth?" hint="This helps decide which screening questions may apply.">
             <RadioRow<SexAssignedAtBirth>
               label="Sex assigned at birth"
               value={answers.sexAssignedAtBirth}
@@ -271,7 +264,7 @@ export default function Assessment() {
 
       case 'race':
         return (
-          <QuestionShell title="Which race options apply?" hint="Select all that apply. This helps identify screening conversations where ancestry or disparities may matter.">
+          <QuestionShell title="Which race options apply?" hint="Select all that apply.">
             <CheckboxGroup title="Race" required>
               {(Object.keys(raceLabels) as RaceOption[]).map((race) => (
                 <CheckboxRow key={race} checked={answers.race.includes(race)} onChange={() => toggleRace(race)} label={raceLabels[race]} />
@@ -289,7 +282,7 @@ export default function Assessment() {
 
       case 'routineIntent':
         return (
-          <QuestionShell title="Is this for routine screening?" hint="Symptoms or prior cancer history can require diagnostic care instead of routine screening rules.">
+          <QuestionShell title="Is this for routine screening?" hint="If there are symptoms, the safest next step is to talk with a clinician.">
             <RadioRow<RoutineScreeningIntent>
               label="Screening context"
               value={answers.routineIntent}
@@ -305,41 +298,23 @@ export default function Assessment() {
           </QuestionShell>
         );
 
-      case 'highRisk':
-        return (
-          <QuestionShell title="Has a clinician ever recommended special cancer screening?" hint="Inherited syndromes and strong family history may change routine age-based screening.">
-            <RadioRow
-              label="High-risk history"
-              value={answers.highRiskHistory}
-              onChange={(value) => update({ highRiskHistory: value as AssessmentAnswers['highRiskHistory'] })}
-              options={[
-                ['no', 'No'],
-                ['inherited-syndrome', 'Inherited syndrome such as BRCA, Lynch syndrome, or FAP'],
-                ['strong-family-history', 'Strong family history of cancer'],
-                ['not-sure', 'Not sure'],
-              ]}
-              required
-            />
-          </QuestionShell>
-        );
-
       case 'anatomy':
         return (
-          <QuestionShell title="Which anatomy and procedure history options apply?" hint="Choose all that apply. If unsure, select the unsure option.">
-            <CheckboxGroup title="Anatomy and procedure history" required>
-              <CheckboxRow checked={answers.anatomy.breastScreeningApplies} onChange={() => toggleAnatomy('breastScreeningApplies')} label="Breast screening applies to me" />
-              <CheckboxRow checked={answers.anatomy.hasCervix} onChange={() => toggleAnatomy('hasCervix')} label="I currently have a cervix" />
-              <CheckboxRow checked={answers.cervicalRisk.cervixRemoved} onChange={() => toggleRisk('cervicalRisk', 'cervixRemoved')} label="My cervix was removed for a non-cancer reason" />
-              <CheckboxRow checked={answers.anatomy.hasProstate} onChange={() => toggleAnatomy('hasProstate')} label="I currently have a prostate" />
-              <CheckboxRow checked={answers.anatomy.none} onChange={() => toggleAnatomy('none')} label="None of these apply" />
-              <CheckboxRow checked={answers.anatomy.unknown} onChange={() => toggleAnatomy('unknown')} label="I am not sure which anatomy-based screenings apply" />
+          <QuestionShell title="Which of these apply?" hint="Pick any you know. If you are not sure, choose Not sure.">
+            <CheckboxGroup title="Select all that apply" required>
+              <CheckboxRow checked={answers.anatomy.breastScreeningApplies} onChange={() => toggleAnatomy('breastScreeningApplies')} label="Breast screening may apply" />
+              <CheckboxRow checked={answers.anatomy.hasCervix} onChange={() => toggleAnatomy('hasCervix')} label="Has a cervix" />
+              <CheckboxRow checked={answers.cervicalRisk.cervixRemoved} onChange={toggleCervixRemoved} label="Cervix was removed" />
+              <CheckboxRow checked={answers.anatomy.hasProstate} onChange={() => toggleAnatomy('hasProstate')} label="Has a prostate" />
+              <CheckboxRow checked={answers.anatomy.none} onChange={() => toggleAnatomy('none')} label="None of these" />
+              <CheckboxRow checked={answers.anatomy.unknown} onChange={() => toggleAnatomy('unknown')} label="Not sure" />
             </CheckboxGroup>
           </QuestionShell>
         );
 
       case 'priorCervical':
         return (
-          <QuestionShell title="Has the participant had regular normal Pap or HPV tests in the past?" hint="This matters most for people older than 65 or unsure of prior screening.">
+          <QuestionShell title="Has the participant had regular normal Pap or HPV tests before?" hint="If not sure, choose Not sure.">
             <RadioRow
               label="Prior cervical screening"
               value={answers.priorCervicalScreening}
@@ -356,7 +331,7 @@ export default function Assessment() {
 
       case 'priorColorectal':
         return (
-          <QuestionShell title="Has the participant ever completed colorectal cancer screening?" hint="This can matter for adults older than 75.">
+          <QuestionShell title="Has the participant ever completed colorectal cancer screening?" hint="If not sure, choose Not sure.">
             <RadioRow
               label="Prior colorectal screening"
               value={answers.priorColorectalScreening}
@@ -373,7 +348,7 @@ export default function Assessment() {
 
       case 'smokingStatus':
         return (
-          <QuestionShell title="What is the participant's smoking status?" hint="This is used for lung cancer screening eligibility.">
+          <QuestionShell title="What is the participant's smoking status?" hint="This helps check lung screening eligibility.">
             <RadioRow<SmokingStatus>
               label="Smoking status"
               value={answers.smokingStatus}
@@ -391,7 +366,7 @@ export default function Assessment() {
 
       case 'smokingNumbers':
         return (
-          <QuestionShell title="Estimate the participant's smoking exposure." hint="Pack-years are calculated as average packs per day times total years smoked.">
+          <QuestionShell title="How much has the participant smoked?" hint="Pack-years are average packs per day times total years smoked.">
             <div className="grid gap-4 md:grid-cols-3">
               <NumberField label="Average packs per day" value={answers.packsPerDay ?? ''} onChange={(value) => update({ packsPerDay: numericValue(value) })} min={0} max={10} step={0.25} required />
               <NumberField label="Total years smoked" value={answers.yearsSmoked ?? ''} onChange={(value) => update({ yearsSmoked: numericValue(value) })} min={0} max={100} step={0.5} required />
@@ -406,96 +381,6 @@ export default function Assessment() {
           </QuestionShell>
         );
 
-      case 'lungRisk':
-        return (
-          <QuestionShell title="Are any lung-specific risk or safety factors present?" hint="Select any that apply. Leave all unselected if none apply.">
-            <CheckboxGroup title="Lung-specific risk and safety questions">
-              <RiskCheckbox group="lungRisk" field="symptoms" answers={answers} onChange={toggleRisk} label="New/worsening cough, coughing blood, unexplained weight loss, or other concerning lung symptoms" />
-              <RiskCheckbox group="lungRisk" field="healthLimitsCurativeTreatment" answers={answers} onChange={toggleRisk} label="Major health problem that would substantially limit life expectancy or ability/willingness to have curative lung surgery" />
-              <RiskCheckbox group="lungRisk" field="copdOrPulmonaryFibrosis" answers={answers} onChange={toggleRisk} label="COPD, emphysema, or pulmonary fibrosis" />
-              <RiskCheckbox group="lungRisk" field="occupationalExposure" answers={answers} onChange={toggleRisk} label="Significant exposure to asbestos, radon, arsenic, silica, diesel exhaust, or similar carcinogens" />
-              <RiskCheckbox group="lungRisk" field="otherSmokingRelatedCancer" answers={answers} onChange={toggleRisk} label="Prior smoking-related cancer such as bladder, head, or neck cancer" />
-            </CheckboxGroup>
-          </QuestionShell>
-        );
-
-      case 'breastRisk':
-        return (
-          <QuestionShell title="Are any breast cancer risk factors present?" hint="Select any that apply. Leave all unselected if none apply.">
-            <CheckboxGroup title="Breast cancer">
-              <RiskCheckbox group="breastRisk" field="personalHistoryOrHighRiskLesion" answers={answers} onChange={toggleRisk} label="Personal history of breast cancer or a high-risk breast lesion" />
-              <RiskCheckbox group="breastRisk" field="geneticMutation" answers={answers} onChange={toggleRisk} label="Known BRCA1/2, PALB2, PTEN, or similar mutation in self or close family" />
-              <RiskCheckbox group="breastRisk" field="chestRadiationYoung" answers={answers} onChange={toggleRisk} label="Chest radiation between about ages 10 and 30" />
-              <RiskCheckbox group="breastRisk" field="denseBreasts" answers={answers} onChange={toggleRisk} label="Told you have dense breasts on mammogram" />
-              <RiskCheckbox group="breastRisk" field="firstDegreeRelativeEarly" answers={answers} onChange={toggleRisk} label="Parent, sibling, or child with breast cancer before age 50" />
-            </CheckboxGroup>
-          </QuestionShell>
-        );
-
-      case 'cervicalRisk':
-        return (
-          <QuestionShell title="Are any cervical cancer risk factors present?" hint="Select any that apply. Leave all unselected if none apply.">
-            <CheckboxGroup title="Cervical cancer">
-              <RiskCheckbox group="cervicalRisk" field="priorHighGradeLesionOrCancer" answers={answers} onChange={toggleRisk} label="Prior cervical cancer or high-grade cervical precancer" />
-              <RiskCheckbox group="cervicalRisk" field="immunocompromised" answers={answers} onChange={toggleRisk} label="HIV, organ transplant, chronic immune suppression, or similar condition" />
-              <RiskCheckbox group="cervicalRisk" field="desExposure" answers={answers} onChange={toggleRisk} label="Known DES exposure before birth" />
-              <RiskCheckbox group="cervicalRisk" field="adequatePriorScreening" answers={answers} onChange={toggleRisk} label="Age 65+ with adequate prior normal Pap/HPV screening" />
-            </CheckboxGroup>
-          </QuestionShell>
-        );
-
-      case 'colorectalRisk':
-        return (
-          <QuestionShell title="Are any colorectal cancer risk factors present?" hint="Select any that apply. Leave all unselected if none apply.">
-            <CheckboxGroup title="Colorectal cancer">
-              <RiskCheckbox group="colorectalRisk" field="personalHistory" answers={answers} onChange={toggleRisk} label="Personal history of colorectal cancer or adenomatous/high-risk polyps" />
-              <RiskCheckbox group="colorectalRisk" field="inflammatoryBowelDisease" answers={answers} onChange={toggleRisk} label="Crohn disease or ulcerative colitis for many years" />
-              <RiskCheckbox group="colorectalRisk" field="familyEarly" answers={answers} onChange={toggleRisk} label="First-degree relative with colorectal cancer or advanced adenoma before age 60" />
-              <RiskCheckbox group="colorectalRisk" field="familyMultiple" answers={answers} onChange={toggleRisk} label="Two or more first-degree relatives with colorectal cancer at any age" />
-              <RiskCheckbox group="colorectalRisk" field="geneticSyndrome" answers={answers} onChange={toggleRisk} label="Known Lynch syndrome, FAP, or similar inherited colorectal cancer syndrome" />
-            </CheckboxGroup>
-          </QuestionShell>
-        );
-
-      case 'prostateRisk':
-        return (
-          <QuestionShell title="Are any prostate cancer risk factors present?" hint="Select any that apply. Leave all unselected if none apply.">
-            <CheckboxGroup title="Prostate cancer">
-              <RiskCheckbox group="prostateRisk" field="familyEarly" answers={answers} onChange={toggleRisk} label="Father, brother, or son diagnosed with prostate cancer before age 65" />
-              <RiskCheckbox group="prostateRisk" field="familyMultiple" answers={answers} onChange={toggleRisk} label="Multiple family members diagnosed with prostate cancer" />
-              <RiskCheckbox group="prostateRisk" field="brcaMutation" answers={answers} onChange={toggleRisk} label="Known BRCA1 or BRCA2 mutation in self or family" />
-              <RiskCheckbox group="prostateRisk" field="africanAncestry" answers={answers} onChange={toggleRisk} label="Black or African ancestry" />
-              <RiskCheckbox group="prostateRisk" field="priorHighRiskBiopsy" answers={answers} onChange={toggleRisk} label="Prior prostate biopsy with high-risk abnormal result" />
-            </CheckboxGroup>
-          </QuestionShell>
-        );
-
-      case 'liverSkinOralRisk':
-        return (
-          <QuestionShell title="Are any liver, skin, or oral/HPV-related risk factors present?" hint="Select any that apply. Leave all unselected if none apply.">
-            <div className="grid gap-4">
-              <QuestionPanel title="Liver cancer">
-                <RiskCheckbox group="liverRisk" field="cirrhosis" answers={answers} onChange={toggleRisk} label="Cirrhosis or advanced liver scarring" />
-                <RiskCheckbox group="liverRisk" field="hepatitisB" answers={answers} onChange={toggleRisk} label="Chronic hepatitis B" />
-                <RiskCheckbox group="liverRisk" field="hepatitisC" answers={answers} onChange={toggleRisk} label="Chronic hepatitis C" />
-                <RiskCheckbox group="liverRisk" field="hemochromatosis" answers={answers} onChange={toggleRisk} label="Hereditary hemochromatosis or inherited liver disease risk" />
-              </QuestionPanel>
-              <QuestionPanel title="Skin cancer">
-                <RiskCheckbox group="skinRisk" field="changingLesion" answers={answers} onChange={toggleRisk} label="Changing, bleeding, painful, or unusual mole/skin spot" />
-                <RiskCheckbox group="skinRisk" field="personalHistory" answers={answers} onChange={toggleRisk} label="Personal history of melanoma or other skin cancer" />
-                <RiskCheckbox group="skinRisk" field="immunosuppressed" answers={answers} onChange={toggleRisk} label="Immune suppression, organ transplant, or long-term immune-suppressing medication" />
-                <RiskCheckbox group="skinRisk" field="manyAtypicalMoles" answers={answers} onChange={toggleRisk} label="Many moles or atypical moles" />
-                <RiskCheckbox group="skinRisk" field="highUvExposure" answers={answers} onChange={toggleRisk} label="High UV exposure, indoor tanning, or blistering sunburn history" />
-              </QuestionPanel>
-              <QuestionPanel title="Oral/HPV-related cancers">
-                <RiskCheckbox group="oralRisk" field="persistentSymptoms" answers={answers} onChange={toggleRisk} label="Persistent mouth sore, throat pain, swallowing trouble, voice change, or neck lump" />
-                <RiskCheckbox group="oralRisk" field="tobaccoOrHeavyAlcohol" answers={answers} onChange={toggleRisk} label="Current or prior tobacco use or heavy alcohol use" />
-                <RiskCheckbox group="oralRisk" field="hpvRelatedHistory" answers={answers} onChange={toggleRisk} label="History of HPV-related disease or concern about HPV-related cancer risk" />
-              </QuestionPanel>
-            </div>
-          </QuestionShell>
-        );
-
       case 'results':
         return <ResultsView results={evaluation.results} alerts={evaluation.alerts} />;
 
@@ -506,8 +391,8 @@ export default function Assessment() {
 
   return (
     <section className="min-h-[calc(100vh-96px)] bg-[var(--color-brand-primary-soft)]/40 py-5 sm:py-8 md:py-12">
-      <div className="container-gedi">
-        <div className="mx-auto max-w-4xl">
+      <div className="w-full px-3 sm:px-6 lg:px-10">
+        <div className="w-full">
           <p className="eyebrow text-[var(--color-brand-primary)]">Assessment</p>
           <h1 className="display-md mt-3 text-[var(--color-brand-aubergine)]">Cancer screening eligibility intake.</h1>
           <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--color-ink-muted)] sm:text-base">
@@ -515,7 +400,7 @@ export default function Assessment() {
           </p>
         </div>
 
-        <form className="mx-auto mt-5 max-w-4xl overflow-hidden rounded-3xl border border-[var(--color-line)] bg-white shadow-[var(--shadow-gedi)]" onSubmit={(event) => event.preventDefault()}>
+        <form className="mt-5 w-full overflow-hidden rounded-3xl border border-[var(--color-line)] bg-white shadow-[var(--shadow-gedi)]" onSubmit={(event) => event.preventDefault()}>
           <div className="border-b border-[var(--color-line)] bg-[var(--color-surface)] px-5 py-4">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
@@ -582,8 +467,7 @@ function buildSteps(answers: AssessmentAnswers): StepDefinition[] {
 
   steps.push(
     { key: 'routineIntent', shortTitle: 'Screening context' },
-    { key: 'highRisk', shortTitle: 'High-risk history' },
-    { key: 'anatomy', shortTitle: 'Anatomy and procedure history' }
+    { key: 'anatomy', shortTitle: 'Screening basics' }
   );
 
   if (answers.sexAssignedAtBirth === 'female' || answers.anatomy.hasCervix || answers.anatomy.unknown) {
@@ -599,15 +483,7 @@ function buildSteps(answers: AssessmentAnswers): StepDefinition[] {
     steps.push({ key: 'smokingNumbers', shortTitle: 'Smoking exposure' });
   }
 
-  steps.push(
-    { key: 'lungRisk', shortTitle: 'Lung risk factors' },
-    { key: 'breastRisk', shortTitle: 'Breast cancer risk factors' },
-    { key: 'cervicalRisk', shortTitle: 'Cervical cancer risk factors' },
-    { key: 'colorectalRisk', shortTitle: 'Colorectal cancer risk factors' },
-    { key: 'prostateRisk', shortTitle: 'Prostate cancer risk factors' },
-    { key: 'liverSkinOralRisk', shortTitle: 'Other risk factors' },
-    { key: 'results', shortTitle: 'Results' }
-  );
+  steps.push({ key: 'results', shortTitle: 'Results' });
 
   return steps;
 }
@@ -633,12 +509,9 @@ function validateStep(step: StepKey, answers: AssessmentAnswers) {
     case 'routineIntent':
       if (!answers.routineIntent) return 'Please select the screening context.';
       return '';
-    case 'highRisk':
-      if (!answers.highRiskHistory) return 'Please select a high-risk history answer.';
-      return '';
     case 'anatomy':
       if (!Object.values(answers.anatomy).some(Boolean) && !answers.cervicalRisk.cervixRemoved) {
-        return 'Please select at least one anatomy or procedure history option.';
+        return 'Please select at least one option.';
       }
       return '';
     case 'priorCervical':
@@ -666,17 +539,8 @@ function QuestionShell({ title, hint, children }: { title: string; hint?: string
   return (
     <section>
       <h2 className="text-2xl font-black leading-tight text-[var(--color-brand-aubergine)] sm:text-3xl">{title}</h2>
-      {hint ? <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--color-ink-muted)] sm:text-base">{hint}</p> : null}
+      {hint ? <p className="mt-3 max-w-4xl text-sm leading-6 text-[var(--color-ink-muted)] sm:text-base">{hint}</p> : null}
       <div className="mt-6 grid gap-5">{children}</div>
-    </section>
-  );
-}
-
-function QuestionPanel({ title, children }: { title: string; children: ReactNode }) {
-  return (
-    <section className="rounded-2xl border border-[var(--color-line)] bg-[var(--color-surface)] p-4">
-      <h3 className="font-black text-[var(--color-brand-aubergine)]">{title}</h3>
-      <div className="mt-3 grid gap-2">{children}</div>
     </section>
   );
 }
@@ -796,23 +660,6 @@ function CheckboxRow({ checked, onChange, label }: { checked: boolean; onChange:
       <span className="chip-label">{label}</span>
     </label>
   );
-}
-
-function RiskCheckbox({
-  group,
-  field,
-  answers,
-  onChange,
-  label,
-}: {
-  group: RiskGroupKey;
-  field: string;
-  answers: AssessmentAnswers;
-  onChange: (group: RiskGroupKey, key: string) => void;
-  label: string;
-}) {
-  const current = answers[group] as Record<string, boolean>;
-  return <CheckboxRow checked={current[field]} onChange={() => onChange(group, field)} label={label} />;
 }
 
 function ResultsView({ results, alerts }: { results: ScreeningResult[]; alerts: ReturnType<typeof evaluateScreening>['alerts'] }) {

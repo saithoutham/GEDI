@@ -117,11 +117,6 @@ test('colorectal high-risk answers route to clinician discussion', () => {
   assert.equal(result.status, 'ask-clinician');
 });
 
-test('liver risk answers route to clinician discussion', () => {
-  const result = resultFor(base({ liverRisk: { ...emptyRiskAnswers.liverRisk, hepatitisB: true } }), 'liver');
-  assert.equal(result.status, 'ask-clinician');
-});
-
 test('symptom-related answers trigger diagnostic alert', () => {
   const evaluation = evaluateScreening(base({ lungRisk: { ...emptyRiskAnswers.lungRisk, symptoms: true } }));
   assert.equal(evaluation.alerts.some((alert) => alert.id === 'diagnostic-symptoms'), true);

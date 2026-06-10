@@ -241,9 +241,6 @@ export function evaluateScreening(answers: AssessmentAnswers): AssessmentEvaluat
   results.push(evaluateColorectal(age, answers, routineInfoOnly));
   results.push(evaluateLung(age, answers, routineInfoOnly));
   if (prostateApplies(answers)) results.push(evaluateProstate(age, answers, routineInfoOnly));
-  results.push(evaluateLiver(answers, routineInfoOnly));
-  results.push(evaluateSkin(answers, routineInfoOnly));
-  results.push(evaluateOral(answers, routineInfoOnly));
 
   return { alerts, results };
 }
@@ -287,7 +284,7 @@ function buildAlerts(answers: AssessmentAnswers): AssessmentAlert[] {
     alerts.push({
       id: 'unknown-anatomy',
       message:
-        'Some screening recommendations depend on anatomy or prior surgeries. A clinician can help confirm which screenings apply.',
+        'Some screening recommendations depend on information not provided here. A clinician can help confirm which screenings apply.',
     });
   }
   return alerts;
@@ -448,31 +445,4 @@ function evaluateProstate(age: number, answers: AssessmentAnswers, routineInfoOn
     return result('prostate', 'ask-clinician', 'Your prostate cancer risk answers may support an earlier clinician conversation about PSA testing than average-risk age ranges.', routineInfoOnly);
   }
   return result('prostate', 'not-routine', 'Routine PSA-based prostate cancer screening is generally not recommended before age 55 for average-risk people.', routineInfoOnly);
-}
-
-function evaluateLiver(answers: AssessmentAnswers, routineInfoOnly: boolean) {
-  if (answers.liverRisk.cirrhosis || answers.liverRisk.hepatitisB || answers.liverRisk.hepatitisC || answers.liverRisk.hemochromatosis) {
-    return result('liver', 'ask-clinician', 'Liver cancer surveillance is risk-based. Cirrhosis, chronic hepatitis B or C, and some inherited liver conditions can require ultrasound-based surveillance.', routineInfoOnly);
-  }
-  return result('liver', 'info', 'There is no routine liver cancer screening recommendation for average-risk adults. Ask a clinician if you have liver disease or hepatitis risk.', routineInfoOnly);
-}
-
-function evaluateSkin(answers: AssessmentAnswers, routineInfoOnly: boolean) {
-  if (answers.skinRisk.changingLesion) {
-    return result('skin', 'ask-clinician', 'A changing, bleeding, painful, or unusual skin spot should be checked by a clinician rather than treated as routine screening.', routineInfoOnly);
-  }
-  if (answers.skinRisk.personalHistory || answers.skinRisk.immunosuppressed || answers.skinRisk.manyAtypicalMoles || answers.skinRisk.highUvExposure) {
-    return result('skin', 'ask-clinician', 'Routine population-wide skin screening has limited evidence, but your risk answers may justify a clinician skin exam plan.', routineInfoOnly);
-  }
-  return result('skin', 'info', 'Routine population-wide skin cancer screening is not clearly recommended for average-risk adults. Know your skin and report changes.', routineInfoOnly);
-}
-
-function evaluateOral(answers: AssessmentAnswers, routineInfoOnly: boolean) {
-  if (answers.oralRisk.persistentSymptoms) {
-    return result('oral-hpv', 'ask-clinician', 'Persistent mouth sores, throat pain, swallowing trouble, voice changes, or a neck lump should be evaluated by a dentist, primary care clinician, or ENT clinician.', routineInfoOnly);
-  }
-  if (answers.oralRisk.tobaccoOrHeavyAlcohol || answers.oralRisk.hpvRelatedHistory) {
-    return result('oral-hpv', 'ask-clinician', 'There is no routine oral HPV screening test, but your risk answers are worth discussing during dental or medical exams.', routineInfoOnly);
-  }
-  return result('oral-hpv', 'info', 'There is no approved routine screening test for HPV-related throat cancer. Routine dental and medical exams can still identify concerning findings.', routineInfoOnly);
 }

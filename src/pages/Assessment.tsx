@@ -69,7 +69,6 @@ type StepKey =
   | 'race'
   | 'raceOther'
   | 'routineIntent'
-  | 'anatomy'
   | 'priorCervical'
   | 'priorColorectal'
   | 'smokingStatus'
@@ -109,14 +108,19 @@ export default function Assessment() {
       ...prev,
       sexAssignedAtBirth: value,
       anatomy: {
-        ...prev.anatomy,
-        breastScreeningApplies: value === 'female' ? true : prev.anatomy.breastScreeningApplies,
-        hasCervix: value === 'female' ? true : prev.anatomy.hasCervix,
-        hasProstate: value === 'male' ? true : prev.anatomy.hasProstate,
+        breastScreeningApplies: value === 'female',
+        hasCervix: value === 'female',
+        hasProstate: value === 'male',
+        none: false,
+        unknown: value === 'intersex' || value === 'prefer-not',
+      },
+      cervicalRisk: {
+        ...prev.cervicalRisk,
+        cervixRemoved: false,
       },
       prostateRisk: {
         ...prev.prostateRisk,
-        africanAncestry: value === 'male' && prev.race.includes('black') ? true : prev.prostateRisk.africanAncestry,
+        africanAncestry: value === 'male' && prev.race.includes('black'),
       },
     }));
     setError('');
@@ -130,52 +134,10 @@ export default function Assessment() {
         race,
         prostateRisk: {
           ...prev.prostateRisk,
-          africanAncestry: race.includes('black') || prev.prostateRisk.africanAncestry,
+          africanAncestry: prev.sexAssignedAtBirth === 'male' && race.includes('black'),
         },
       };
     });
-    setError('');
-  }
-
-  function toggleAnatomy(key: keyof AssessmentAnswers['anatomy']) {
-    setAnswers((prev) => {
-      const anatomy = { ...prev.anatomy, [key]: !prev.anatomy[key] };
-      if (key === 'none' || key === 'unknown') {
-        anatomy.breastScreeningApplies = false;
-        anatomy.hasCervix = false;
-        anatomy.hasProstate = false;
-        if (key === 'none') anatomy.unknown = false;
-        if (key === 'unknown') anatomy.none = false;
-        return {
-          ...prev,
-          anatomy,
-          cervicalRisk: {
-            ...prev.cervicalRisk,
-            cervixRemoved: false,
-          },
-        };
-      } else {
-        anatomy.none = false;
-        anatomy.unknown = false;
-      }
-      return { ...prev, anatomy };
-    });
-    setError('');
-  }
-
-  function toggleCervixRemoved() {
-    setAnswers((prev) => ({
-      ...prev,
-      anatomy: {
-        ...prev.anatomy,
-        none: false,
-        unknown: false,
-      },
-      cervicalRisk: {
-        ...prev.cervicalRisk,
-        cervixRemoved: !prev.cervicalRisk.cervixRemoved,
-      },
-    }));
     setError('');
   }
 
@@ -229,24 +191,24 @@ export default function Assessment() {
 
       case 'contactDetails':
         return (
-          <QuestionShell title="What contact details should be used?" hint="Enter the participant name and phone number for screening follow-up.">
+          <QuestionShell title="How should we contact you?" hint="Enter your name and phone number for screening follow-up.">
             <div className="grid gap-4 md:grid-cols-2">
-              <TextField label="Participant name (first, last)" value={answers.participantName ?? ''} onChange={(value) => update({ participantName: value })} required />
-              <TextField label="Participant phone number" value={answers.phoneNumber ?? ''} onChange={(value) => update({ phoneNumber: value })} inputMode="tel" required />
+              <TextField label="Your name (first, last)" value={answers.participantName ?? ''} onChange={(value) => update({ participantName: value })} required />
+              <TextField label="Your phone number" value={answers.phoneNumber ?? ''} onChange={(value) => update({ phoneNumber: value })} inputMode="tel" required />
             </div>
           </QuestionShell>
         );
 
       case 'age':
         return (
-          <QuestionShell title="What is the participant's age?" hint="Use the participant's current age in years.">
-            <NumberField label="Participant age" value={answers.age ?? ''} onChange={setAge} min={0} max={120} required />
+          <QuestionShell title="How old are you?" hint="Use your current age in years.">
+            <NumberField label="Your age" value={answers.age ?? ''} onChange={setAge} min={0} max={120} required />
           </QuestionShell>
         );
 
       case 'sex':
         return (
-          <QuestionShell title="What was the participant's sex assigned at birth?" hint="This helps decide which screening questions may apply.">
+          <QuestionShell title="What sex were you assigned at birth?" hint="This helps decide which screening guidelines may apply to you.">
             <RadioRow<SexAssignedAtBirth>
               label="Sex assigned at birth"
               value={answers.sexAssignedAtBirth}
@@ -264,7 +226,7 @@ export default function Assessment() {
 
       case 'race':
         return (
-          <QuestionShell title="Which race options apply?" hint="Select all that apply.">
+          <QuestionShell title="Which race options apply to you?" hint="Select all that apply.">
             <CheckboxGroup title="Race" required>
               {(Object.keys(raceLabels) as RaceOption[]).map((race) => (
                 <CheckboxRow key={race} checked={answers.race.includes(race)} onChange={() => toggleRace(race)} label={raceLabels[race]} />
@@ -282,15 +244,15 @@ export default function Assessment() {
 
       case 'routineIntent':
         return (
-          <QuestionShell title="Is this for routine screening?" hint="If there are symptoms, the safest next step is to talk with a clinician.">
+          <QuestionShell title="Are you taking this for routine screening?" hint="If you have symptoms, the safest next step is to talk with a clinician.">
             <RadioRow<RoutineScreeningIntent>
               label="Screening context"
               value={answers.routineIntent}
               onChange={(value) => update({ routineIntent: value })}
               options={[
-                ['routine', 'Routine screening only, no symptoms'],
-                ['symptoms', 'Symptoms are present'],
-                ['prior-cancer', 'Prior cancer history'],
+                ['routine', 'Yes, routine screening only'],
+                ['symptoms', 'No, I have symptoms'],
+                ['prior-cancer', 'No, I have had cancer before'],
                 ['not-sure', 'Not sure'],
               ]}
               required
@@ -298,25 +260,11 @@ export default function Assessment() {
           </QuestionShell>
         );
 
-      case 'anatomy':
-        return (
-          <QuestionShell title="Which of these apply?" hint="Pick any you know. If you are not sure, choose Not sure.">
-            <CheckboxGroup title="Select all that apply" required>
-              <CheckboxRow checked={answers.anatomy.breastScreeningApplies} onChange={() => toggleAnatomy('breastScreeningApplies')} label="Breast screening may apply" />
-              <CheckboxRow checked={answers.anatomy.hasCervix} onChange={() => toggleAnatomy('hasCervix')} label="Has a cervix" />
-              <CheckboxRow checked={answers.cervicalRisk.cervixRemoved} onChange={toggleCervixRemoved} label="Cervix was removed" />
-              <CheckboxRow checked={answers.anatomy.hasProstate} onChange={() => toggleAnatomy('hasProstate')} label="Has a prostate" />
-              <CheckboxRow checked={answers.anatomy.none} onChange={() => toggleAnatomy('none')} label="None of these" />
-              <CheckboxRow checked={answers.anatomy.unknown} onChange={() => toggleAnatomy('unknown')} label="Not sure" />
-            </CheckboxGroup>
-          </QuestionShell>
-        );
-
       case 'priorCervical':
         return (
-          <QuestionShell title="Has the participant had regular normal Pap or HPV tests before?" hint="If not sure, choose Not sure.">
+          <QuestionShell title="Have you had regular normal Pap or HPV tests before?" hint="If you are not sure, choose Not sure.">
             <RadioRow
-              label="Prior cervical screening"
+              label="Past Pap or HPV testing"
               value={answers.priorCervicalScreening}
               onChange={(value) => update({ priorCervicalScreening: value })}
               options={[
@@ -331,9 +279,9 @@ export default function Assessment() {
 
       case 'priorColorectal':
         return (
-          <QuestionShell title="Has the participant ever completed colorectal cancer screening?" hint="If not sure, choose Not sure.">
+          <QuestionShell title="Have you ever completed colorectal cancer screening?" hint="This could be a stool test, colonoscopy, or another colorectal screening test. If you are not sure, choose Not sure.">
             <RadioRow
-              label="Prior colorectal screening"
+              label="Past colorectal screening"
               value={answers.priorColorectalScreening}
               onChange={(value) => update({ priorColorectalScreening: value })}
               options={[
@@ -348,7 +296,7 @@ export default function Assessment() {
 
       case 'smokingStatus':
         return (
-          <QuestionShell title="What is the participant's smoking status?" hint="This helps check lung screening eligibility.">
+          <QuestionShell title="What is your smoking status?" hint="This helps check lung screening eligibility.">
             <RadioRow<SmokingStatus>
               label="Smoking status"
               value={answers.smokingStatus}
@@ -366,10 +314,10 @@ export default function Assessment() {
 
       case 'smokingNumbers':
         return (
-          <QuestionShell title="How much has the participant smoked?" hint="Pack-years are average packs per day times total years smoked.">
+          <QuestionShell title="How much have you smoked?" hint="Pack-years are average packs per day times total years smoked.">
             <div className="grid gap-4 md:grid-cols-3">
               <NumberField label="Average packs per day" value={answers.packsPerDay ?? ''} onChange={(value) => update({ packsPerDay: numericValue(value) })} min={0} max={10} step={0.25} required />
-              <NumberField label="Total years smoked" value={answers.yearsSmoked ?? ''} onChange={(value) => update({ yearsSmoked: numericValue(value) })} min={0} max={100} step={0.5} required />
+              <NumberField label="Total years you smoked" value={answers.yearsSmoked ?? ''} onChange={(value) => update({ yearsSmoked: numericValue(value) })} min={0} max={100} step={0.5} required />
               {answers.smokingStatus === 'former' ? (
                 <NumberField label="Years since quitting" value={answers.quitYearsAgo ?? ''} onChange={(value) => update({ quitYearsAgo: numericValue(value) })} min={0} max={100} step={1} required />
               ) : null}
@@ -465,17 +413,14 @@ function buildSteps(answers: AssessmentAnswers): StepDefinition[] {
     steps.push({ key: 'raceOther', shortTitle: 'Race detail' });
   }
 
-  steps.push(
-    { key: 'routineIntent', shortTitle: 'Screening context' },
-    { key: 'anatomy', shortTitle: 'Screening basics' }
-  );
+  steps.push({ key: 'routineIntent', shortTitle: 'Screening context' });
 
-  if (answers.sexAssignedAtBirth === 'female' || answers.anatomy.hasCervix || answers.anatomy.unknown) {
-    steps.push({ key: 'priorCervical', shortTitle: 'Prior cervical screening' });
+  if (answers.sexAssignedAtBirth === 'female') {
+    steps.push({ key: 'priorCervical', shortTitle: 'Past Pap or HPV testing' });
   }
 
   steps.push(
-    { key: 'priorColorectal', shortTitle: 'Prior colorectal screening' },
+    { key: 'priorColorectal', shortTitle: 'Past colorectal screening' },
     { key: 'smokingStatus', shortTitle: 'Smoking status' }
   );
 
@@ -491,11 +436,11 @@ function buildSteps(answers: AssessmentAnswers): StepDefinition[] {
 function validateStep(step: StepKey, answers: AssessmentAnswers) {
   switch (step) {
     case 'contactDetails':
-      if (!answers.participantName?.trim()) return 'Please enter the participant name.';
-      if (!answers.phoneNumber?.trim()) return 'Please enter the participant phone number.';
+      if (!answers.participantName?.trim()) return 'Please enter your name.';
+      if (!answers.phoneNumber?.trim()) return 'Please enter your phone number.';
       return '';
     case 'age':
-      if (answers.age === undefined || answers.age <= 0 || answers.age > 120) return 'Please enter a valid participant age.';
+      if (answers.age === undefined || answers.age <= 0 || answers.age > 120) return 'Please enter a valid age.';
       return '';
     case 'sex':
       if (!answers.sexAssignedAtBirth) return 'Please select sex assigned at birth.';
@@ -509,16 +454,11 @@ function validateStep(step: StepKey, answers: AssessmentAnswers) {
     case 'routineIntent':
       if (!answers.routineIntent) return 'Please select the screening context.';
       return '';
-    case 'anatomy':
-      if (!Object.values(answers.anatomy).some(Boolean) && !answers.cervicalRisk.cervixRemoved) {
-        return 'Please select at least one option.';
-      }
-      return '';
     case 'priorCervical':
-      if (!answers.priorCervicalScreening) return 'Please answer the prior cervical screening question.';
+      if (!answers.priorCervicalScreening) return 'Please answer the past Pap or HPV testing question.';
       return '';
     case 'priorColorectal':
-      if (!answers.priorColorectalScreening) return 'Please answer the prior colorectal screening question.';
+      if (!answers.priorColorectalScreening) return 'Please answer the past colorectal screening question.';
       return '';
     case 'smokingStatus':
       if (!answers.smokingStatus) return 'Please select smoking status.';

@@ -51,7 +51,7 @@ export default function Home() {
   return (
     <>
       <section className="pb-12 pt-8 md:pb-16 md:pt-12">
-        <div className="container-gedi">
+        <div className="w-full px-3 sm:px-6 lg:px-10">
           <div className="grid gap-8 rounded-[32px] bg-[var(--color-brand-primary-soft)] p-5 sm:p-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:p-10">
             <div className="min-w-0 text-left">
               <h1 className="display-xl max-w-5xl text-[var(--color-brand-aubergine)]">
@@ -81,7 +81,7 @@ export default function Home() {
       </section>
 
       <section className="py-16 md:py-24">
-        <div className="container-gedi grid gap-10 md:grid-cols-[1.05fr_0.95fr] md:items-end">
+        <div className="w-full px-3 sm:px-6 lg:px-10 grid gap-10 md:grid-cols-[1.05fr_0.95fr] md:items-end">
           <div>
             <p className="eyebrow text-[var(--color-brand-primary)]">Why this matters</p>
             <h2 className="display-lg mt-4 max-w-4xl text-[var(--color-brand-aubergine)]">
@@ -97,7 +97,7 @@ export default function Home() {
       </section>
 
       <section className="py-12 md:py-20">
-        <div className="container-gedi grid gap-4 md:grid-cols-3">
+        <div className="w-full px-3 sm:px-6 lg:px-10 grid gap-4 md:grid-cols-3">
           {valueProps.map((item) => (
             <article key={item.title} className="card p-7">
               <h2 className="text-2xl font-black text-[var(--color-brand-aubergine)]">{item.title}</h2>
@@ -108,10 +108,10 @@ export default function Home() {
       </section>
 
       <section className="py-14 md:py-24">
-        <div className="container-gedi">
+        <div className="w-full px-3 sm:px-6 lg:px-10">
           <div className="grid gap-6 md:grid-cols-3">
             {[
-              ['01', 'Share basic context', 'Age, anatomy, family history, smoking history, and primary care access help summarize relevant guidance.'],
+              ['01', 'Share basic context', 'Age, sex assigned at birth, prior screening, and smoking history help summarize relevant guidance.'],
               ['02', 'Review the summary', 'GEDI shows screening topics with status labels and the reason each one appears.'],
               ['03', 'Prepare for care', 'Use the summary and plain-language prompts when speaking with a licensed clinician.'],
             ].map(([number, title, body]) => (
@@ -126,7 +126,7 @@ export default function Home() {
       </section>
 
       <section className="py-14 md:py-24">
-        <div className="container-gedi">
+        <div className="w-full px-3 sm:px-6 lg:px-10">
           <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
             <div>
               <p className="eyebrow text-[var(--color-brand-primary)]">Screenings we cover</p>
@@ -154,7 +154,7 @@ export default function Home() {
       </section>
 
       <section className="bg-[var(--color-brand-navy)] py-16 text-white md:py-24">
-        <div className="container-gedi grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
+        <div className="w-full px-3 sm:px-6 lg:px-10 grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
             <p className="eyebrow text-[var(--color-brand-sky)]">Research context</p>
             <h2 className="display-md mt-4">Built to communicate evidence carefully.</h2>
@@ -179,7 +179,7 @@ export default function Home() {
       </section>
 
       <section className="py-16 md:py-24">
-        <div className="container-gedi">
+        <div className="w-full px-3 sm:px-6 lg:px-10">
           <p className="eyebrow text-[var(--color-brand-primary)]">Community outreach</p>
           <h2 className="display-md mt-3 max-w-3xl text-[var(--color-brand-aubergine)]">Information is strongest when it reaches people where they are.</h2>
           <div className="mt-8 grid gap-4 md:grid-cols-4">
@@ -194,7 +194,7 @@ export default function Home() {
       </section>
 
       <section className="bg-[var(--color-brand-primary)] py-16 text-white md:py-20">
-        <div className="container-gedi text-center">
+        <div className="w-full px-3 text-center sm:px-6 lg:px-10">
           <h2 className="display-md">Start with information you can discuss with a clinician.</h2>
           <Link to="/assessment" className="btn btn-light-contrast mt-8">
             Check my eligibility <ArrowRight className="h-4 w-4" aria-hidden="true" />

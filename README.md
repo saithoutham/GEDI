@@ -13,14 +13,7 @@ npm run preview -- --host 127.0.0.1 --port 4173
 
 ## Environment Variables
 
-The locator uses `/api/places` with OpenStreetMap/Nominatim/Overpass data. No Google Maps key is required.
-
-Set these in Vercel only if the related feature is needed:
-
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-- `SUPABASE_SERVICE_ROLE_KEY` for server-side Supabase API routes only.
-- `GEMINI_API_KEY` for `/api/geai`.
+No environment variables are required for the current static site.
 
 ## Verification
 
@@ -30,7 +23,6 @@ Set these in Vercel only if the related feature is needed:
   - `lighthouse-prod-home.json`
   - `lighthouse-prod-assessment.json`
   - `lighthouse-prod-guide.json`
-  - `lighthouse-prod-locate.json`
   - `lighthouse-prod-research.json`
 
 Scores from the production preview:
@@ -40,7 +32,6 @@ Scores from the production preview:
 | `/` | 98 | 96 | 2.0s |
 | `/assessment` | 98 | 96 | 2.0s |
 | `/guide` | 98 | 95 | 2.0s |
-| `/locate` | 98 | 96 | 2.0s |
 | `/research` | 98 | 96 | 2.0s |
 
 ## Remaining Human Content

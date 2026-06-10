@@ -16,11 +16,12 @@ await mkdir(new URL('../node_modules/.tmp/', import.meta.url), { recursive: true
 const outputUrl = new URL('../node_modules/.tmp/screeningRules.test-build.mjs', import.meta.url);
 await writeFile(outputUrl, compiled);
 
-const { evaluateScreening } = await import(`${pathToFileURL(outputUrl.pathname).href}?v=${Date.now()}`);
+const { evaluateScreening, emptyRiskAnswers } = await import(`${pathToFileURL(outputUrl.pathname).href}?v=${Date.now()}`);
 
 function base(overrides = {}) {
   return {
     age: 45,
+    race: [],
     anatomy: {
       breastScreeningApplies: false,
       hasCervix: false,
@@ -30,6 +31,7 @@ function base(overrides = {}) {
     },
     routineIntent: 'routine',
     highRiskHistory: 'no',
+    ...structuredClone(emptyRiskAnswers),
     ...overrides,
   };
 }
@@ -85,6 +87,11 @@ test('lung eligible at 50 to 80, 20+ pack-years, current smoker', () => {
   assert.equal(result.status, 'appears-eligible');
 });
 
+test('lung calculator qualifies current smoker with 20+ pack-years', () => {
+  const result = resultFor(base({ age: 80, smokingStatus: 'current', packsPerDay: 56, yearsSmoked: 55 }), 'lung');
+  assert.equal(result.status, 'appears-eligible');
+});
+
 test('lung eligible at 50 to 80, 20+ pack-years, quit within 15 years', () => {
   const result = resultFor(base({ age: 80, lungPackYears: 'yes-20-plus', smokingStatus: 'quit-within-15' }), 'lung');
   assert.equal(result.status, 'appears-eligible');
@@ -103,6 +110,21 @@ test('prostate 55 to 69 is shared decision', () => {
 test('prostate 70+ is not routinely recommended', () => {
   const result = resultFor(base({ age: 70, anatomy: { breastScreeningApplies: false, hasCervix: false, hasProstate: true, none: false, unknown: false } }), 'prostate');
   assert.equal(result.status, 'not-routine');
+});
+
+test('colorectal high-risk answers route to clinician discussion', () => {
+  const result = resultFor(base({ colorectalRisk: { ...emptyRiskAnswers.colorectalRisk, inflammatoryBowelDisease: true } }), 'colorectal');
+  assert.equal(result.status, 'ask-clinician');
+});
+
+test('liver risk answers route to clinician discussion', () => {
+  const result = resultFor(base({ liverRisk: { ...emptyRiskAnswers.liverRisk, hepatitisB: true } }), 'liver');
+  assert.equal(result.status, 'ask-clinician');
+});
+
+test('symptom-related answers trigger diagnostic alert', () => {
+  const evaluation = evaluateScreening(base({ lungRisk: { ...emptyRiskAnswers.lungRisk, symptoms: true } }));
+  assert.equal(evaluation.alerts.some((alert) => alert.id === 'diagnostic-symptoms'), true);
 });
 
 test('symptoms or prior cancer triggers clinician alert', () => {

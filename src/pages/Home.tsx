@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { ArrowRight, BookOpen } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { papers, screenings, type CancerType } from '../lib/gedi';
@@ -18,6 +19,33 @@ const valueProps = [
 ];
 
 const covered: CancerType[] = ['lung', 'breast', 'cervical', 'colorectal', 'prostate', 'liver', 'skin', 'oral-hpv'];
+
+const outreachPhotos = [
+  {
+    src: '/community/homepage/outreach-1.jpg',
+    alt: 'ALCSI volunteer speaking with a community member at a lung cancer screening outreach table',
+  },
+  {
+    src: '/community/homepage/outreach-2.jpg',
+    alt: 'Volunteers and community members reviewing lung cancer screening information outdoors',
+  },
+  {
+    src: '/community/homepage/outreach-3.jpg',
+    alt: 'Lung cancer awareness volunteers holding ribbon signs',
+  },
+  {
+    src: '/community/homepage/outreach-4.jpg',
+    alt: 'Indoor community health fair with ALCSI lung cancer screening materials',
+  },
+  {
+    src: '/community/homepage/outreach-5.jpg',
+    alt: 'Students speaking with an older adult about lung cancer awareness',
+  },
+  {
+    src: '/community/homepage/outreach-6.jpg',
+    alt: 'Community lung cancer screening outreach table at a public park',
+  },
+];
 
 export default function Home() {
   return (
@@ -47,16 +75,7 @@ export default function Home() {
                 Built from published screening guidance and peer-reviewed research context.
               </p>
             </div>
-            <figure className="overflow-hidden rounded-[28px] border border-white/70 bg-white shadow-[var(--shadow-gedi)]">
-              <img
-                src="/community/alcsi-outreach.jpeg"
-                alt="Community members raising lung cancer awareness"
-                className="aspect-[4/3] w-full object-cover"
-              />
-              <figcaption className="px-5 py-4 text-sm font-bold text-[var(--color-brand-aubergine)]">
-                Community lung cancer awareness.
-              </figcaption>
-            </figure>
+            <HomepagePhotoCarousel />
           </div>
         </div>
       </section>
@@ -183,5 +202,39 @@ export default function Home() {
         </div>
       </section>
     </>
+  );
+}
+
+function HomepagePhotoCarousel() {
+  const [active, setActive] = useState(0);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setActive((current) => (current + 1) % outreachPhotos.length);
+    }, 4200);
+
+    return () => window.clearInterval(timer);
+  }, []);
+
+  return (
+    <figure className="overflow-hidden rounded-[28px] border border-white/70 bg-white shadow-[var(--shadow-gedi)]">
+      <div className="relative aspect-[4/3] w-full bg-[var(--color-surface)]">
+        {outreachPhotos.map((photo, index) => (
+          <img
+            key={photo.src}
+            src={photo.src}
+            alt={photo.alt}
+            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${
+              index === active ? 'opacity-100' : 'opacity-0'
+            }`}
+            loading={index === 0 ? 'eager' : 'lazy'}
+          />
+        ))}
+      </div>
+      <figcaption className="flex items-center justify-between gap-4 px-5 py-4 text-sm font-bold text-[var(--color-brand-aubergine)]">
+        <span>Community lung cancer screening outreach.</span>
+        <span className="shrink-0 tabular-nums text-[var(--color-ink-muted)]">{active + 1}/{outreachPhotos.length}</span>
+      </figcaption>
+    </figure>
   );
 }

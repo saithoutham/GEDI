@@ -176,7 +176,7 @@ export default function Assessment() {
     switch (key) {
       case 'contact':
         return (
-          <QuestionShell title="Do you want to be contacted about screening information?" hint="This only changes whether contact details are collected in this intake.">
+          <QuestionShell title="Do you want to be contacted about screening information?" hint="This only changes whether contact details are collected in this intake">
             <RadioRow
               label="Contact preference"
               value={answers.contactConsent ? 'yes' : 'no'}
@@ -191,7 +191,7 @@ export default function Assessment() {
 
       case 'contactDetails':
         return (
-          <QuestionShell title="How should we contact you?" hint="Enter your name and phone number for screening follow-up.">
+          <QuestionShell title="How should we contact you?" hint="Enter your name and phone number for screening follow-up">
             <div className="grid gap-4 md:grid-cols-2">
               <TextField label="Your name (first, last)" value={answers.participantName ?? ''} onChange={(value) => update({ participantName: value })} required />
               <TextField label="Your phone number" value={answers.phoneNumber ?? ''} onChange={(value) => update({ phoneNumber: value })} inputMode="tel" required />
@@ -201,14 +201,14 @@ export default function Assessment() {
 
       case 'age':
         return (
-          <QuestionShell title="How old are you?" hint="Use your current age in years.">
+          <QuestionShell title="How old are you?" hint="Use your current age in years">
             <NumberField label="Your age" value={answers.age ?? ''} onChange={setAge} min={0} max={120} required />
           </QuestionShell>
         );
 
       case 'sex':
         return (
-          <QuestionShell title="What sex were you assigned at birth?" hint="This helps decide which screening guidelines may apply to you.">
+          <QuestionShell title="What sex were you assigned at birth?" hint="This helps decide which screening guidelines may apply to you">
             <RadioRow<SexAssignedAtBirth>
               label="Sex assigned at birth"
               value={answers.sexAssignedAtBirth}
@@ -226,7 +226,7 @@ export default function Assessment() {
 
       case 'race':
         return (
-          <QuestionShell title="Which race options apply to you?" hint="Select all that apply.">
+          <QuestionShell title="Which race options apply to you?" hint="Select all that apply">
             <CheckboxGroup title="Race" required>
               {(Object.keys(raceLabels) as RaceOption[]).map((race) => (
                 <CheckboxRow key={race} checked={answers.race.includes(race)} onChange={() => toggleRace(race)} label={raceLabels[race]} />
@@ -237,14 +237,14 @@ export default function Assessment() {
 
       case 'raceOther':
         return (
-          <QuestionShell title="Please specify the race option marked other." hint="A short description is enough.">
+          <QuestionShell title="Please specify the race option marked other" hint="A short description is enough">
             <TextField label="If other, please specify" value={answers.raceOther ?? ''} onChange={(value) => update({ raceOther: value })} required />
           </QuestionShell>
         );
 
       case 'routineIntent':
         return (
-          <QuestionShell title="Are you taking this for routine screening?" hint="If you have symptoms, the safest next step is to talk with a clinician.">
+          <QuestionShell title="Are you taking this for routine screening?" hint="If you have symptoms, the safest next step is to talk with a clinician">
             <RadioRow<RoutineScreeningIntent>
               label="Screening context"
               value={answers.routineIntent}
@@ -262,7 +262,7 @@ export default function Assessment() {
 
       case 'priorCervical':
         return (
-          <QuestionShell title="Have you had regular normal Pap or HPV tests before?" hint="If you are not sure, choose Not sure.">
+          <QuestionShell title="Have you had regular normal Pap or HPV tests before?" hint="If you are not sure, choose Not sure">
             <RadioRow
               label="Past Pap or HPV testing"
               value={answers.priorCervicalScreening}
@@ -279,7 +279,7 @@ export default function Assessment() {
 
       case 'priorColorectal':
         return (
-          <QuestionShell title="Have you ever completed colorectal cancer screening?" hint="This could be a stool test, colonoscopy, or another colorectal screening test. If you are not sure, choose Not sure.">
+          <QuestionShell title="Have you ever completed colorectal cancer screening?" hint="This could be a stool test, colonoscopy, or another colorectal screening test If you are not sure, choose Not sure">
             <RadioRow
               label="Past colorectal screening"
               value={answers.priorColorectalScreening}
@@ -296,7 +296,7 @@ export default function Assessment() {
 
       case 'smokingStatus':
         return (
-          <QuestionShell title="What is your smoking status?" hint="This helps check lung screening eligibility.">
+          <QuestionShell title="What is your smoking status?" hint="This helps check lung screening eligibility">
             <RadioRow<SmokingStatus>
               label="Smoking status"
               value={answers.smokingStatus}
@@ -314,7 +314,7 @@ export default function Assessment() {
 
       case 'smokingNumbers':
         return (
-          <QuestionShell title="How much have you smoked?" hint="Pack-years are average packs per day times total years smoked.">
+          <QuestionShell title="How much have you smoked?" hint="Pack-years are average packs per day times total years smoked">
             <div className="grid gap-4 md:grid-cols-3">
               <NumberField label="Average packs per day" value={answers.packsPerDay ?? ''} onChange={(value) => update({ packsPerDay: numericValue(value) })} min={0} max={10} step={0.25} required />
               <NumberField label="Total years you smoked" value={answers.yearsSmoked ?? ''} onChange={(value) => update({ yearsSmoked: numericValue(value) })} min={0} max={100} step={0.5} required />
@@ -342,9 +342,9 @@ export default function Assessment() {
       <div className="w-full px-3 sm:px-6 lg:px-10">
         <div className="w-full">
           <p className="eyebrow text-[var(--color-brand-primary)]">Assessment</p>
-          <h1 className="display-md mt-3 text-[var(--color-brand-aubergine)]">Cancer screening eligibility intake.</h1>
+          <h1 className="display-md mt-3 text-[var(--color-brand-aubergine)]">Cancer screening eligibility intake</h1>
           <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--color-ink-muted)] sm:text-base">
-            Answer one step at a time. Your screening summary appears only after the intake is complete.
+            Answer one step at a time Your screening summary appears only after the intake is complete
           </p>
         </div>
 
@@ -436,38 +436,38 @@ function buildSteps(answers: AssessmentAnswers): StepDefinition[] {
 function validateStep(step: StepKey, answers: AssessmentAnswers) {
   switch (step) {
     case 'contactDetails':
-      if (!answers.participantName?.trim()) return 'Please enter your name.';
-      if (!answers.phoneNumber?.trim()) return 'Please enter your phone number.';
+      if (!answers.participantName?.trim()) return 'Please enter your name';
+      if (!answers.phoneNumber?.trim()) return 'Please enter your phone number';
       return '';
     case 'age':
-      if (answers.age === undefined || answers.age <= 0 || answers.age > 120) return 'Please enter a valid age.';
+      if (answers.age === undefined || answers.age <= 0 || answers.age > 120) return 'Please enter a valid age';
       return '';
     case 'sex':
-      if (!answers.sexAssignedAtBirth) return 'Please select sex assigned at birth.';
+      if (!answers.sexAssignedAtBirth) return 'Please select sex assigned at birth';
       return '';
     case 'race':
-      if (answers.race.length === 0) return 'Please select at least one race option.';
+      if (answers.race.length === 0) return 'Please select at least one race option';
       return '';
     case 'raceOther':
-      if (!answers.raceOther?.trim()) return 'Please specify the race option marked other.';
+      if (!answers.raceOther?.trim()) return 'Please specify the race option marked other';
       return '';
     case 'routineIntent':
-      if (!answers.routineIntent) return 'Please select the screening context.';
+      if (!answers.routineIntent) return 'Please select the screening context';
       return '';
     case 'priorCervical':
-      if (!answers.priorCervicalScreening) return 'Please answer the past Pap or HPV testing question.';
+      if (!answers.priorCervicalScreening) return 'Please answer the past Pap or HPV testing question';
       return '';
     case 'priorColorectal':
-      if (!answers.priorColorectalScreening) return 'Please answer the past colorectal screening question.';
+      if (!answers.priorColorectalScreening) return 'Please answer the past colorectal screening question';
       return '';
     case 'smokingStatus':
-      if (!answers.smokingStatus) return 'Please select smoking status.';
+      if (!answers.smokingStatus) return 'Please select smoking status';
       return '';
     case 'smokingNumbers':
-      if (answers.packsPerDay === undefined || answers.packsPerDay <= 0) return 'Please enter average packs per day.';
-      if (answers.yearsSmoked === undefined || answers.yearsSmoked <= 0) return 'Please enter total years smoked.';
+      if (answers.packsPerDay === undefined || answers.packsPerDay <= 0) return 'Please enter average packs per day';
+      if (answers.yearsSmoked === undefined || answers.yearsSmoked <= 0) return 'Please enter total years smoked';
       if (answers.smokingStatus === 'former' && (answers.quitYearsAgo === undefined || answers.quitYearsAgo < 0)) {
-        return 'Please enter years since quitting.';
+        return 'Please enter years since quitting';
       }
       return '';
     default:
@@ -610,7 +610,7 @@ function ResultsView({ results, alerts }: { results: ScreeningResult[]; alerts: 
         <div>
           <h2 className="text-2xl font-black text-[var(--color-brand-aubergine)] sm:text-3xl">Eligibility summary</h2>
           <p className="mt-2 text-sm leading-6 text-[var(--color-ink-muted)]">
-            Review these results with a licensed clinician before scheduling or changing care.
+            Review these results with a licensed clinician before scheduling or changing care
           </p>
         </div>
       </div>
@@ -634,7 +634,7 @@ function ResultsView({ results, alerts }: { results: ScreeningResult[]; alerts: 
         </div>
       ) : (
         <p className="mt-5 rounded-2xl bg-[var(--color-surface)] p-4 text-sm font-bold text-[var(--color-brand-aubergine)]">
-          Results need at least age and demographic details. Go back to complete the intake.
+          Results need at least age and demographic details Go back to complete the intake
         </p>
       )}
 

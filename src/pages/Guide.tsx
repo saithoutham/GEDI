@@ -18,9 +18,9 @@ export default function Guide() {
       <section className="container-gedi py-20">
         <div className="card p-8 md:p-12">
           <p className="eyebrow text-[var(--color-brand-primary)]">No guide in this browser</p>
-          <h1 className="display-md mt-3 text-[var(--color-brand-aubergine)]">Start with the assessment.</h1>
+          <h1 className="display-md mt-3 text-[var(--color-brand-aubergine)]">Start with the assessment</h1>
           <p className="body-lg mt-4 max-w-2xl text-[var(--color-ink-muted)]">
-            GEDI stores answers in sessionStorage only. No saved guide is available in this browser session.
+            GEDI stores answers in sessionStorage only No saved guide is available in this browser session
           </p>
           <Link to="/assessment" className="btn btn-primary mt-7">
             Take the assessment <ArrowRight className="h-4 w-4" />
@@ -38,7 +38,7 @@ export default function Guide() {
         test: screenings[type as CancerType].test,
         status: 'info' as const,
         summary: screenings[type as CancerType].description,
-        rationale: 'No routine cancer screenings were recommended from your current answers. This card is available for general education.',
+        rationale: 'No routine cancer screenings were recommended from your current answers This card is available for general education',
         sourceUrl: screenings[type as CancerType].sourceUrl,
       }));
 
@@ -46,8 +46,8 @@ export default function Guide() {
     .map((type) => (type in screenings ? screenings[type as CancerType].shortName : type === 'ovarian' ? 'Ovarian' : 'Other'))
     .join(', ');
   const headline = familyList
-    ? `Based on your age, body-part answers, and family history of ${familyList}, here is your plan.`
-    : 'Based on what you shared, here are the screenings to consider.';
+    ? `Based on your age, body-part answers, and family history of ${familyList}, here is your plan`
+    : 'Based on what you shared, here are the screenings to consider';
 
   return (
     <section className="container-gedi py-14 md:py-20">
@@ -55,7 +55,7 @@ export default function Guide() {
         <p className="eyebrow text-[var(--color-brand-primary)]">Your personalized plan</p>
         <h1 className="display-lg mt-4 text-[var(--color-brand-aubergine)]">{headline}</h1>
         <p className="body-lg mt-5 text-[var(--color-ink-muted)]">
-          This guide cites ACS and USPSTF guideline pathways where GEDI has enough information. It is educational and should be reviewed with a licensed clinician.
+          This guide cites ACS and USPSTF guideline pathways where GEDI has enough information It is educational and should be reviewed with a licensed clinician
         </p>
       </div>
 
@@ -80,10 +80,10 @@ export default function Guide() {
       <section className="mt-12">
         <h2 className="display-md text-[var(--color-brand-aubergine)]">Schedule</h2>
         <div className="mt-6 grid gap-4 md:grid-cols-4">
-          <ScheduleCard title="Clinical conversation" body="Bring this summary to a primary care clinician or specialist before scheduling screening." icon={<Stethoscope className="h-6 w-6" />} />
-          <ScheduleCard title="Book with a clinician" body="Use your plan to ask a primary care clinician or specialist for the screening order you need." />
-          <ScheduleCard title="ACS resources" body="Review American Cancer Society screening information before making care decisions." href="https://getscreened.cancer.org/" />
-          <ScheduleCard title="Free / low-cost" body="For breast and cervical screening support, start with CDC's NBCCEDP program directory." href="https://www.cdc.gov/breast-cervical-cancer-screening/about/index.html" />
+          <ScheduleCard title="Clinical conversation" body="Bring this summary to a primary care clinician or specialist before scheduling screening" icon={<Stethoscope className="h-6 w-6" />} />
+          <ScheduleCard title="Book with a clinician" body="Use your plan to ask a primary care clinician or specialist for the screening order you need" />
+          <ScheduleCard title="CDC resources" body="Review CDC screening information before making care decisions" href="https://www.cdc.gov/cancer/prevention/screening.html" />
+          <ScheduleCard title="Free / low-cost" body="For breast and cervical screening support, start with CDC's NBCCEDP program directory" href="https://www.cdc.gov/breast-cervical-cancer-screening/about/index.html" />
         </div>
       </section>
 

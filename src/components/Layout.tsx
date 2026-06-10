@@ -116,7 +116,7 @@ export default function Layout() {
             <div>
               <Logo className="brightness-0 invert" />
               <p className="mt-5 max-w-sm text-sm leading-6 text-white/75">
-                GEDI summarizes screening guidance and helps people prepare careful questions for a licensed clinician.
+                GEDI summarizes screening guidance and helps people prepare careful questions for a licensed clinician
               </p>
             </div>
             {footerColumns.map((column) => (
@@ -125,11 +125,11 @@ export default function Layout() {
           </div>
           <div className="mt-10 border-t border-white/15 pt-6 text-xs leading-5 text-white/55">
             <p>
-              GEDI is an informational tool. It is not a diagnosis and does not replace consultation with a licensed healthcare professional.
-              Recommendations follow ACS and USPSTF guidelines, last reviewed May 20, 2026.
+              GEDI is an informational tool It is not a diagnosis and does not replace consultation with a licensed healthcare professional
+              Recommendations follow ACS and USPSTF guidelines, last reviewed May 20, 2026
             </p>
             <p className="mt-3">
-              Follow ALCSI and Mass General for current screening, research, and outreach updates.
+              Follow ALCSI and Mass General for current screening, research, and outreach updates
             </p>
           </div>
         </div>

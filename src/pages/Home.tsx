@@ -5,16 +5,16 @@ import { papers, screenings, type CancerType } from '../lib/gedi';
 
 const valueProps = [
   {
-    title: 'Start with guidance.',
-    body: 'GEDI summarizes published screening recommendations in plain language. It is educational and does not diagnose cancer or replace medical advice.',
+    title: 'Start with guidance',
+    body: 'GEDI summarizes published screening recommendations in plain language It is educational and does not diagnose cancer or replace medical advice',
   },
   {
-    title: 'Know what to discuss.',
-    body: 'Some screening decisions depend on symptoms, personal history, family history, or prior results. GEDI helps identify topics to review with a clinician.',
+    title: 'Know what to discuss',
+    body: 'Some screening decisions depend on symptoms, personal history, family history, or prior results GEDI helps identify topics to review with a clinician',
   },
   {
-    title: 'Review several topics.',
-    body: 'GEDI brings major screening pathways into one place so people can prepare careful questions before a clinical visit.',
+    title: 'Review several topics',
+    body: 'GEDI brings major screening pathways into one place so people can prepare careful questions before a clinical visit',
   },
 ];
 
@@ -56,10 +56,10 @@ export default function Home() {
             <div className="min-w-0 text-left">
               <h1 className="display-xl max-w-5xl text-[var(--color-brand-aubergine)]">
                 <span className="block">Understand cancer</span>
-                <span className="block">screening guidance<span className="text-[var(--color-brand-primary)]">.</span></span>
+                <span className="block">screening guidance</span>
               </h1>
               <p className="body-lg reveal mt-6 max-w-2xl text-[var(--color-ink-muted)] [animation-delay:120ms]">
-                GEDI summarizes screening pathways and helps people prepare careful questions for a licensed clinician.
+                GEDI summarizes screening pathways and helps people prepare careful questions for a licensed clinician
               </p>
               <div className="reveal mt-8 flex flex-col gap-3 sm:flex-row [animation-delay:180ms]">
                 <Link to="/assessment" className="btn btn-primary w-full sm:w-auto">
@@ -72,7 +72,7 @@ export default function Home() {
                 </Link>
               </div>
               <p className="mt-6 text-sm font-semibold leading-6 text-[var(--color-brand-aubergine)]">
-                Built from published screening guidance and peer-reviewed research context.
+                Built from published screening guidance and peer-reviewed research context
               </p>
             </div>
             <HomepagePhotoCarousel />
@@ -85,12 +85,12 @@ export default function Home() {
           <div>
             <p className="eyebrow text-[var(--color-brand-primary)]">Why this matters</p>
             <h2 className="display-lg mt-4 max-w-4xl text-[var(--color-brand-aubergine)]">
-              Screening guidance is most useful when people understand what may apply to them.
+              Screening guidance is most useful when people understand what may apply to them
             </h2>
           </div>
           <div className="body-lg text-[var(--color-ink-muted)]">
             <p>
-              GEDI turns dense recommendations into a careful summary that people can bring to a clinical visit.
+              GEDI turns dense recommendations into a careful summary that people can bring to a clinical visit
             </p>
           </div>
         </div>
@@ -111,9 +111,9 @@ export default function Home() {
         <div className="w-full px-3 sm:px-6 lg:px-10">
           <div className="grid gap-6 md:grid-cols-3">
             {[
-              ['01', 'Share basic context', 'Age, sex assigned at birth, prior screening, and smoking history help summarize relevant guidance.'],
-              ['02', 'Review the summary', 'GEDI shows screening topics with status labels and the reason each one appears.'],
-              ['03', 'Prepare for care', 'Use the summary and plain-language prompts when speaking with a licensed clinician.'],
+              ['01', 'Share basic context', 'Age, sex assigned at birth, prior screening, and smoking history help summarize relevant guidance'],
+              ['02', 'Review the summary', 'GEDI shows screening topics with status labels and the reason each one appears'],
+              ['03', 'Prepare for care', 'Use the summary and plain-language prompts when speaking with a licensed clinician'],
             ].map(([number, title, body]) => (
               <article key={title} className="rounded-3xl border border-[var(--color-line)] bg-white p-6 shadow-[var(--shadow-gedi)]">
                 <span className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-[var(--color-brand-aubergine)] text-lg font-black text-white">{number}</span>
@@ -130,7 +130,7 @@ export default function Home() {
           <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
             <div>
               <p className="eyebrow text-[var(--color-brand-primary)]">Screenings we cover</p>
-              <h2 className="display-md mt-3 text-[var(--color-brand-aubergine)]">One guide, multiple screening topics.</h2>
+              <h2 className="display-md mt-3 text-[var(--color-brand-aubergine)]">One guide, multiple screening topics</h2>
             </div>
             <Link to="/guidelines" className="btn btn-secondary">
               See guidelines <ArrowRight className="h-4 w-4" aria-hidden="true" />
@@ -157,9 +157,9 @@ export default function Home() {
         <div className="w-full px-3 sm:px-6 lg:px-10 grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
             <p className="eyebrow text-[var(--color-brand-sky)]">Research context</p>
-            <h2 className="display-md mt-4">Built to communicate evidence carefully.</h2>
+            <h2 className="display-md mt-4">Built to communicate evidence carefully</h2>
             <p className="mt-5 leading-7 text-white/75">
-              GEDI follows published screening guidelines and references peer-reviewed work on lung cancer screening eligibility, equity, and early detection.
+              GEDI follows published screening guidelines and references peer-reviewed work on lung cancer screening eligibility, equity, and early detection
             </p>
             <Link to="/research" className="btn mt-8 border border-[var(--color-brand-sky)] bg-[var(--color-brand-sky)] text-[var(--color-brand-navy)] hover:bg-white">
               See the research <ArrowRight className="h-4 w-4" aria-hidden="true" />
@@ -181,7 +181,7 @@ export default function Home() {
       <section className="py-16 md:py-24">
         <div className="w-full px-3 sm:px-6 lg:px-10">
           <p className="eyebrow text-[var(--color-brand-primary)]">Community outreach</p>
-          <h2 className="display-md mt-3 max-w-3xl text-[var(--color-brand-aubergine)]">Information is strongest when it reaches people where they are.</h2>
+          <h2 className="display-md mt-3 max-w-3xl text-[var(--color-brand-aubergine)]">Information is strongest when it reaches people where they are</h2>
           <div className="mt-8 grid gap-4 md:grid-cols-4">
             {['1,000+ student members', '145+ chapters', '1,500+ outreach events', '70,000+ people educated'].map((stat) => (
               <div key={stat} className="rounded-3xl bg-[var(--color-brand-aubergine)] p-6 text-center font-black text-white shadow-[var(--shadow-gedi)]">{stat}</div>
@@ -195,7 +195,7 @@ export default function Home() {
 
       <section className="bg-[var(--color-brand-primary)] py-16 text-white md:py-20">
         <div className="w-full px-3 text-center sm:px-6 lg:px-10">
-          <h2 className="display-md">Start with information you can discuss with a clinician.</h2>
+          <h2 className="display-md">Start with information you can discuss with a clinician</h2>
           <Link to="/assessment" className="btn btn-light-contrast mt-8">
             Check my eligibility <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </Link>
@@ -232,7 +232,7 @@ function HomepagePhotoCarousel() {
         ))}
       </div>
       <figcaption className="flex items-center justify-between gap-4 px-5 py-4 text-sm font-bold text-[var(--color-brand-aubergine)]">
-        <span>Community lung cancer screening outreach.</span>
+        <span>Community lung cancer screening outreach</span>
         <span className="shrink-0 tabular-nums text-[var(--color-ink-muted)]">{active + 1}/{outreachPhotos.length}</span>
       </figcaption>
     </figure>

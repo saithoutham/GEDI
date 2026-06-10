@@ -5,7 +5,7 @@ export default function Initiatives() {
     <section className="container-gedi py-14 md:py-20">
       <div className="max-w-4xl">
         <p className="eyebrow text-[var(--color-brand-primary)]">Initiatives</p>
-        <h1 className="display-lg mt-4 text-[var(--color-brand-aubergine)]">Screening only matters if people actually get screened.</h1>
+        <h1 className="display-lg mt-4 text-[var(--color-brand-aubergine)]">Community outreach for lung cancer screening education.</h1>
         <p className="body-lg mt-6 text-[var(--color-ink-muted)]">
           GEDI works alongside the American Lung Cancer Screening Initiative, a student-led 501(c)(3) founded by Dr. Yang, to put screening information into the hands of the people who need it most.
         </p>
@@ -26,7 +26,7 @@ export default function Initiatives() {
       </div>
 
       <div className="mt-10 grid gap-5 md:grid-cols-3">
-        <InitiativeCard title="Plus One Campaign" body="Get screened, then bring one eligible person with you." href="https://www.alcsi.org/plus-one-campaign" />
+        <InitiativeCard title="Plus One Campaign" body="Learn about screening, then encourage one person who may qualify to ask a clinician about it." href="https://www.alcsi.org/plus-one-campaign" />
         <InitiativeCard title="INSPIRE Study" body="Free LDCT screening for Black men and women aged 50-80 with any smoking history in Boston and Chicago." href="https://inspirelungscreeningstudy.mgh.harvard.edu/" />
         <InitiativeCard title="Start a chapter" body="Mobilize a campus or community group around lung cancer screening access." href="https://www.alcsi.org/about/join" />
       </div>

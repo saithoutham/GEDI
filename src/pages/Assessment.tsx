@@ -1,4 +1,4 @@
-import { AlertTriangle, ArrowRight, CheckCircle2, Info, MapPin } from 'lucide-react';
+import { AlertTriangle, ArrowRight, CheckCircle2, Info } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -60,12 +60,11 @@ export default function Assessment() {
   const [step, setStep] = useState<StepKey>('age');
   const [error, setError] = useState('');
   const [hasPrimaryCare, setHasPrimaryCare] = useState<boolean | undefined>();
-  const [zip, setZip] = useState('');
 
   const steps = useMemo(() => buildSteps(answers), [answers]);
   const stepIndex = Math.max(0, steps.indexOf(step));
   const progress = Math.round(((stepIndex + 1) / steps.length) * 100);
-  const evaluation = useMemo(() => evaluateScreening({ ...answers, hasPrimaryCare, zip }), [answers, hasPrimaryCare, zip]);
+  const evaluation = useMemo(() => evaluateScreening({ ...answers, hasPrimaryCare }), [answers, hasPrimaryCare]);
 
   function update(partial: Partial<AssessmentAnswers>) {
     setAnswers((prev) => ({ ...prev, ...partial }));
@@ -121,14 +120,6 @@ export default function Assessment() {
   }
 
   const packYears = calculatePackYears(answers.packsPerDay, answers.yearsSmoked);
-  const locateTypes = evaluation.results
-    .filter((item) => item.status === 'appears-eligible' || item.status === 'shared-decision' || item.status === 'individual-decision')
-    .map((item) => item.cancerType);
-  const locateParams = new URLSearchParams();
-  if (locateTypes.length) locateParams.set('types', locateTypes.join(','));
-  if (zip.trim()) locateParams.set('zip', zip.trim());
-  const locateHref = `/locate${locateParams.toString() ? `?${locateParams.toString()}` : ''}`;
-
   return (
     <section className="min-h-[calc(100vh-96px)] bg-[var(--color-brand-primary-soft)]/40 py-5 sm:py-8 md:py-12">
       <div className="container-gedi">
@@ -296,9 +287,6 @@ export default function Assessment() {
                 alerts={evaluation.alerts}
                 hasPrimaryCare={hasPrimaryCare}
                 setHasPrimaryCare={setHasPrimaryCare}
-                zip={zip}
-                setZip={setZip}
-                locateHref={locateHref}
               />
             ) : null}
 
@@ -413,17 +401,11 @@ function ResultsView({
   alerts,
   hasPrimaryCare,
   setHasPrimaryCare,
-  zip,
-  setZip,
-  locateHref,
 }: {
   results: ScreeningResult[];
   alerts: ReturnType<typeof evaluateScreening>['alerts'];
   hasPrimaryCare?: boolean;
   setHasPrimaryCare: (value: boolean) => void;
-  zip: string;
-  setZip: (value: string) => void;
-  locateHref: string;
 }) {
   return (
     <div>
@@ -464,14 +446,9 @@ function ResultsView({
           </div>
         </fieldset>
 
-        <label htmlFor="result-zip" className="mt-5 block font-bold text-[var(--color-brand-aubergine)]">
-          Want help finding screening centers near you?
-          <input id="result-zip" value={zip} onChange={(event) => setZip(event.target.value)} placeholder="ZIP code, optional" className="mt-2 w-full rounded-2xl border border-[var(--color-line)] bg-white px-4 py-3" />
-        </label>
-
         <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-          <Link to={locateHref} className="btn btn-primary">
-            Find screening locations <MapPin className="h-4 w-4" />
+          <Link to="/guidelines" className="btn btn-primary">
+            Review guideline details <ArrowRight className="h-4 w-4" />
           </Link>
           <Link to="/assessment" reloadDocument className="btn btn-secondary">Start over</Link>
         </div>

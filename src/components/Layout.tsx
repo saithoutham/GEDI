@@ -6,7 +6,6 @@ import Logo from './brand/Logo';
 const navItems = [
   { path: '/assessment', label: 'Assessment' },
   { path: '/guidelines', label: 'Guidelines' },
-  { path: '/locate', label: 'Locate' },
   { path: '/research', label: 'Research' },
   { path: '/about', label: 'About' },
 ];
@@ -23,7 +22,6 @@ const footerColumns: Array<{ title: string; links: FooterLink[] }> = [
     links: [
       { label: 'Assessment', to: '/assessment' },
       { label: 'Guide', to: '/guide' },
-      { label: 'Locate', to: '/locate' },
       { label: 'Guidelines', to: '/guidelines' },
     ],
   },
@@ -118,7 +116,7 @@ export default function Layout() {
             <div>
               <Logo className="brightness-0 invert" />
               <p className="mt-5 max-w-sm text-sm leading-6 text-white/75">
-                GEDI turns screening guidelines into a clear plan, a place to call, and the words to use when booking.
+                GEDI summarizes screening guidance and helps people prepare careful questions for a licensed clinician.
               </p>
             </div>
             {footerColumns.map((column) => (

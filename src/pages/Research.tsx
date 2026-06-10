@@ -10,7 +10,7 @@ export default function Research() {
           <p className="eyebrow text-[var(--color-brand-sky)]">Yang Lab at Mass General</p>
           <h1 className="display-lg mt-4 max-w-4xl">Research that informed GEDI’s approach.</h1>
           <p className="body-lg mt-6 max-w-3xl text-white/75">
-            GEDI’s eligibility logic follows published screening guidelines. The project was built with inspiration from Dr. Chi-Fu Jeffrey Yang’s work and acknowledges the Yang Lab’s research on lung cancer screening, equity, and early detection.
+            GEDI’s eligibility logic follows published screening guidelines where enough information is available. The project was built with inspiration from clinical research on lung cancer screening, equity, and early detection.
           </p>
         </div>
       </section>
@@ -28,7 +28,7 @@ export default function Research() {
             <p className="eyebrow text-[var(--color-brand-primary)]">About the lab</p>
             <h2 className="display-md mt-3 text-[var(--color-brand-aubergine)]">Clinical research rooted in thoracic surgery and equity.</h2>
             <p className="mt-5 leading-7 text-[var(--color-ink-muted)]">
-              Dr. Chi-Fu Jeffrey Yang is a thoracic surgeon at Massachusetts General Hospital and the Founding Director of CAIIRE. His lab’s work on lung cancer screening eligibility, equity in screening, and machine-learning approaches to early detection helped inspire GEDI’s focus on practical, guideline-based screening action.
+              Dr. Chi-Fu Jeffrey Yang is a thoracic surgeon at Massachusetts General Hospital and the Founding Director of CAIIRE. His lab’s work on lung cancer screening eligibility, screening equity, and earlier detection helped inspire GEDI’s focus on clear, guideline-based education.
             </p>
             <a href="https://yang-lab.mgh.harvard.edu/" target="_blank" rel="noreferrer" className="btn btn-secondary mt-6">
               Visit the lab <ExternalLink className="h-4 w-4" />

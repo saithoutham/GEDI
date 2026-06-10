@@ -18,11 +18,11 @@ const details: Record<CancerType, Detail> = {
     testLike: 'LDCT is a quick chest CT done with a lower radiation dose than a diagnostic CT. You lie on the scanner table, hold your breath briefly, and usually leave within the same visit without needles or sedation.',
     results: 'Many scans are negative or show small nodules that only need repeat imaging. Abnormal results are often reported with Lung-RADS categories that guide whether follow-up is annual screening, short-interval imaging, or specialist evaluation.',
     cost: 'Preventive LDCT is commonly covered when eligibility criteria and shared decision-making requirements are met. Ask whether the facility bills it as lung cancer screening and whether your clinician needs to send an order.',
-    science: 'Yang Lab publications are most relevant here: recent work shows pack-years can miss risk in some groups, while CT screening is associated with earlier stage at diagnosis and survival gains.',
+    science: 'Peer-reviewed lung cancer screening research has raised concerns that pack-year criteria may miss risk in some groups, while CT screening has been associated with earlier-stage diagnosis and survival gains.',
     faqs: [
       ['Will I need contrast?', 'Screening LDCT usually does not use IV contrast. Confirm when scheduling.'],
       ['What if I quit more than 15 years ago?', 'Current coverage rules may not include you, but family history, exposures, or symptoms are still worth discussing.'],
-      ['Can one imaging center handle lung and breast screening?', 'Often yes. Radiology groups may offer both LDCT and mammography, so GEDI groups those together in the locator.'],
+      ['Can one imaging center handle lung and breast screening?', 'Often yes. Radiology groups may offer both LDCT and mammography. Ask which screening services are offered and whether a clinician order is required.'],
     ],
     sources: [
       { label: 'USPSTF lung screening recommendation', url: 'https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/lung-cancer-screening' },
@@ -163,8 +163,8 @@ export default function CancerDetail() {
           <p className="eyebrow text-[var(--color-brand-primary)]">{item.test}</p>
           <h1 className="display-lg mt-4 text-[var(--color-brand-aubergine)]">{item.name}</h1>
           <p className="body-lg mt-5 text-[var(--color-ink-muted)]">{item.detail}</p>
-          <Link to={`/locate/${cancer}`} className="btn btn-primary mt-7">
-            Find a center near you <ArrowRight className="h-4 w-4" />
+          <Link to="/assessment" className="btn btn-primary mt-7">
+            Start assessment <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
       </div>

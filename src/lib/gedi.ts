@@ -84,7 +84,7 @@ export const screenings: Record<CancerType, Screening> = {
     sourceUrl: 'https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/lung-cancer-screening',
     description: 'A low-dose CT scan can find lung cancers before symptoms appear.',
     detail:
-      'LDCT is a quick imaging test. Current USPSTF criteria use age, pack-years, and years since quitting; GEDI also flags where published Yang Lab work shows those criteria can miss people.',
+      'LDCT is a quick imaging test. Current USPSTF criteria use age, pack-years, and years since quitting; GEDI also notes published research showing these criteria can miss some people.',
   },
   breast: {
     id: 'breast',
@@ -234,7 +234,7 @@ export function derivePlan(answers: Answers): Plan {
   const age = ageFromBracket(answers.ageBracket);
   const recommendations = new Map<CancerType, ScreeningRec>();
   const notes: string[] = [
-    'Recommendations are informational and follow USPSTF guidance where GEDI has enough information.',
+    'Recommendations are informational and follow USPSTF guidance where GEDI has enough information. They are not a diagnosis or medical advice.',
   ];
   const quitYears = answers.currentlySmokes ? 0 : answers.quitYearsAgo ?? 999;
   const packYears = answers.packYears ?? ((answers.packsPerDay ?? 0) * (answers.yearsSmoked ?? 0));
@@ -247,7 +247,7 @@ export function derivePlan(answers: Answers): Plan {
         'lung',
         'eligible',
         'USPSTF 2021 recommends annual LDCT lung cancer screening for adults 50-80 with at least 20 pack-years who currently smoke or quit within the past 15 years.',
-        'Published research from Yang Lab collaborators has raised concerns that pack-year history can be an inadequate and biased eligibility measure; GEDI keeps the guideline rule while surfacing the limitation.'
+        'Published research has raised concerns that pack-year history can be an inadequate and biased eligibility measure; GEDI keeps the guideline rule while surfacing the limitation.'
       )
     );
   } else if (age >= 50 && age <= 80 && answers.smoked100Plus) {
@@ -371,7 +371,7 @@ export function derivePlan(answers: Answers): Plan {
   });
 
   if (!answers.hasPCP) {
-    notes.push('You said you do not have a regular primary care clinician. GEDI prioritizes locator and call-script steps that help you start there.');
+    notes.push('You said you do not have a regular primary care clinician. Consider reviewing this information with a community health center, public health screening program, or licensed clinician.');
   }
 
   return { recommendations: [...recommendations.values()], notes };
@@ -386,15 +386,6 @@ export const papers = [
     pmid: '38537159',
     url: 'https://pubmed.ncbi.nlm.nih.gov/38537159/',
     relevance: 'Explains why GEDI flags limitations in pack-year based lung screening eligibility.',
-  },
-  {
-    title: 'A Pilot Study Using Machine Learning Algorithms and Wearable Technology for the Early Detection of Postoperative Complications After Cardiothoracic Surgery.',
-    authors: 'Beqari J, Powell J, Hurd J, et al.',
-    journal: 'Annals of Surgery',
-    year: 2024,
-    pmid: '38482684',
-    url: 'https://pubmed.ncbi.nlm.nih.gov/38482684/',
-    relevance: 'Shows the lab’s broader work using physiologic data to detect complications earlier.',
   },
   {
     title: 'Cigarette package labels to promote lung cancer screening.',
@@ -437,18 +428,6 @@ export const trials = [
     url: 'https://inspirelungscreeningstudy.mgh.harvard.edu/',
     summary:
       'Provides free LDCT lung screening to Black men and women aged 50-80 with any smoking history.',
-  },
-  {
-    name: 'Wearables',
-    fullName: 'Machine Learning + Wearable Technology for Early Detection of Postoperative Complications',
-    pi: 'Chi-Fu Jeffrey Yang, MD; Xiang Li, PhD',
-    funder: 'NIH R01',
-    amount: '$3.5M',
-    status: 'Active',
-    sites: 'Massachusetts General Hospital',
-    url: 'https://wearables.mgh.harvard.edu/',
-    summary:
-      'Uses machine learning on wearable physiology data to predict postoperative complications in cardiothoracic surgery patients.',
   },
 ];
 

@@ -7,9 +7,9 @@ export default function Guidelines() {
     <section className="container-gedi py-14 md:py-20">
       <div className="max-w-4xl">
         <p className="eyebrow text-[var(--color-brand-primary)]">Guidelines</p>
-        <h1 className="display-lg mt-4 text-[var(--color-brand-aubergine)]">Plain-language screening guidance, no quiz required.</h1>
+        <h1 className="display-lg mt-4 text-[var(--color-brand-aubergine)]">Plain-language screening guidance for clinician conversations.</h1>
         <p className="body-lg mt-5 text-[var(--color-ink-muted)]">
-          These cards summarize the screening pathways GEDI uses. Risk-based screenings are included for learning, not automatic eligibility.
+          These cards summarize the screening pathways GEDI uses for education. Risk-based topics are included for learning and should be discussed with a licensed clinician.
         </p>
       </div>
       <script type="application/ld+json">
@@ -42,7 +42,7 @@ export default function Guidelines() {
       <section className="mt-10 rounded-3xl bg-white p-6 text-sm leading-6 text-[var(--color-ink-muted)]">
         <h2 className="font-black text-[var(--color-brand-aubergine)]">Sources used across this guide</h2>
         <p className="mt-2">
-          GEDI summarizes screening pathways from ACS, USPSTF, CDC, NCI, and Yang Lab publications. Full source links appear at the bottom of each detail page.
+          GEDI summarizes screening pathways from ACS, USPSTF, CDC, NCI, and selected peer-reviewed research. Full source links appear at the bottom of each detail page.
         </p>
       </section>
     </section>

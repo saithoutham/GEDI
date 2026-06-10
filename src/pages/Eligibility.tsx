@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, ArrowLeft, CheckCircle2, Circle, AlertTriangle, MapPin, ChevronDown, ChevronUp } from 'lucide-react';
+import { ArrowRight, ArrowLeft, CheckCircle2, Circle, AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react';
 import { evaluatePatient, type EligibilityResult } from '../utils/evaluatePatient';
 import { detailedAssessments } from '../data/detailedAssessments';
 
@@ -33,14 +33,14 @@ export default function Eligibility() {
   const [assessmentAnswers, setAssessmentAnswers] = useState<Record<string, Record<string, boolean>>>({});
   const [assessmentResults, setAssessmentResults] = useState<AssessmentResult[]>([]);
 
-  // Centers
+  // Next steps
   const [expandedCenter, setExpandedCenter] = useState<string | null>(null);
 
   const steps = [
     { key: 'profile', label: 'Your Info' },
     { key: 'results', label: 'Results' },
     { key: 'assessment', label: 'Deep Dive' },
-    { key: 'centers', label: 'Find Centers' },
+    { key: 'centers', label: 'Next Steps' },
   ];
 
   const currentStepIndex = steps.findIndex(s => s.key === currentStep);
@@ -75,7 +75,7 @@ export default function Eligibility() {
     // Only assess screenings that have detailed assessments available
     const assessable = selectedScreenings.filter(s => detailedAssessments[s]);
     if (assessable.length === 0) {
-      // Skip to centers if no detailed assessments available
+      // Skip to next steps if no detailed assessments are available
       setCurrentStep('centers');
     } else {
       setCurrentAssessmentIdx(0);
@@ -441,7 +441,7 @@ export default function Eligibility() {
               >
                 {currentAssessmentIdx < assessableScreenings.length - 1
                   ? `Next: ${assessableScreenings[currentAssessmentIdx + 1]}`
-                  : 'View Results and Find Centers'
+                  : 'View Results and Next Steps'
                 }
                 <ArrowRight className="w-4 h-4" />
               </button>
@@ -456,7 +456,7 @@ export default function Eligibility() {
               <h2 className="text-xl font-semibold text-[#1a1a2e] mb-1">Your Screening Plan</h2>
               <p className="text-sm text-[#64748b] mb-6">
                 Here is a summary of your selected screenings with assessment results.
-                Find centers for each one below.
+                Review each screening below and use these prompts when talking with a licensed clinician.
               </p>
 
               <div className="space-y-4">
@@ -509,11 +509,11 @@ export default function Eligibility() {
                             </div>
                           </div>
                           <Link
-                            to={`/locator?screening=${encodeURIComponent(category)}`}
+                            to="/guidelines"
                             className="mt-4 w-full flex items-center justify-center gap-2 py-3 bg-[#6366f1] text-white rounded-xl text-sm font-medium hover:bg-[#5558e6] transition-colors"
                           >
-                            <MapPin className="w-4 h-4" />
-                            Find Centers for {category}
+                            Review Guidance for {category}
+                            <ArrowRight className="w-4 h-4" />
                           </Link>
                         </div>
                       )}
@@ -544,11 +544,11 @@ export default function Eligibility() {
                 <ArrowLeft className="w-4 h-4" /> Start Over
               </button>
               <Link
-                to="/locator"
+                to="/guidelines"
                 className="flex-grow flex items-center justify-center gap-2 py-3 bg-[#1a1a2e] text-white rounded-xl text-sm font-medium hover:bg-[#2a2a3e] transition-colors"
               >
-                <MapPin className="w-4 h-4" />
-                Find All Centers Near Me
+                Review All Guidelines
+                <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
           </div>

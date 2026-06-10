@@ -1,4 +1,4 @@
-import { ArrowRight, MapPin, Pencil, RotateCcw, Stethoscope } from 'lucide-react';
+import { ArrowRight, RotateCcw, Stethoscope } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { derivePlan, scripts, screenings, statusClasses, statusLabels, type Answers, type CancerType, type Plan, type ScreeningRec } from '../lib/gedi';
@@ -9,27 +9,9 @@ type SavedGuide = {
   createdAt: string;
 };
 
-type CtaOverride = {
-  label: string;
-  targetCancerTypes: CancerType[];
-};
-
 export default function Guide() {
   const saved = useSavedGuide();
   const [openScript, setOpenScript] = useState<CancerType | null>(null);
-  const [editing, setEditing] = useState<CancerType | null>(null);
-  const guideId = typeof window !== 'undefined' ? sessionStorage.getItem('gedi-guide-id') : null;
-  const [overrides, setOverrides] = useState<Record<string, CtaOverride>>(() => {
-    if (!guideId) return {};
-    const raw = sessionStorage.getItem(`gedi-guide-overrides-${guideId}`);
-    return raw ? (JSON.parse(raw) as Record<string, CtaOverride>) : {};
-  });
-
-  function saveOverride(type: CancerType, value: CtaOverride) {
-    const next = { ...overrides, [type]: value };
-    setOverrides(next);
-    if (guideId) sessionStorage.setItem(`gedi-guide-overrides-${guideId}`, JSON.stringify(next));
-  }
 
   if (!saved) {
     return (
@@ -73,7 +55,7 @@ export default function Guide() {
         <p className="eyebrow text-[var(--color-brand-primary)]">Your personalized plan</p>
         <h1 className="display-lg mt-4 text-[var(--color-brand-aubergine)]">{headline}</h1>
         <p className="body-lg mt-5 text-[var(--color-ink-muted)]">
-          This guide cites ACS and USPSTF guideline pathways where GEDI has enough information. It also flags active research limitations, especially the Yang Lab’s work on pack-year bias in lung screening.
+          This guide cites ACS and USPSTF guideline pathways where GEDI has enough information. It is educational and should be reviewed with a licensed clinician.
         </p>
       </div>
 
@@ -90,10 +72,7 @@ export default function Guide() {
           <GuideRecommendationCard
             key={item.cancerType}
             item={item}
-            zip={saved.answers.zip}
-            override={overrides[item.cancerType]}
             onOpenScript={() => setOpenScript(item.cancerType)}
-            onEdit={() => setEditing(item.cancerType)}
           />
         ))}
       </div>
@@ -101,9 +80,9 @@ export default function Guide() {
       <section className="mt-12">
         <h2 className="display-md text-[var(--color-brand-aubergine)]">Schedule</h2>
         <div className="mt-6 grid gap-4 md:grid-cols-4">
-          <ScheduleCard title="GEDI Locator" body="Search across multiple screening types without losing your plan context." to="/locate" icon={<MapPin className="h-6 w-6" />} />
+          <ScheduleCard title="Clinical conversation" body="Bring this summary to a primary care clinician or specialist before scheduling screening." icon={<Stethoscope className="h-6 w-6" />} />
           <ScheduleCard title="Book with a clinician" body="Use your plan to ask a primary care clinician or specialist for the screening order you need." />
-          <ScheduleCard title="Find on ACS" body="Use the American Cancer Society screening location finder." href="https://getscreened.cancer.org/" />
+          <ScheduleCard title="ACS resources" body="Review American Cancer Society screening information before making care decisions." href="https://getscreened.cancer.org/" />
           <ScheduleCard title="Free / low-cost" body="For breast and cervical screening support, start with CDC's NBCCEDP program directory." href="https://www.cdc.gov/breast-cervical-cancer-screening/about/index.html" />
         </div>
       </section>
@@ -117,41 +96,17 @@ export default function Guide() {
       </div>
 
       {openScript ? <ScriptSheet type={openScript} onClose={() => setOpenScript(null)} /> : null}
-      {editing ? (
-        <CustomizeDialog
-          type={editing}
-          current={overrides[editing] ?? { label: `Find a ${screenings[editing].shortName.toLowerCase()} screening center`, targetCancerTypes: [editing] }}
-          onClose={() => setEditing(null)}
-          onSave={(value) => {
-            saveOverride(editing, value);
-            setEditing(null);
-          }}
-        />
-      ) : null}
     </section>
   );
 }
 
 function GuideRecommendationCard({
   item,
-  zip,
-  override,
   onOpenScript,
-  onEdit,
 }: {
   item: ScreeningRec;
-  zip?: string;
-  override?: CtaOverride;
   onOpenScript: () => void;
-  onEdit: () => void;
 }) {
-  const targets = override?.targetCancerTypes?.length ? override.targetCancerTypes : [item.cancerType];
-  const locateParams = new URLSearchParams();
-  if (targets.length > 1) locateParams.set('types', targets.join(','));
-  if (zip) locateParams.set('zip', zip);
-  const locatePath = targets.length === 1 ? `/locate/${targets[0]}` : '/locate';
-  const locateHref = `${locatePath}${locateParams.toString() ? `?${locateParams.toString()}` : ''}`;
-
   return (
     <article className="card p-6 md:p-8">
             <div className="grid gap-5">
@@ -173,20 +128,19 @@ function GuideRecommendationCard({
                   </a>
                 </details>
                 <div className="mt-6 flex flex-col gap-3 lg:flex-row">
-                  <Link to={locateHref} className="btn btn-primary">
-                    {override?.label ?? `Find a ${screenings[item.cancerType].shortName.toLowerCase()} screening center`}
-                    <MapPin className="h-4 w-4" />
+                  <Link to={`/guide/${item.cancerType}`} className="btn btn-primary">
+                    Review screening details
+                    <ArrowRight className="h-4 w-4" />
                   </Link>
                   <button type="button" className="btn btn-secondary" onClick={onOpenScript}>
                     What to ask your doctor
                     <Stethoscope className="h-4 w-4" />
                   </button>
-                  <button type="button" className="btn btn-secondary" onClick={onEdit} aria-label={`Customize ${item.title} CTA`}>
-                    <Pencil className="h-4 w-4" />
-                    Customize CTA
-                  </button>
-                  <Link to={`/guide/${item.cancerType}`} className="btn btn-ghost self-center">
-                    View full plan <ArrowRight className="h-4 w-4" />
+                  <a href={item.sourceUrl} target="_blank" rel="noreferrer" className="btn btn-secondary">
+                    Source guideline
+                  </a>
+                  <Link to="/guidelines" className="btn btn-ghost self-center">
+                    Compare guidelines <ArrowRight className="h-4 w-4" />
                   </Link>
                 </div>
               </div>
@@ -246,41 +200,6 @@ function ScriptSheet({ type, onClose }: { type: CancerType; onClose: () => void 
         >
           Copy to clipboard
         </button>
-      </div>
-    </div>
-  );
-}
-
-function CustomizeDialog({ type, current, onClose, onSave }: { type: CancerType; current: CtaOverride; onClose: () => void; onSave: (value: CtaOverride) => void }) {
-  const [label, setLabel] = useState(current.label);
-  const [targets, setTargets] = useState<CancerType[]>(current.targetCancerTypes);
-  function toggle(typeToToggle: CancerType) {
-    setTargets((prev) => (prev.includes(typeToToggle) ? prev.filter((item) => item !== typeToToggle) : [...prev, typeToToggle]));
-  }
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4" role="dialog" aria-modal="true" aria-label="Customize button">
-      <div className="card w-full max-w-lg p-6">
-        <h2 className="text-2xl font-black text-[var(--color-brand-aubergine)]">Customize this CTA</h2>
-        <label className="mt-5 block font-bold text-[var(--color-brand-aubergine)]">
-          Button label
-          <input value={label} onChange={(event) => setLabel(event.target.value)} className="mt-2 w-full rounded-2xl border border-[var(--color-line)] px-4 py-3" />
-        </label>
-        <fieldset className="mt-5">
-          <legend className="font-bold text-[var(--color-brand-aubergine)]">Screenings this button covers</legend>
-          <div className="mt-3 grid grid-cols-2 gap-2">
-            {(['lung', 'breast', 'cervical', 'colorectal', 'prostate'] as CancerType[]).map((item) => (
-              <label key={item} className="flex items-center gap-2 rounded-2xl bg-[var(--color-surface)] p-3 font-semibold">
-                <input type="checkbox" checked={targets.includes(item)} onChange={() => toggle(item)} />
-                {screenings[item].shortName}
-              </label>
-            ))}
-          </div>
-        </fieldset>
-        <div className="mt-6 flex justify-end gap-3">
-          <button type="button" className="btn btn-secondary" onClick={onClose}>Cancel</button>
-          <button type="button" className="btn btn-primary" onClick={() => onSave({ label, targetCancerTypes: targets.length ? targets : [type] })}>Save</button>
-        </div>
-        <p className="sr-only" aria-live="polite">Button label updated</p>
       </div>
     </div>
   );

@@ -4,16 +4,16 @@ import { papers, screenings, type CancerType } from '../lib/gedi';
 
 const valueProps = [
   {
-    title: 'Catch things early.',
-    body: 'When found early, survival can be dramatically better for several screenable cancers. GEDI makes the next step specific.',
+    title: 'Start with guidance.',
+    body: 'GEDI summarizes published screening recommendations in plain language. It is educational and does not diagnose cancer or replace medical advice.',
   },
   {
-    title: "Spot what you can't feel.",
-    body: 'Most screenable cancers cause no symptoms until they are harder to treat. Screening looks before your body can warn you.',
+    title: 'Know what to discuss.',
+    body: 'Some screening decisions depend on symptoms, personal history, family history, or prior results. GEDI helps identify topics to review with a clinician.',
   },
   {
-    title: 'Cover more than one.',
-    body: 'GEDI checks the major screening pathways in one place and lets you add cancers you are curious about.',
+    title: 'Review several topics.',
+    body: 'GEDI brings major screening pathways into one place so people can prepare careful questions before a clinical visit.',
   },
 ];
 
@@ -27,11 +27,11 @@ export default function Home() {
           <div className="grid gap-8 rounded-[32px] bg-[var(--color-brand-primary-soft)] p-5 sm:p-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:p-10">
             <div className="min-w-0 text-left">
               <h1 className="display-xl max-w-5xl text-[var(--color-brand-aubergine)]">
-                <span className="block">Find cancer earlier</span>
-                <span className="block">with a plan made for you<span className="text-[var(--color-brand-primary)]">.</span></span>
+                <span className="block">Understand cancer</span>
+                <span className="block">screening guidance<span className="text-[var(--color-brand-primary)]">.</span></span>
               </h1>
               <p className="body-lg reveal mt-6 max-w-2xl text-[var(--color-ink-muted)] [animation-delay:120ms]">
-                GEDI builds a personalized screening plan in under a minute. Then it helps you book the next step.
+                GEDI summarizes screening pathways and helps people prepare careful questions for a licensed clinician.
               </p>
               <div className="reveal mt-8 flex flex-col gap-3 sm:flex-row [animation-delay:180ms]">
                 <Link to="/assessment" className="btn btn-primary w-full sm:w-auto">
@@ -44,7 +44,7 @@ export default function Home() {
                 </Link>
               </div>
               <p className="mt-6 text-sm font-semibold leading-6 text-[var(--color-brand-aubergine)]">
-                Built from ACS and USPSTF screening pathways, with research context inspired by the Yang Lab at Mass General.
+                Built from published screening guidance and peer-reviewed research context.
               </p>
             </div>
             <figure className="overflow-hidden rounded-[28px] border border-white/70 bg-white shadow-[var(--shadow-gedi)]">
@@ -64,14 +64,14 @@ export default function Home() {
       <section className="py-16 md:py-24">
         <div className="container-gedi grid gap-10 md:grid-cols-[1.05fr_0.95fr] md:items-end">
           <div>
-            <p className="eyebrow text-[var(--color-brand-primary)]">The hard truth</p>
+            <p className="eyebrow text-[var(--color-brand-primary)]">Why this matters</p>
             <h2 className="display-lg mt-4 max-w-4xl text-[var(--color-brand-aubergine)]">
-              Fewer than 5% of people eligible for lung cancer screening get one.
+              Screening guidance is most useful when people understand what may apply to them.
             </h2>
           </div>
           <div className="body-lg text-[var(--color-ink-muted)]">
             <p>
-              Too many people who qualify never make it from guideline to appointment. GEDI is designed around that missing step.
+              GEDI turns dense recommendations into a careful summary that people can bring to a clinical visit.
             </p>
           </div>
         </div>
@@ -92,9 +92,9 @@ export default function Home() {
         <div className="container-gedi">
           <div className="grid gap-6 md:grid-cols-3">
             {[
-              ['01', 'Tell us five things', 'Age, body parts relevant to screening, family history, smoking, and whether you have a PCP.'],
-              ['02', 'See your plan', 'GEDI shows multiple cancer plans together, with status labels and the reason each appears.'],
-              ['03', 'Call with a script', 'Find the right kind of center and use a plain-language call script for the screening.'],
+              ['01', 'Share basic context', 'Age, anatomy, family history, smoking history, and primary care access help summarize relevant guidance.'],
+              ['02', 'Review the summary', 'GEDI shows screening topics with status labels and the reason each one appears.'],
+              ['03', 'Prepare for care', 'Use the summary and plain-language prompts when speaking with a licensed clinician.'],
             ].map(([number, title, body]) => (
               <article key={title} className="rounded-3xl border border-[var(--color-line)] bg-white p-6 shadow-[var(--shadow-gedi)]">
                 <span className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-[var(--color-brand-aubergine)] text-lg font-black text-white">{number}</span>
@@ -111,7 +111,7 @@ export default function Home() {
           <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
             <div>
               <p className="eyebrow text-[var(--color-brand-primary)]">Screenings we cover</p>
-              <h2 className="display-md mt-3 text-[var(--color-brand-aubergine)]">One plan, more than one cancer.</h2>
+              <h2 className="display-md mt-3 text-[var(--color-brand-aubergine)]">One guide, multiple screening topics.</h2>
             </div>
             <Link to="/guidelines" className="btn btn-secondary">
               See guidelines <ArrowRight className="h-4 w-4" aria-hidden="true" />
@@ -123,7 +123,7 @@ export default function Home() {
                 <div className="flex items-center justify-between gap-3">
                   <h3 className="text-xl font-black text-[var(--color-brand-aubergine)]">{screenings[type].shortName}</h3>
                   {screenings[type].comingSoon ? (
-                    <span className="rounded-full bg-[var(--color-not-recommended)] px-3 py-1 text-xs font-bold">Expanding</span>
+                    <span className="rounded-full bg-[var(--color-not-recommended)] px-3 py-1 text-xs font-bold">Risk-based</span>
                   ) : null}
                 </div>
                 <p className="mt-3 text-sm font-bold text-[var(--color-brand-primary)]">{screenings[type].test}</p>
@@ -137,10 +137,10 @@ export default function Home() {
       <section className="bg-[var(--color-brand-navy)] py-16 text-white md:py-24">
         <div className="container-gedi grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
-            <p className="eyebrow text-[var(--color-brand-sky)]">Powered by research</p>
-            <h2 className="display-md mt-4">The recommendations are only as good as the science behind them.</h2>
+            <p className="eyebrow text-[var(--color-brand-sky)]">Research context</p>
+            <h2 className="display-md mt-4">Built to communicate evidence carefully.</h2>
             <p className="mt-5 leading-7 text-white/75">
-              GEDI follows published screening guidelines and acknowledges Yang Lab research on lung cancer screening eligibility, equity, and early detection.
+              GEDI follows published screening guidelines and references peer-reviewed work on lung cancer screening eligibility, equity, and early detection.
             </p>
             <Link to="/research" className="btn mt-8 border border-[var(--color-brand-sky)] bg-[var(--color-brand-sky)] text-[var(--color-brand-navy)] hover:bg-white">
               See the research <ArrowRight className="h-4 w-4" aria-hidden="true" />
@@ -161,22 +161,22 @@ export default function Home() {
 
       <section className="py-16 md:py-24">
         <div className="container-gedi">
-          <p className="eyebrow text-[var(--color-brand-primary)]">On the ground</p>
-          <h2 className="display-md mt-3 max-w-3xl text-[var(--color-brand-aubergine)]">Screening only matters if people actually get screened.</h2>
+          <p className="eyebrow text-[var(--color-brand-primary)]">Community outreach</p>
+          <h2 className="display-md mt-3 max-w-3xl text-[var(--color-brand-aubergine)]">Information is strongest when it reaches people where they are.</h2>
           <div className="mt-8 grid gap-4 md:grid-cols-4">
             {['1,000+ student members', '145+ chapters', '1,500+ outreach events', '70,000+ people educated'].map((stat) => (
               <div key={stat} className="rounded-3xl bg-[var(--color-brand-aubergine)] p-6 text-center font-black text-white shadow-[var(--shadow-gedi)]">{stat}</div>
             ))}
           </div>
           <Link to="/initiatives" className="btn btn-secondary mt-8">
-            Join the movement <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            Learn about outreach <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </Link>
         </div>
       </section>
 
       <section className="bg-[var(--color-brand-primary)] py-16 text-white md:py-20">
         <div className="container-gedi text-center">
-          <h2 className="display-md">It takes 60 seconds. It could change everything.</h2>
+          <h2 className="display-md">Start with information you can discuss with a clinician.</h2>
           <Link to="/assessment" className="btn btn-light-contrast mt-8">
             Check my eligibility <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </Link>

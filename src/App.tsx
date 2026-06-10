@@ -7,7 +7,6 @@ import Guide from './pages/Guide';
 import Guidelines from './pages/Guidelines';
 import Home from './pages/Home';
 import Initiatives from './pages/Initiatives';
-import Locator from './pages/Locator';
 import Research from './pages/Research';
 
 export default function App() {
@@ -20,9 +19,6 @@ export default function App() {
           <Route path="eligibility" element={<Navigate to="/assessment" replace />} />
           <Route path="guide" element={<Guide />} />
           <Route path="guide/:cancer" element={<CancerDetail />} />
-          <Route path="locate" element={<Locator />} />
-          <Route path="locate/:cancer" element={<Locator />} />
-          <Route path="locator" element={<Navigate to="/locate" replace />} />
           <Route path="guidelines" element={<Guidelines />} />
           <Route path="explore" element={<Navigate to="/guidelines" replace />} />
           <Route path="research" element={<Research />} />

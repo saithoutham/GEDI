@@ -148,7 +148,7 @@ export default function Eligibility() {
       <div className="bg-white border-b border-black/[0.06]">
         <div className="max-w-4xl mx-auto px-6 lg:px-8 py-8">
           <h1 className="text-3xl font-semibold text-[#1a1a2e] tracking-tight mb-2">Screening Eligibility</h1>
-          <p className="text-[#64748b]">Answer a few questions to find which preventive screenings may apply to you</p>
+          <p className="text-[#64748b]">Answer a few questions to find which preventive screenings may apply to you.</p>
 
           {/* Step Progress */}
           <div className="flex items-center gap-2 mt-6">
@@ -174,7 +174,7 @@ export default function Eligibility() {
         {currentStep === 'profile' && (
           <div className="card-static p-8 lg:p-10">
             <h2 className="text-xl font-semibold text-[#1a1a2e] mb-1">Tell us about yourself</h2>
-            <p className="text-sm text-[#64748b] mb-8">This information stays in your browser Nothing is stored or sent to any server</p>
+            <p className="text-sm text-[#64748b] mb-8">This information stays in your browser. Nothing is stored or sent to any server.</p>
 
             <div className="space-y-6">
               {/* Age */}
@@ -297,14 +297,14 @@ export default function Eligibility() {
             <div className="card-static p-6 lg:p-8 mb-6">
               <h2 className="text-xl font-semibold text-[#1a1a2e] mb-1">Your Screening Results</h2>
               <p className="text-sm text-[#64748b] mb-6">
-                Based on your profile, here are the screenings that may apply to you
-                Select the ones you want to explore further
+                Based on your profile, here are the screenings that may apply to you.
+                Select the ones you want to explore further.
               </p>
 
               {results.length === 0 ? (
                 <div className="text-center py-12">
                   <AlertTriangle className="w-12 h-12 text-[#94a3b8] mx-auto mb-4" />
-                  <p className="text-[#64748b]">No screenings matched your profile Consider consulting your doctor for personalized advice</p>
+                  <p className="text-[#64748b]">No screenings matched your profile. Consider consulting your doctor for personalized advice.</p>
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -392,7 +392,7 @@ export default function Eligibility() {
                 {currentAssessmentCategory} - Detailed Assessment
               </h2>
               <p className="text-sm text-[#64748b] mb-6">
-                Answer these follow-up questions to get a more precise risk assessment
+                Answer these follow-up questions to get a more precise risk assessment.
               </p>
 
               {/* Key facts */}
@@ -455,8 +455,8 @@ export default function Eligibility() {
             <div className="card-static p-6 lg:p-8 mb-6">
               <h2 className="text-xl font-semibold text-[#1a1a2e] mb-1">Your Screening Plan</h2>
               <p className="text-sm text-[#64748b] mb-6">
-                Here is a summary of your selected screenings with assessment results
-                Review each screening below and use these prompts when talking with a licensed clinician
+                Here is a summary of your selected screenings with assessment results.
+                Review each screening below and use these prompts when talking with a licensed clinician.
               </p>
 
               <div className="space-y-4">

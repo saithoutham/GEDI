@@ -6,15 +6,15 @@ import { papers, screenings, type CancerType } from '../lib/gedi';
 const valueProps = [
   {
     title: 'Start with guidance',
-    body: 'GEDI summarizes published screening recommendations in plain language It is educational and does not diagnose cancer or replace medical advice',
+    body: 'GEDI summarizes published screening recommendations in plain language. It is educational and does not diagnose cancer or replace medical advice.',
   },
   {
     title: 'Know what to discuss',
-    body: 'Some screening decisions depend on symptoms, personal history, family history, or prior results GEDI helps identify topics to review with a clinician',
+    body: 'Some screening decisions depend on symptoms, personal history, family history, or prior results. GEDI helps identify topics to review with a clinician.',
   },
   {
     title: 'Review several topics',
-    body: 'GEDI brings major screening pathways into one place so people can prepare careful questions before a clinical visit',
+    body: 'GEDI brings major screening pathways into one place so people can prepare careful questions before a clinical visit.',
   },
 ];
 
@@ -59,7 +59,7 @@ export default function Home() {
                 <span className="block">screening guidance</span>
               </h1>
               <p className="body-lg reveal mt-6 max-w-2xl text-[var(--color-ink-muted)] [animation-delay:120ms]">
-                GEDI summarizes screening pathways and helps people prepare careful questions for a licensed clinician
+                GEDI summarizes screening pathways and helps people prepare careful questions for a licensed clinician.
               </p>
               <div className="reveal mt-8 flex flex-col gap-3 sm:flex-row [animation-delay:180ms]">
                 <Link to="/assessment" className="btn btn-primary w-full sm:w-auto">
@@ -72,7 +72,7 @@ export default function Home() {
                 </Link>
               </div>
               <p className="mt-6 text-sm font-semibold leading-6 text-[var(--color-brand-aubergine)]">
-                Built from published screening guidance and peer-reviewed research context
+                Built from published screening guidance and peer-reviewed research context.
               </p>
             </div>
             <HomepagePhotoCarousel />
@@ -90,7 +90,7 @@ export default function Home() {
           </div>
           <div className="body-lg text-[var(--color-ink-muted)]">
             <p>
-              GEDI turns dense recommendations into a careful summary that people can bring to a clinical visit
+              GEDI turns dense recommendations into a careful summary that people can bring to a clinical visit.
             </p>
           </div>
         </div>
@@ -111,9 +111,9 @@ export default function Home() {
         <div className="w-full px-3 sm:px-6 lg:px-10">
           <div className="grid gap-6 md:grid-cols-3">
             {[
-              ['01', 'Share basic context', 'Age, sex assigned at birth, prior screening, and smoking history help summarize relevant guidance'],
-              ['02', 'Review the summary', 'GEDI shows screening topics with status labels and the reason each one appears'],
-              ['03', 'Prepare for care', 'Use the summary and plain-language prompts when speaking with a licensed clinician'],
+              ['01', 'Share basic context', 'Age, sex assigned at birth, prior screening, and smoking history help summarize relevant guidance.'],
+              ['02', 'Review the summary', 'GEDI shows screening topics with status labels and the reason each one appears.'],
+              ['03', 'Prepare for care', 'Use the summary and plain-language prompts when speaking with a licensed clinician.'],
             ].map(([number, title, body]) => (
               <article key={title} className="rounded-3xl border border-[var(--color-line)] bg-white p-6 shadow-[var(--shadow-gedi)]">
                 <span className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-[var(--color-brand-aubergine)] text-lg font-black text-white">{number}</span>
@@ -159,7 +159,7 @@ export default function Home() {
             <p className="eyebrow text-[var(--color-brand-sky)]">Research context</p>
             <h2 className="display-md mt-4">Built to communicate evidence carefully</h2>
             <p className="mt-5 leading-7 text-white/75">
-              GEDI follows published screening guidelines and references peer-reviewed work on lung cancer screening eligibility, equity, and early detection
+              GEDI follows published screening guidelines and references peer-reviewed work on lung cancer screening eligibility, equity, and early detection.
             </p>
             <Link to="/research" className="btn mt-8 border border-[var(--color-brand-sky)] bg-[var(--color-brand-sky)] text-[var(--color-brand-navy)] hover:bg-white">
               See the research <ArrowRight className="h-4 w-4" aria-hidden="true" />

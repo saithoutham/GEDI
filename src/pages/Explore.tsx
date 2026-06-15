@@ -24,66 +24,66 @@ const fallbackGuidelines: Guideline[] = [
   {
     id: 1, category: 'Lung cancer',
     title: 'Low-Dose CT Screening for Lung Cancer',
-    summary: 'Annual screening with low-dose computed tomography (LDCT) for adults aged 50 to 80 years who have a 20 pack-year smoking history and currently smoke or have quit within the past 15 years',
+    summary: 'Annual screening with low-dose computed tomography (LDCT) for adults aged 50 to 80 years who have a 20 pack-year smoking history and currently smoke or have quit within the past 15 years.',
     min_age: 50, max_age: 80, sex: 'All', interval: 'Annual', modality: 'Low-dose CT (LDCT)',
     source: 'USPSTF', reviewed_date: '2021',
-    details: 'The USPSTF recommends annual screening for lung cancer with LDCT in adults aged 50 to 80 years who have a 20 pack-year smoking history and currently smoke or have quit within the past 15 years Screening should be discontinued once a person has not smoked for 15 years or develops a health problem that substantially limits life expectancy or the ability or willingness to have curative lung surgery'
+    details: 'The USPSTF recommends annual screening for lung cancer with LDCT in adults aged 50 to 80 years who have a 20 pack-year smoking history and currently smoke or have quit within the past 15 years. Screening should be discontinued once a person has not smoked for 15 years or develops a health problem that substantially limits life expectancy or the ability or willingness to have curative lung surgery.'
   },
   {
     id: 2, category: 'Breast cancer',
     title: 'Mammography Screening for Breast Cancer',
-    summary: 'Biennial screening mammography for women aged 40 to 74 years Women should begin screening at age 40',
+    summary: 'Biennial screening mammography for women aged 40 to 74 years. Women should begin screening at age 40.',
     min_age: 40, max_age: 74, sex: 'Female', interval: 'Biennial', modality: 'Mammography',
     source: 'USPSTF', reviewed_date: '2024',
-    details: 'The USPSTF recommends biennial screening mammography for women aged 40 to 74 years This recommendation applies to women at average risk for breast cancer Women who have a parent, sibling, or child with breast cancer are at higher risk and may benefit from beginning screening earlier Additional imaging with breast MRI may be recommended for women with known genetic mutations (BRCA1/2)'
+    details: 'The USPSTF recommends biennial screening mammography for women aged 40 to 74 years. This recommendation applies to women at average risk for breast cancer. Women who have a parent, sibling, or child with breast cancer are at higher risk and may benefit from beginning screening earlier. Additional imaging with breast MRI may be recommended for women with known genetic mutations (BRCA1/2).'
   },
   {
     id: 3, category: 'Cervical cancer',
     title: 'Cervical Cancer Screening with Cytology and HPV Testing',
-    summary: 'Screening for cervical cancer in women aged 21 to 65 years with cytology (Pap smear) every 3 years or, for women 30 to 65, with a combination of cytology and HPV testing every 5 years',
+    summary: 'Screening for cervical cancer in women aged 21 to 65 years with cytology (Pap smear) every 3 years or, for women 30 to 65, with a combination of cytology and HPV testing every 5 years.',
     min_age: 21, max_age: 65, sex: 'Female', interval: 'Every 3-5 years', modality: 'Pap smear / HPV testing',
     source: 'USPSTF', reviewed_date: '2018',
-    details: 'The USPSTF recommends screening every 3 years with cervical cytology alone in women aged 21 to 29 years For women aged 30 to 65 years, the USPSTF recommends screening every 3 years with cervical cytology alone, every 5 years with hrHPV testing alone, or every 5 years with hrHPV testing in combination with cytology (cotesting)'
+    details: 'The USPSTF recommends screening every 3 years with cervical cytology alone in women aged 21 to 29 years. For women aged 30 to 65 years, the USPSTF recommends screening every 3 years with cervical cytology alone, every 5 years with hrHPV testing alone, or every 5 years with hrHPV testing in combination with cytology (cotesting).'
   },
   {
     id: 4, category: 'Colorectal cancer',
     title: 'Screening for Colorectal Cancer',
-    summary: 'Screening for colorectal cancer in all adults aged 45 to 75 years using stool-based tests, colonoscopy, or other approved methods',
+    summary: 'Screening for colorectal cancer in all adults aged 45 to 75 years using stool-based tests, colonoscopy, or other approved methods.',
     min_age: 45, max_age: 75, sex: 'All', interval: 'Varies by modality', modality: 'Colonoscopy / FIT / sDNA-FIT',
     source: 'USPSTF', reviewed_date: '2021',
-    details: 'The USPSTF recommends screening for colorectal cancer in all adults aged 45 to 75 years (Grade A for 50-75, Grade B for 45-49) Screening modalities include stool-based tests (FIT annually, sDNA-FIT every 1-3 years) and direct visualization tests (colonoscopy every 10 years, CT colonography every 5 years, flexible sigmoidoscopy every 5 years)'
+    details: 'The USPSTF recommends screening for colorectal cancer in all adults aged 45 to 75 years (Grade A for 50-75, Grade B for 45-49). Screening modalities include stool-based tests (FIT annually, sDNA-FIT every 1-3 years) and direct visualization tests (colonoscopy every 10 years, CT colonography every 5 years, flexible sigmoidoscopy every 5 years).'
   },
   {
     id: 5, category: 'Prostate cancer',
     title: 'PSA-Based Screening for Prostate Cancer',
-    summary: 'For men aged 55 to 69 years, the decision to undergo periodic PSA-based screening should be an individual one based on shared decision-making',
+    summary: 'For men aged 55 to 69 years, the decision to undergo periodic PSA-based screening should be an individual one based on shared decision-making.',
     min_age: 55, max_age: 69, sex: 'Male', interval: 'Individualized', modality: 'PSA blood test',
     source: 'USPSTF', reviewed_date: '2018',
-    details: 'The USPSTF recommends that for men aged 55 to 69 years, the decision to undergo periodic PSA-based screening for prostate cancer should be an individual one Before deciding whether to be screened, men should have an opportunity to discuss the potential benefits and harms of screening with their clinician and to incorporate their values and preferences in the decision The USPSTF recommends against PSA-based screening in men 70 years and older'
+    details: 'The USPSTF recommends that for men aged 55 to 69 years, the decision to undergo periodic PSA-based screening for prostate cancer should be an individual one. Before deciding whether to be screened, men should have an opportunity to discuss the potential benefits and harms of screening with their clinician and to incorporate their values and preferences in the decision. The USPSTF recommends against PSA-based screening in men 70 years and older.'
   },
   {
     id: 6, category: 'Skin cancer',
     title: 'Skin Cancer Prevention and Self-Examination',
-    summary: 'Behavioral counseling for young adults aged 10 to 24 years with fair skin about minimizing UV exposure Regular skin self-examination is encouraged for all adults',
+    summary: 'Behavioral counseling for young adults aged 10 to 24 years with fair skin about minimizing UV exposure. Regular skin self-examination is encouraged for all adults.',
     min_age: 10, max_age: 100, sex: 'All', interval: 'Ongoing', modality: 'Counseling / Self-exam',
-    source: 'USPSTF / ACS', reviewed_date: '2018',
-    details: 'The USPSTF recommends counseling young adults, adolescents, children, and parents of young children about minimizing exposure to ultraviolet (UV) radiation for persons aged 6 months to 24 years with fair skin types to reduce their risk of skin cancer Monthly self-examination of the skin is recommended by the American Cancer Society Adults should see a dermatologist if they notice new moles, changes in existing moles, or sores that do not heal'
+    source: 'USPSTF / CDC', reviewed_date: '2018',
+    details: 'The USPSTF recommends counseling young adults, adolescents, children, and parents of young children about minimizing exposure to ultraviolet (UV) radiation for persons aged 6 months to 24 years with fair skin types to reduce their risk of skin cancer. Adults should ask a clinician about new moles, changes in existing moles, or sores that do not heal.'
   },
   {
     id: 7, category: 'CVD - Hypertension',
     title: 'Screening for High Blood Pressure in Adults',
-    summary: 'Screening for high blood pressure in adults aged 18 years or older Blood pressure should be confirmed outside of the clinical setting before starting treatment',
+    summary: 'Screening for high blood pressure in adults aged 18 years or older. Blood pressure should be confirmed outside of the clinical setting before starting treatment.',
     min_age: 18, max_age: 100, sex: 'All', interval: 'Annual or per visit', modality: 'Blood pressure measurement',
     source: 'USPSTF', reviewed_date: '2021',
-    details: 'The USPSTF recommends screening for high blood pressure in adults aged 18 years or older The USPSTF recommends obtaining blood pressure measurements outside of the clinical setting for diagnostic confirmation before starting treatment Ambulatory blood pressure monitoring is the best method for confirming the diagnosis of hypertension'
+    details: 'The USPSTF recommends screening for high blood pressure in adults aged 18 years or older. The USPSTF recommends obtaining blood pressure measurements outside of the clinical setting for diagnostic confirmation before starting treatment. Ambulatory blood pressure monitoring is the best method for confirming the diagnosis of hypertension.'
   },
   {
     id: 8, category: 'CVD - Diabetes',
     title: 'Screening for Prediabetes and Type 2 Diabetes',
-    summary: 'Screening for prediabetes and type 2 diabetes in adults aged 35 to 70 years who have overweight or obesity',
+    summary: 'Screening for prediabetes and type 2 diabetes in adults aged 35 to 70 years who have overweight or obesity.',
     min_age: 35, max_age: 70, sex: 'All', interval: 'Every 3 years', modality: 'A1C / Fasting glucose / OGTT',
     source: 'USPSTF', reviewed_date: '2021',
-    details: 'The USPSTF recommends screening for prediabetes and type 2 diabetes in adults aged 35 to 70 years who have overweight or obesity Clinicians should offer or refer patients with prediabetes to effective preventive interventions Screening is done with fasting blood glucose, HbA1c, or an oral glucose tolerance test'
+    details: 'The USPSTF recommends screening for prediabetes and type 2 diabetes in adults aged 35 to 70 years who have overweight or obesity. Clinicians should offer or refer patients with prediabetes to effective preventive interventions. Screening is done with fasting blood glucose, HbA1c, or an oral glucose tolerance test.'
   },
 ];
 
@@ -149,7 +149,7 @@ export default function Explore() {
         <div className="max-w-5xl mx-auto px-6 lg:px-8 py-12">
           <p className="text-xs font-semibold text-[#6366f1] uppercase tracking-wider mb-3">Library</p>
           <h1 className="text-4xl font-semibold text-[#1a1a2e] tracking-tight mb-3">Screening Guidelines</h1>
-          <p className="text-[#64748b] max-w-lg">Search, filter, and review evidence-based screening recommendations across all conditions</p>
+          <p className="text-[#64748b] max-w-lg">Search, filter, and review evidence-based screening recommendations across all conditions.</p>
         </div>
       </div>
 
@@ -157,7 +157,7 @@ export default function Explore() {
         <div className="card-static p-4 mb-8 flex flex-col md:flex-row gap-4 items-center">
           <div className="relative flex-grow w-full">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#94a3b8] w-4 h-4" />
-            <input type="text" placeholder="Search conditions and guidelines" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
+            <input type="text" placeholder="Search conditions, guidelines..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-2.5 bg-[#f0f2f5] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#6366f1]/30 placeholder:text-[#94a3b8]" />
           </div>
           <div className="flex items-center gap-4 w-full md:w-auto">
@@ -175,7 +175,7 @@ export default function Explore() {
         {loading ? (
           <div className="text-center py-20"><div className="animate-spin rounded-full h-8 w-8 border-2 border-[#6366f1] border-t-transparent mx-auto" /><p className="text-[#94a3b8] mt-4 text-sm">Loading guidelines...</p></div>
         ) : filtered.length === 0 ? (
-          <div className="card-static p-16 text-center"><Search className="w-10 h-10 text-[#cbd5e1] mx-auto mb-4" /><h3 className="text-lg font-medium text-[#1a1a2e] mb-1">No guidelines found</h3><p className="text-[#64748b] text-sm">Try adjusting your filters or search term</p></div>
+          <div className="card-static p-16 text-center"><Search className="w-10 h-10 text-[#cbd5e1] mx-auto mb-4" /><h3 className="text-lg font-medium text-[#1a1a2e] mb-1">No guidelines found</h3><p className="text-[#64748b] text-sm">Try adjusting your filters or search term.</p></div>
         ) : (
           <div className="space-y-3">
             {filtered.map((g) => (

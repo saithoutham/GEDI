@@ -10,7 +10,7 @@ export default function Research() {
           <p className="eyebrow text-[var(--color-brand-sky)]">Yang Lab at Mass General</p>
           <h1 className="display-lg mt-4 max-w-4xl">Research that informed GEDI’s approach</h1>
           <p className="body-lg mt-6 max-w-3xl text-white/75">
-            GEDI’s eligibility logic follows published screening guidelines where enough information is available The project was built with inspiration from clinical research on lung cancer screening, equity, and early detection
+            GEDI’s eligibility logic follows published screening guidelines where enough information is available. The project was built with inspiration from clinical research on lung cancer screening, equity, and early detection.
           </p>
         </div>
       </section>
@@ -20,7 +20,7 @@ export default function Research() {
           <div className="card p-7">
             <img
               src="/research/chi-fu-jeffrey-yang-local.png"
-              alt="Dr Chi-Fu Jeffrey Yang"
+              alt="Dr. Chi-Fu Jeffrey Yang"
               className="aspect-square w-full rounded-3xl object-cover"
             />
           </div>
@@ -28,7 +28,7 @@ export default function Research() {
             <p className="eyebrow text-[var(--color-brand-primary)]">About the lab</p>
             <h2 className="display-md mt-3 text-[var(--color-brand-aubergine)]">Clinical research rooted in thoracic surgery and equity</h2>
             <p className="mt-5 leading-7 text-[var(--color-ink-muted)]">
-              Dr Chi-Fu Jeffrey Yang is a thoracic surgeon at Massachusetts General Hospital and the Founding Director of CAIIRE His lab’s work on lung cancer screening eligibility, screening equity, and earlier detection helped inspire GEDI’s focus on clear, guideline-based education
+              Dr. Chi-Fu Jeffrey Yang is a thoracic surgeon at Massachusetts General Hospital and the Founding Director of CAIIRE. His lab’s work on lung cancer screening eligibility, screening equity, and earlier detection helped inspire GEDI’s focus on clear, guideline-based education.
             </p>
             <a href="https://yang-lab.mgh.harvard.edu/" target="_blank" rel="noreferrer" className="btn btn-secondary mt-6">
               Visit the lab <ExternalLink className="h-4 w-4" />
@@ -85,9 +85,9 @@ export default function Research() {
           <p className="eyebrow text-[var(--color-brand-primary)]">Research context in GEDI</p>
           <div className="mt-6 grid gap-5 md:grid-cols-3">
             {[
-              ['Pack-year context', 'GEDI keeps USPSTF eligibility visible while noting published concerns that pack-year rules can under-screen some groups'],
-              ['Equity prompts', 'Family history and exposure risk create a doctor-discussion pathway instead of a hard no'],
-              ['Action design', 'The guide connects eligibility to call scripts so users can move from guideline information to a practical next step'],
+              ['Pack-year context', 'GEDI keeps USPSTF eligibility visible while noting published concerns that pack-year rules can under-screen some groups.'],
+              ['Equity prompts', 'Family history and exposure risk create a doctor-discussion pathway instead of a hard no.'],
+              ['Action design', 'The guide connects eligibility to call scripts so users can move from guideline information to a practical next step.'],
             ].map(([title, body]) => (
               <article key={title} className="rounded-3xl bg-white p-6">
                 <h2 className="text-xl font-black text-[var(--color-brand-aubergine)]">{title}</h2>

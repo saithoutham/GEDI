@@ -192,13 +192,13 @@ const statusLabels: Record<ScreeningStatus, string> = {
 };
 
 const nextSteps: Record<ScreeningStatus, string> = {
-  'appears-eligible': 'Review this result with a licensed clinician before scheduling screening',
-  'shared-decision': 'Discuss benefits, limits, and harms with a licensed clinician',
-  'individual-decision': 'Discuss overall health, prior screening history, and preferences with a licensed clinician',
-  'ask-clinician': 'Contact a licensed clinician for personalized guidance',
-  'not-routine': 'Review again when age, symptoms, or health history changes',
-  'not-eligible': 'Review again when age, smoking history, or health history changes',
-  info: 'Use this as education and ask a clinician if you have symptoms or risk factors',
+  'appears-eligible': 'Review this result with a licensed clinician before scheduling screening.',
+  'shared-decision': 'Discuss benefits, limits, and harms with a licensed clinician.',
+  'individual-decision': 'Discuss overall health, prior screening history, and preferences with a licensed clinician.',
+  'ask-clinician': 'Contact a licensed clinician for personalized guidance.',
+  'not-routine': 'Review again when age, symptoms, or health history changes.',
+  'not-eligible': 'Review again when age, smoking history, or health history changes.',
+  info: 'Use this as education and ask a clinician if you have symptoms or risk factors.',
 };
 
 function result(cancerType: CancerType, status: ScreeningStatus, explanation: string, routineInfoOnly = false): ScreeningResult {
@@ -263,28 +263,28 @@ function buildAlerts(answers: AssessmentAnswers): AssessmentAlert[] {
     alerts.push({
       id: 'symptoms-or-prior-cancer',
       message:
-        'This may not be routine screening Symptoms, prior cancer, or uncertainty can require diagnostic testing or a personalized follow-up plan',
+        'This may not be routine screening. Symptoms, prior cancer, or uncertainty can require diagnostic testing or a personalized follow-up plan.',
     });
   }
   if (answers.lungRisk.symptoms || answers.skinRisk.changingLesion || answers.oralRisk.persistentSymptoms) {
     alerts.push({
       id: 'diagnostic-symptoms',
       message:
-        'You selected symptom-related answers Screening rules are not a substitute for diagnostic care; please contact a clinician',
+        'You selected symptom-related answers. Screening rules are not a substitute for diagnostic care; please contact a clinician.',
     });
   }
   if (answers.highRiskHistory && answers.highRiskHistory !== 'no') {
     alerts.push({
       id: 'high-risk-history',
       message:
-        'Inherited syndromes or strong family history may require earlier, different, or more frequent screening than routine recommendations',
+        'Inherited syndromes or strong family history may require earlier, different, or more frequent screening than routine recommendations.',
     });
   }
   if (answers.anatomy.unknown || answers.sexAssignedAtBirth === 'prefer-not') {
     alerts.push({
       id: 'unknown-anatomy',
       message:
-        'Some screening recommendations depend on information not provided here A clinician can help confirm which screenings apply',
+        'Some screening recommendations depend on information not provided here. A clinician can help confirm which screenings apply.',
     });
   }
   return alerts;
@@ -301,7 +301,7 @@ function evaluateBreast(age: number, answers: AssessmentAnswers, routineInfoOnly
     return result(
       'breast',
       'ask-clinician',
-      'Your breast cancer answers suggest that average-risk mammography rules may not be enough You may need earlier or different screening, such as genetic-risk assessment or breast specialist guidance',
+      'Your breast cancer answers suggest that average-risk mammography rules may not be enough. You may need earlier or different screening, such as genetic-risk assessment or breast specialist guidance.',
       routineInfoOnly
     );
   }
@@ -309,7 +309,7 @@ function evaluateBreast(age: number, answers: AssessmentAnswers, routineInfoOnly
     return result(
       'breast',
       'appears-eligible',
-      'Based on your answers, you appear to meet USPSTF criteria for routine breast cancer screening The recommendation is a mammogram every 2 years from ages 40 to 74',
+      'Based on your answers, you appear to meet USPSTF criteria for routine breast cancer screening. The recommendation is a mammogram every 2 years from ages 40 to 74.',
       routineInfoOnly
     );
   }
@@ -317,46 +317,46 @@ function evaluateBreast(age: number, answers: AssessmentAnswers, routineInfoOnly
     return result(
       'breast',
       'ask-clinician',
-      'USPSTF says there is not enough evidence to recommend routine screening for everyone 75 or older Ask a clinician whether continued screening makes sense for you',
+      'USPSTF says there is not enough evidence to recommend routine screening for everyone 75 or older. Ask a clinician whether continued screening makes sense for you.',
       routineInfoOnly
     );
   }
   if (answers.breastRisk.denseBreasts) {
-    return result('breast', 'ask-clinician', 'Dense breasts can affect mammography follow-up decisions Ask a clinician what screening plan fits your risk', routineInfoOnly);
+    return result('breast', 'ask-clinician', 'Dense breasts can affect mammography follow-up decisions. Ask a clinician what screening plan fits your risk.', routineInfoOnly);
   }
-  return result('breast', 'not-routine', 'Routine breast cancer screening is usually not recommended yet based on age alone for average-risk people', routineInfoOnly);
+  return result('breast', 'not-routine', 'Routine breast cancer screening is usually not recommended yet based on age alone for average-risk people.', routineInfoOnly);
 }
 
 function evaluateCervical(age: number, answers: AssessmentAnswers, routineInfoOnly: boolean) {
   if (answers.cervicalRisk.cervixRemoved && !answers.cervicalRisk.priorHighGradeLesionOrCancer) {
-    return result('cervical', 'not-routine', 'Routine cervical cancer screening is usually not recommended after the cervix has been removed for non-cancer reasons', routineInfoOnly);
+    return result('cervical', 'not-routine', 'Routine cervical cancer screening is usually not recommended after the cervix has been removed for non-cancer reasons.', routineInfoOnly);
   }
   if (answers.cervicalRisk.priorHighGradeLesionOrCancer || answers.cervicalRisk.immunocompromised || answers.cervicalRisk.desExposure) {
     return result(
       'cervical',
       'ask-clinician',
-      'Your cervical cancer answers suggest a higher-risk or special-population pathway Routine age-based screening intervals may not apply',
+      'Your cervical cancer answers suggest a higher-risk or special-population pathway. Routine age-based screening intervals may not apply.',
       routineInfoOnly
     );
   }
   if (age >= 21 && age <= 29) {
-    return result('cervical', 'appears-eligible', 'Based on your answers, you appear to meet USPSTF criteria for cervical cancer screening with a Pap test every 3 years', routineInfoOnly);
+    return result('cervical', 'appears-eligible', 'Based on your answers, you appear to meet USPSTF criteria for cervical cancer screening with a Pap test every 3 years.', routineInfoOnly);
   }
   if (age >= 30 && age <= 65) {
     return result(
       'cervical',
       'appears-eligible',
-      'Based on your answers, you appear to meet USPSTF criteria for cervical cancer screening Options include Pap testing every 3 years, high-risk HPV testing every 5 years, or cotesting every 5 years',
+      'Based on your answers, you appear to meet USPSTF criteria for cervical cancer screening. Options include Pap testing every 3 years, high-risk HPV testing every 5 years, or cotesting every 5 years.',
       routineInfoOnly
     );
   }
   if (age >= 66) {
     if (answers.cervicalRisk.adequatePriorScreening || answers.priorCervicalScreening === 'yes') {
-      return result('cervical', 'not-routine', 'Routine cervical cancer screening is usually not recommended after 65 when prior screening has been adequate and risk is not high', routineInfoOnly);
+      return result('cervical', 'not-routine', 'Routine cervical cancer screening is usually not recommended after 65 when prior screening has been adequate and risk is not high.', routineInfoOnly);
     }
-    return result('cervical', 'ask-clinician', 'You may still need cervical screening if prior screening was not adequate or you are unsure of your screening history', routineInfoOnly);
+    return result('cervical', 'ask-clinician', 'You may still need cervical screening if prior screening was not adequate or you are unsure of your screening history.', routineInfoOnly);
   }
-  return result('cervical', 'not-routine', 'Routine cervical cancer screening usually starts at age 21', routineInfoOnly);
+  return result('cervical', 'not-routine', 'Routine cervical cancer screening usually starts at age 21.', routineInfoOnly);
 }
 
 function evaluateColorectal(age: number, answers: AssessmentAnswers, routineInfoOnly: boolean) {
@@ -370,34 +370,34 @@ function evaluateColorectal(age: number, answers: AssessmentAnswers, routineInfo
     return result(
       'colorectal',
       'ask-clinician',
-      'Your colorectal cancer answers suggest you may need a high-risk screening pathway rather than average-risk screening intervals',
+      'Your colorectal cancer answers suggest you may need a high-risk screening pathway rather than average-risk screening intervals.',
       routineInfoOnly
     );
   }
   if (age >= 45 && age <= 75) {
-    return result('colorectal', 'appears-eligible', 'Based on your age, you appear to meet USPSTF criteria for routine colorectal cancer screening', routineInfoOnly);
+    return result('colorectal', 'appears-eligible', 'Based on your age, you appear to meet USPSTF criteria for routine colorectal cancer screening.', routineInfoOnly);
   }
   if (age >= 76 && age <= 85) {
     const neverScreened = answers.priorColorectalScreening === 'no';
     return result(
       'colorectal',
       'individual-decision',
-      `Screening may still be appropriate, but USPSTF recommends an individualized decision based on health, prior screening history, and preferences${neverScreened ? ' You reported that you have not been screened before' : ''}`,
+      `Screening may still be appropriate, but USPSTF recommends an individualized decision based on health, prior screening history, and preferences.${neverScreened ? ' You reported that you have not been screened before.' : ''}`,
       routineInfoOnly
     );
   }
-  return result('colorectal', 'not-routine', 'Routine colorectal cancer screening usually starts at age 45 for average-risk adults and is usually stopped after age 85', routineInfoOnly);
+  return result('colorectal', 'not-routine', 'Routine colorectal cancer screening usually starts at age 45 for average-risk adults and is usually stopped after age 85.', routineInfoOnly);
 }
 
 function evaluateLung(age: number, answers: AssessmentAnswers, routineInfoOnly: boolean) {
   if (answers.lungRisk.symptoms) {
-    return result('lung', 'ask-clinician', 'Symptoms such as coughing blood, unexplained weight loss, or a new/worsening cough need diagnostic evaluation rather than routine screening', routineInfoOnly);
+    return result('lung', 'ask-clinician', 'Symptoms such as coughing blood, unexplained weight loss, or a new/worsening cough need diagnostic evaluation rather than routine screening.', routineInfoOnly);
   }
   if (answers.lungRisk.healthLimitsCurativeTreatment) {
-    return result('lung', 'not-routine', 'USPSTF recommends stopping or avoiding screening when a health problem substantially limits life expectancy or ability/willingness to have curative lung surgery', routineInfoOnly);
+    return result('lung', 'not-routine', 'USPSTF recommends stopping or avoiding screening when a health problem substantially limits life expectancy or ability/willingness to have curative lung surgery.', routineInfoOnly);
   }
   if (age < 50 || age > 80) {
-    return result('lung', 'not-routine', 'Routine lung cancer screening is considered by USPSTF criteria for adults ages 50 to 80 with qualifying smoking history', routineInfoOnly);
+    return result('lung', 'not-routine', 'Routine lung cancer screening is considered by USPSTF criteria for adults ages 50 to 80 with qualifying smoking history.', routineInfoOnly);
   }
 
   const packYears = answers.lungPackYears === 'yes-20-plus' ? 20 : calculatePackYears(answers.packsPerDay, answers.yearsSmoked);
@@ -408,8 +408,8 @@ function evaluateLung(age: number, answers: AssessmentAnswers, routineInfoOnly: 
       'lung',
       hasAddedRisk ? 'ask-clinician' : 'not-eligible',
       hasAddedRisk
-        ? 'You do not appear to meet the USPSTF pack-year threshold, but you selected other lung cancer risk factors Ask a clinician how those affect your care'
-        : 'Based on your answers, you do not appear to meet the USPSTF smoking history threshold for routine lung cancer screening',
+        ? 'You do not appear to meet the USPSTF pack-year threshold, but you selected other lung cancer risk factors. Ask a clinician how those affect your care.'
+        : 'Based on your answers, you do not appear to meet the USPSTF smoking history threshold for routine lung cancer screening.',
       routineInfoOnly
     );
   }
@@ -417,15 +417,15 @@ function evaluateLung(age: number, answers: AssessmentAnswers, routineInfoOnly: 
   const quitYears = answers.smokingStatus === 'quit-within-15' ? 10 : answers.smokingStatus === 'quit-more-than-15' ? 16 : answers.quitYearsAgo;
   const currentOrRecent = answers.smokingStatus === 'current' || (answers.smokingStatus === 'former' && (quitYears ?? 999) <= 15) || answers.smokingStatus === 'quit-within-15';
   if (currentOrRecent) {
-    return result('lung', 'appears-eligible', 'Based on your answers, you appear to meet USPSTF criteria for annual lung cancer screening with low-dose CT', routineInfoOnly);
+    return result('lung', 'appears-eligible', 'Based on your answers, you appear to meet USPSTF criteria for annual lung cancer screening with low-dose CT.', routineInfoOnly);
   }
   if (answers.smokingStatus === 'never') {
-    return result('lung', 'not-eligible', 'USPSTF routine lung cancer screening criteria are based on age and smoking history', routineInfoOnly);
+    return result('lung', 'not-eligible', 'USPSTF routine lung cancer screening criteria are based on age and smoking history.', routineInfoOnly);
   }
   if (answers.smokingStatus === 'quit-more-than-15' || (answers.smokingStatus === 'former' && (quitYears ?? 0) > 15)) {
-    return result('lung', 'not-eligible', 'USPSTF recommends lung cancer screening for people who currently smoke or quit within the past 15 years', routineInfoOnly);
+    return result('lung', 'not-eligible', 'USPSTF recommends lung cancer screening for people who currently smoke or quit within the past 15 years.', routineInfoOnly);
   }
-  return result('lung', 'ask-clinician', 'Your smoking history may affect whether lung cancer screening is recommended A clinician can help confirm eligibility', routineInfoOnly);
+  return result('lung', 'ask-clinician', 'Your smoking history may affect whether lung cancer screening is recommended. A clinician can help confirm eligibility.', routineInfoOnly);
 }
 
 function evaluateProstate(age: number, answers: AssessmentAnswers, routineInfoOnly: boolean) {
@@ -434,15 +434,15 @@ function evaluateProstate(age: number, answers: AssessmentAnswers, routineInfoOn
     return result(
       'prostate',
       'shared-decision',
-      `Based on your answers, you are in the age range where USPSTF recommends discussing PSA-based prostate cancer screening with a clinician${highRisk ? ' Your risk answers make that conversation more important' : ''}`,
+      `Based on your answers, you are in the age range where USPSTF recommends discussing PSA-based prostate cancer screening with a clinician.${highRisk ? ' Your risk answers make that conversation more important.' : ''}`,
       routineInfoOnly
     );
   }
   if (age >= 70) {
-    return result('prostate', 'not-routine', 'USPSTF recommends against routine PSA-based prostate cancer screening at age 70 or older', routineInfoOnly);
+    return result('prostate', 'not-routine', 'USPSTF recommends against routine PSA-based prostate cancer screening at age 70 or older.', routineInfoOnly);
   }
   if (highRisk && age >= 40) {
-    return result('prostate', 'ask-clinician', 'Your prostate cancer risk answers may support an earlier clinician conversation about PSA testing than average-risk age ranges', routineInfoOnly);
+    return result('prostate', 'ask-clinician', 'Your prostate cancer risk answers may support an earlier clinician conversation about PSA testing than average-risk age ranges.', routineInfoOnly);
   }
-  return result('prostate', 'not-routine', 'Routine PSA-based prostate cancer screening is generally not recommended before age 55 for average-risk people', routineInfoOnly);
+  return result('prostate', 'not-routine', 'Routine PSA-based prostate cancer screening is generally not recommended before age 55 for average-risk people.', routineInfoOnly);
 }

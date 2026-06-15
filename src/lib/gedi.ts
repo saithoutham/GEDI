@@ -82,9 +82,9 @@ export const screenings: Record<CancerType, Screening> = {
     ageRange: '50-80 with qualifying smoking history',
     source: 'USPSTF 2021',
     sourceUrl: 'https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/lung-cancer-screening',
-    description: 'A low-dose CT scan can find lung cancers before symptoms appear',
+    description: 'A low-dose CT scan can find lung cancers before symptoms appear.',
     detail:
-      'LDCT is a quick imaging test Current USPSTF criteria use age, pack-years, and years since quitting; GEDI also notes published research showing these criteria can miss some people',
+      'LDCT is a quick imaging test. Current USPSTF criteria use age, pack-years, and years since quitting; GEDI also notes published research showing these criteria can miss some people.',
   },
   breast: {
     id: 'breast',
@@ -94,9 +94,9 @@ export const screenings: Record<CancerType, Screening> = {
     ageRange: '40-74 for average-risk screening',
     source: 'USPSTF 2024',
     sourceUrl: 'https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/breast-cancer-screening',
-    description: 'A mammogram is a low-dose X-ray that can find tumors before they are large enough to feel',
+    description: 'A mammogram is a low-dose X-ray that can find tumors before they are large enough to feel.',
     detail:
-      'USPSTF guidance recommends biennial screening mammography for people assigned female at birth from ages 40-74 at average risk',
+      'USPSTF guidance recommends biennial screening mammography for people assigned female at birth from ages 40-74 at average risk.',
   },
   cervical: {
     id: 'cervical',
@@ -106,9 +106,9 @@ export const screenings: Record<CancerType, Screening> = {
     ageRange: '21-65 with a cervix',
     source: 'USPSTF 2018',
     sourceUrl: 'https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/cervical-cancer-screening',
-    description: 'HPV and Pap testing can find cervical cancer early or prevent it by finding precancerous changes',
+    description: 'HPV and Pap testing can find cervical cancer early or prevent it by finding precancerous changes.',
     detail:
-      'GEDI uses organ presence, not gender identity, when deciding whether cervical screening information should appear',
+      'GEDI uses organ presence, not gender identity, when deciding whether cervical screening information should appear.',
   },
   colorectal: {
     id: 'colorectal',
@@ -118,9 +118,9 @@ export const screenings: Record<CancerType, Screening> = {
     ageRange: '45+ for average risk',
     source: 'USPSTF 2021',
     sourceUrl: 'https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/colorectal-cancer-screening',
-    description: 'Stool tests and colonoscopy can find colorectal cancer early; colonoscopy can also remove some precancerous polyps',
+    description: 'Stool tests and colonoscopy can find colorectal cancer early; colonoscopy can also remove some precancerous polyps.',
     detail:
-      'Average-risk adults start at 45 People with a first-degree relative diagnosed young should talk with a clinician about starting earlier',
+      'Average-risk adults start at 45. People with a first-degree relative diagnosed young should talk with a clinician about starting earlier.',
   },
   prostate: {
     id: 'prostate',
@@ -130,9 +130,9 @@ export const screenings: Record<CancerType, Screening> = {
     ageRange: '55-69 shared decision-making',
     source: 'USPSTF 2018',
     sourceUrl: 'https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/prostate-cancer-screening',
-    description: 'A PSA blood test can help detect prostate cancer, but the decision should include benefits and harms',
+    description: 'A PSA blood test can help detect prostate cancer, but the decision should include benefits and harms.',
     detail:
-      'GEDI treats PSA as a discussion, not an automatic order Family history moves that conversation earlier',
+      'GEDI treats PSA as a discussion, not an automatic order. Family history moves that conversation earlier.',
   },
   liver: {
     id: 'liver',
@@ -142,8 +142,8 @@ export const screenings: Record<CancerType, Screening> = {
     ageRange: 'Risk-based',
     source: 'Risk-based informational screening',
     sourceUrl: 'https://www.cancer.gov/about-cancer/screening/screening-tests',
-    description: 'Liver screening is risk-based, usually for people with cirrhosis or chronic hepatitis B',
-    detail: 'GEDI currently presents liver screening as informational until risk questions are expanded',
+    description: 'Liver screening is risk-based, usually for people with cirrhosis or chronic hepatitis B.',
+    detail: 'GEDI currently presents liver screening as informational until risk questions are expanded.',
     comingSoon: true,
   },
   skin: {
@@ -154,8 +154,8 @@ export const screenings: Record<CancerType, Screening> = {
     ageRange: 'Risk-based',
     source: 'Risk-based informational screening',
     sourceUrl: 'https://www.cdc.gov/skin-cancer/about/index.html',
-    description: 'Skin exams are usually driven by personal risk factors, concerning spots, or clinician judgment',
-    detail: 'GEDI currently presents skin screening as informational until risk questions are expanded',
+    description: 'Skin exams are usually driven by personal risk factors, concerning spots, or clinician judgment.',
+    detail: 'GEDI currently presents skin screening as informational until risk questions are expanded.',
     comingSoon: true,
   },
   'oral-hpv': {
@@ -166,8 +166,8 @@ export const screenings: Record<CancerType, Screening> = {
     ageRange: 'Risk-based',
     source: 'Risk-based informational screening',
     sourceUrl: 'https://www.cancer.gov/about-cancer/screening/screening-tests',
-    description: 'There is no routine population screening test; GEDI can help users understand risk and symptoms',
-    detail: 'GEDI currently presents HPV-related oropharyngeal cancer as informational',
+    description: 'There is no routine population screening test; GEDI can help users understand risk and symptoms.',
+    detail: 'GEDI currently presents HPV-related oropharyngeal cancer as informational.',
     comingSoon: true,
   },
 };
@@ -234,7 +234,7 @@ export function derivePlan(answers: Answers): Plan {
   const age = ageFromBracket(answers.ageBracket);
   const recommendations = new Map<CancerType, ScreeningRec>();
   const notes: string[] = [
-    'Recommendations are informational and follow USPSTF guidance where GEDI has enough information They are not a diagnosis or medical advice',
+    'Recommendations are informational and follow USPSTF guidance where GEDI has enough information. They are not a diagnosis or medical advice.',
   ];
   const quitYears = answers.currentlySmokes ? 0 : answers.quitYearsAgo ?? 999;
   const packYears = answers.packYears ?? ((answers.packsPerDay ?? 0) * (answers.yearsSmoked ?? 0));
@@ -246,8 +246,8 @@ export function derivePlan(answers: Answers): Plan {
       rec(
         'lung',
         'eligible',
-        'USPSTF 2021 recommends annual LDCT lung cancer screening for adults 50-80 with at least 20 pack-years who currently smoke or quit within the past 15 years',
-        'Published research has raised concerns that pack-year history can be an inadequate and biased eligibility measure; GEDI keeps the guideline rule while surfacing the limitation'
+        'USPSTF 2021 recommends annual LDCT lung cancer screening for adults 50-80 with at least 20 pack-years who currently smoke or quit within the past 15 years.',
+        'Published research has raised concerns that pack-year history can be an inadequate and biased eligibility measure; GEDI keeps the guideline rule while surfacing the limitation.'
       )
     );
   } else if (age >= 50 && age <= 80 && answers.smoked100Plus) {
@@ -256,8 +256,8 @@ export function derivePlan(answers: Answers): Plan {
       rec(
         'lung',
         'info',
-        'You reported smoking history in the age range where lung screening is often discussed, but your answers may not meet the strict USPSTF pack-year or quit-year threshold',
-        'Potter et al, Journal of Clinical Oncology 2024, PMID 38537159, found pack-years can under-screen some groups Bring this up with a clinician if you have concerns'
+        'You reported smoking history in the age range where lung screening is often discussed, but your answers may not meet the strict USPSTF pack-year or quit-year threshold.',
+        'Potter et al., Journal of Clinical Oncology 2024, PMID 38537159, found pack-years can under-screen some groups. Bring this up with a clinician if you have concerns.'
       )
     );
   }
@@ -268,8 +268,8 @@ export function derivePlan(answers: Answers): Plan {
       rec(
         'lung',
         'discuss',
-        'Family history of lung cancer or significant radon, asbestos, or secondhand-smoke exposure is worth discussing even when current screening rules are narrower',
-        'Current USPSTF criteria may still require smoking-history thresholds for insurance coverage'
+        'Family history of lung cancer or significant radon, asbestos, or secondhand-smoke exposure is worth discussing even when current screening rules are narrower.',
+        'Current USPSTF criteria may still require smoking-history thresholds for insurance coverage.'
       )
     );
   }
@@ -281,13 +281,13 @@ export function derivePlan(answers: Answers): Plan {
         rec(
           'breast',
           'eligible',
-          'USPSTF 2024 recommends biennial screening mammography for women and other people assigned female at birth ages 40-74'
+          'USPSTF 2024 recommends biennial screening mammography for women and other people assigned female at birth ages 40-74.'
         )
       );
     } else if (age >= 75) {
       setRecommendation(
         recommendations,
-        rec('breast', 'discuss', 'USPSTF says evidence is insufficient to determine the balance of benefits and harms of mammography screening at age 75 or older')
+        rec('breast', 'discuss', 'USPSTF says evidence is insufficient to determine the balance of benefits and harms of mammography screening at age 75 or older.')
       );
     }
     if (answers.familyHistory.cancers.includes('breast') || answers.familyHistory.cancers.includes('ovarian')) {
@@ -296,8 +296,8 @@ export function derivePlan(answers: Answers): Plan {
         rec(
           'breast',
           'discuss',
-          'Family history of breast or ovarian cancer can change the age to start screening and may warrant genetic-risk counseling',
-          'GEDI does not calculate hereditary cancer risk Ask about BRCA-related risk assessment'
+          'Family history of breast or ovarian cancer can change the age to start screening and may warrant genetic-risk counseling.',
+          'GEDI does not calculate hereditary cancer risk. Ask about BRCA-related risk assessment.'
         )
       );
     }
@@ -307,12 +307,12 @@ export function derivePlan(answers: Answers): Plan {
     if (age >= 21 && age <= 65) {
       setRecommendation(
         recommendations,
-        rec('cervical', 'eligible', 'USPSTF recommends routine cervical cancer screening from ages 21-65 for people with a cervix')
+        rec('cervical', 'eligible', 'USPSTF recommends routine cervical cancer screening from ages 21-65 for people with a cervix.')
       );
     } else if (age > 65) {
       setRecommendation(
         recommendations,
-        rec('cervical', 'discuss', 'USPSTF recommends stopping cervical screening after 65 only when prior screening has been adequate and risk is not high')
+        rec('cervical', 'discuss', 'USPSTF recommends stopping cervical screening after 65 only when prior screening has been adequate and risk is not high.')
       );
     }
   }
@@ -320,12 +320,12 @@ export function derivePlan(answers: Answers): Plan {
   if (age >= 45 && age <= 75) {
     setRecommendation(
       recommendations,
-      rec('colorectal', 'eligible', 'USPSTF 2021 recommends colorectal cancer screening for adults ages 45-75')
+      rec('colorectal', 'eligible', 'USPSTF 2021 recommends colorectal cancer screening for adults ages 45-75.')
     );
   } else if (age >= 76 && age <= 85) {
     setRecommendation(
       recommendations,
-      rec('colorectal', 'discuss', 'USPSTF recommends selectively offering colorectal cancer screening from ages 76-85 based on prior screening, health, and preferences')
+      rec('colorectal', 'discuss', 'USPSTF recommends selectively offering colorectal cancer screening from ages 76-85 based on prior screening, health, and preferences.')
     );
   } else if (answers.familyHistory.cancers.includes('colorectal')) {
     setRecommendation(
@@ -333,7 +333,7 @@ export function derivePlan(answers: Answers): Plan {
       rec(
         'colorectal',
         'discuss',
-        'A first-degree family history of colorectal cancer can mean colonoscopy should start before 45, especially if the relative was diagnosed before 60'
+        'A first-degree family history of colorectal cancer can mean colonoscopy should start before 45, especially if the relative was diagnosed before 60.'
       )
     );
   }
@@ -345,18 +345,18 @@ export function derivePlan(answers: Answers): Plan {
         rec(
           'prostate',
           'discuss',
-          'USPSTF recommends individualized decision-making about PSA-based prostate cancer screening for men ages 55-69'
+          'USPSTF recommends individualized decision-making about PSA-based prostate cancer screening for men ages 55-69.'
         )
       );
     } else if (age >= 70) {
       setRecommendation(
         recommendations,
-        rec('prostate', 'info', 'USPSTF recommends against routine PSA-based prostate cancer screening at age 70 or older')
+        rec('prostate', 'info', 'USPSTF recommends against routine PSA-based prostate cancer screening at age 70 or older.')
       );
     } else if (answers.familyHistory.cancers.includes('prostate')) {
       setRecommendation(
         recommendations,
-        rec('prostate', 'discuss', 'Family history is an important prostate cancer risk factor Ask a clinician when PSA screening conversations should begin for you')
+        rec('prostate', 'discuss', 'Family history is an important prostate cancer risk factor. Ask a clinician when PSA screening conversations should begin for you.')
       );
     }
   }
@@ -365,13 +365,13 @@ export function derivePlan(answers: Answers): Plan {
     if (!recommendations.has(type)) {
       recommendations.set(
         type,
-        rec(type, 'info', `${screenings[type].name} was added because you asked to see information even if GEDI cannot determine formal eligibility yet`)
+        rec(type, 'info', `${screenings[type].name} was added because you asked to see information even if GEDI cannot determine formal eligibility yet.`)
       );
     }
   });
 
   if (!answers.hasPCP) {
-    notes.push('You said you do not have a regular primary care clinician Consider reviewing this information with a community health center, public health screening program, or licensed clinician');
+    notes.push('You said you do not have a regular primary care clinician. Consider reviewing this information with a community health center, public health screening program, or licensed clinician.');
   }
 
   return { recommendations: [...recommendations.values()], notes };
@@ -379,40 +379,40 @@ export function derivePlan(answers: Answers): Plan {
 
 export const papers = [
   {
-    title: 'Pack-Year Smoking History: An Inadequate and Biased Measure to Determine Lung Cancer Screening Eligibility',
-    authors: 'Potter AL, Xu N, Senthil P, Srinivasan D, Lee H, Gazelle GS, et al',
+    title: 'Pack-Year Smoking History: An Inadequate and Biased Measure to Determine Lung Cancer Screening Eligibility.',
+    authors: 'Potter AL, Xu N, Senthil P, Srinivasan D, Lee H, Gazelle GS, et al.',
     journal: 'Journal of Clinical Oncology',
     year: 2024,
     pmid: '38537159',
     url: 'https://pubmed.ncbi.nlm.nih.gov/38537159/',
-    relevance: 'Explains why GEDI flags limitations in pack-year based lung screening eligibility',
+    relevance: 'Explains why GEDI flags limitations in pack-year based lung screening eligibility.',
   },
   {
-    title: 'Cigarette package labels to promote lung cancer screening',
-    authors: 'Bajaj SS, Pan M, Potter AL, Yang CJ',
+    title: 'Cigarette package labels to promote lung cancer screening.',
+    authors: 'Bajaj SS, Pan M, Potter AL, Yang CJ.',
     journal: 'Nature Medicine',
     year: 2022,
     pmid: '36229665',
     url: 'https://pubmed.ncbi.nlm.nih.gov/36229665/',
-    relevance: 'Connects public messaging to lung cancer screening uptake',
+    relevance: 'Connects public messaging to lung cancer screening uptake.',
   },
   {
-    title: 'The Association of Computed Tomography Screening with Lung Cancer Stage Shift and Survival in the United States: A Quasi-experimental Study',
-    authors: 'Potter AL, Rosenstein AL, Kiang MV, Shah S, Gaissert H, Chang DC, et al',
+    title: 'The Association of Computed Tomography Screening with Lung Cancer Stage Shift and Survival in the United States: A Quasi-experimental Study.',
+    authors: 'Potter AL, Rosenstein AL, Kiang MV, Shah S, Gaissert H, Chang DC, et al.',
     journal: 'British Medical Journal',
     year: 2022,
     pmid: '35354556',
     url: 'https://pubmed.ncbi.nlm.nih.gov/35354556/',
-    relevance: 'Supports the link between CT screening, earlier stage at diagnosis, and survival',
+    relevance: 'Supports the link between CT screening, earlier stage at diagnosis, and survival.',
   },
   {
-    title: 'Evaluating Eligibility of US Black Women Under USPSTF Lung Cancer Screening Guidelines',
-    authors: 'Potter AL, Yang CJ, Woolpert KM, Puttaraju T, Suzuki K, Palmer JR',
+    title: 'Evaluating Eligibility of US Black Women Under USPSTF Lung Cancer Screening Guidelines.',
+    authors: 'Potter AL, Yang CJ, Woolpert KM, Puttaraju T, Suzuki K, Palmer JR.',
     journal: 'JAMA Oncology',
     year: 2022,
     pmid: '34817564',
     url: 'https://pubmed.ncbi.nlm.nih.gov/34817564/',
-    relevance: 'Documents how eligibility criteria can systematically miss Black women',
+    relevance: 'Documents how eligibility criteria can systematically miss Black women.',
   },
 ];
 
@@ -420,45 +420,45 @@ export const trials = [
   {
     name: 'INSPIRE',
     fullName: 'Improving Lung Cancer Screening for Black Women',
-    pi: 'Chi-Fu Jeffrey Yang, MD; Julie R Palmer, ScD',
+    pi: 'Chi-Fu Jeffrey Yang, MD; Julie R. Palmer, ScD',
     funder: 'AHRQ R18',
     amount: '$1.5M',
     status: 'Recruiting',
     sites: 'Boston, MA and Chicago, IL',
     url: 'https://inspirelungscreeningstudy.mgh.harvard.edu/',
     summary:
-      'Provides free LDCT lung screening to Black men and women aged 50-80 with any smoking history',
+      'Provides free LDCT lung screening to Black men and women aged 50-80 with any smoking history.',
   },
 ];
 
 export const scripts: Record<Exclude<CancerType, 'liver' | 'skin' | 'oral-hpv'>, string[]> = {
   lung: [
-    'Hi, I am calling to schedule a low-dose CT scan for lung cancer screening',
+    'Hi, I am calling to schedule a low-dose CT scan for lung cancer screening.',
     'Is your facility accredited by the American College of Radiology for lung cancer screening?',
     'Do I need a referral from my primary care doctor, or can I self-refer?',
     'Can you verify whether this is billed as preventive screening under CPT 71271 or G0297?',
     'How long does the appointment take, and when should I expect results?',
   ],
   breast: [
-    'Hi, I am calling to schedule a screening mammogram',
+    'Hi, I am calling to schedule a screening mammogram.',
     'Is your facility MQSA certified for mammography?',
     'Do you offer 3D mammography, and is it covered by my insurance plan?',
     'When will I receive results, and who explains them if follow-up imaging is needed?',
   ],
   cervical: [
-    'Hi, I am calling to schedule cervical cancer screening',
+    'Hi, I am calling to schedule cervical cancer screening.',
     'Do you offer primary HPV testing, Pap testing, or co-testing?',
     'Do I need a referral, or can I schedule directly?',
     'How should I prepare for the appointment?',
   ],
   colorectal: [
-    'Hi, I am calling about colorectal cancer screening',
+    'Hi, I am calling about colorectal cancer screening.',
     'Do you offer colonoscopy, stool-based testing, or both?',
     'If I choose colonoscopy, what prep is required and who handles insurance authorization?',
     'If a stool test is positive, how quickly can I schedule a follow-up colonoscopy?',
   ],
   prostate: [
-    'Hi, I am calling to discuss prostate cancer screening with a clinician',
+    'Hi, I am calling to discuss prostate cancer screening with a clinician.',
     'Can I schedule a visit to review whether a PSA blood test makes sense for me?',
     'How are abnormal PSA results handled in your practice?',
     'Do you help compare benefits, false positives, and biopsy risks?',

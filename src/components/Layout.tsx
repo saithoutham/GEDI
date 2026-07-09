@@ -65,22 +65,22 @@ export default function Layout() {
   return (
     <div className="min-h-screen bg-[var(--color-surface)] text-[var(--color-ink)]">
       <header className="sticky top-0 z-50 border-b border-[var(--color-line)] bg-[rgba(241,233,218,0.92)] backdrop-blur print-hidden">
-        <div className="container-gedi flex h-20 items-center justify-between gap-3 md:h-24 xl:h-28 xl:gap-6">
-          <Logo compact className="min-w-0" />
-          <nav className="hidden items-center gap-1 xl:flex" aria-label="Primary navigation">
+        <div className="flex h-16 items-center justify-between gap-4 px-4 sm:h-20 sm:px-6 lg:px-10">
+          <Logo compact className="min-w-0 shrink-0" />
+          <nav className="hidden items-center gap-1 md:flex" aria-label="Primary navigation">
             {navItems.map((item) => (
               <NavLink key={item.path} to={item.path} className={linkClass}>
                 {item.label}
               </NavLink>
             ))}
           </nav>
-          <Link to="/assessment" className="btn btn-primary hidden xl:inline-flex">
+          <Link to="/assessment" className="btn btn-primary shrink-0 max-md:!hidden">
             Check eligibility
             <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </Link>
           <button
             type="button"
-            className="shrink-0 rounded-full p-2.5 text-[var(--color-brand-aubergine)] xl:hidden"
+            className="shrink-0 rounded-full p-2.5 text-[var(--color-brand-aubergine)] md:!hidden"
             onClick={() => setOpen((value) => !value)}
             aria-expanded={open}
             aria-controls="mobile-nav"
@@ -90,14 +90,14 @@ export default function Layout() {
           </button>
         </div>
         {open ? (
-          <div id="mobile-nav" className="border-t border-[var(--color-line)] bg-[var(--color-surface)] p-3 xl:hidden">
+          <div id="mobile-nav" className="border-t border-[var(--color-line)] bg-[var(--color-surface)] p-4 md:hidden">
             <nav className="flex flex-col gap-2" aria-label="Mobile navigation">
               {navItems.map((item) => (
                 <NavLink key={item.path} to={item.path} onClick={() => setOpen(false)} className={linkClass}>
                   {item.label}
                 </NavLink>
               ))}
-              <Link to="/assessment" onClick={() => setOpen(false)} className="btn btn-primary mt-2 w-full">
+              <Link to="/assessment" onClick={() => setOpen(false)} className="btn btn-primary mt-3 w-full">
                 Check eligibility
                 <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </Link>
@@ -116,8 +116,11 @@ export default function Layout() {
             <div>
               <Logo className="brightness-0 invert" />
               <p className="mt-5 max-w-sm text-sm leading-6 text-white/75">
-                GEDI summarizes screening guidance and helps people prepare careful questions for a licensed clinician.
+                Empowering individuals with evidence-based cancer screening education to promote informed decision-making and reduce the burden of cancer through early detection.
               </p>
+              <a href="mailto:Info@globalearlydetection.org" className="mt-3 inline-block text-sm font-bold text-white/90 hover:text-white">
+                Info@globalearlydetection.org
+              </a>
             </div>
             {footerColumns.map((column) => (
               <FooterColumn key={column.title} title={column.title} links={column.links} />

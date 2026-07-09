@@ -1,20 +1,21 @@
 import { useEffect, useState } from 'react';
 import { ArrowRight, BookOpen } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { papers, screenings, type CancerType } from '../lib/gedi';
+import { screenings, type CancerType } from '../lib/gedi';
+import { researchSections } from '../lib/researchPapers';
 
 const valueProps = [
   {
     title: 'Start with guidance',
-    body: 'GEDI summarizes published screening recommendations in plain language. It is educational and does not diagnose cancer or replace medical advice.',
+    body: 'This tool summarizes USPSTF screening recommendations in plain language. It is educational and does not diagnose cancer or replace medical advice.',
   },
   {
     title: 'Know what to discuss',
-    body: 'Some screening decisions depend on symptoms, personal history, family history, or prior results. GEDI helps identify topics to review with a clinician.',
+    body: 'Some screening decisions depend on symptoms, personal history, family history, or prior results. Identify topics to review with a clinician.',
   },
   {
     title: 'Review several topics',
-    body: 'GEDI brings major screening pathways into one place so people can prepare careful questions before a clinical visit.',
+    body: 'Major screening pathways are brought into one place so people can prepare careful questions before a clinical visit.',
   },
 ];
 
@@ -53,15 +54,14 @@ export default function Home() {
       <section className="pb-12 pt-8 md:pb-16 md:pt-12">
         <div className="w-full px-3 sm:px-6 lg:px-10">
           <div className="grid gap-8 rounded-[32px] bg-[var(--color-brand-primary-soft)] p-5 sm:p-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:p-10">
-            <div className="min-w-0 text-left">
-              <h1 className="display-xl max-w-5xl text-[var(--color-brand-aubergine)]">
-                <span className="block">Understand cancer</span>
-                <span className="block">screening guidance</span>
+            <div className="min-w-0">
+              <h1 className="text-4xl font-black leading-tight text-[var(--color-brand-aubergine)] sm:text-5xl lg:text-6xl">
+                Cancer screening education and advocacy
               </h1>
-              <p className="body-lg reveal mt-6 max-w-2xl text-[var(--color-ink-muted)] [animation-delay:120ms]">
-                GEDI summarizes screening pathways and helps people prepare careful questions for a licensed clinician.
+              <p className="mt-5 max-w-xl text-base leading-7 text-[var(--color-ink-muted)] sm:text-lg">
+                The Global Early Detection Initiative (GEDI) empowers individuals with evidence-based cancer screening education to promote informed decision-making, increase access to preventive care, and reduce the burden of cancer through early detection.
               </p>
-              <div className="reveal mt-8 flex flex-col gap-3 sm:flex-row [animation-delay:180ms]">
+              <div className="mt-7 flex flex-col gap-3 sm:flex-row">
                 <Link to="/assessment" className="btn btn-primary w-full sm:w-auto">
                   Check my eligibility
                   <ArrowRight className="h-4 w-4" aria-hidden="true" />
@@ -71,8 +71,8 @@ export default function Home() {
                   <BookOpen className="h-4 w-4" aria-hidden="true" />
                 </Link>
               </div>
-              <p className="mt-6 text-sm font-semibold leading-6 text-[var(--color-brand-aubergine)]">
-                Built from published screening guidance and peer-reviewed research context.
+              <p className="mt-5 text-sm font-semibold leading-6 text-[var(--color-brand-aubergine)]">
+                Built from USPSTF screening guidance and peer-reviewed research.
               </p>
             </div>
             <HomepagePhotoCarousel />
@@ -90,7 +90,7 @@ export default function Home() {
           </div>
           <div className="body-lg text-[var(--color-ink-muted)]">
             <p>
-              GEDI turns dense recommendations into a careful summary that people can bring to a clinical visit.
+              Through advocacy, education, and awareness, we help translate dense screening recommendations into plain-language summaries that people can bring to a clinical visit.
             </p>
           </div>
         </div>
@@ -112,7 +112,7 @@ export default function Home() {
           <div className="grid gap-6 md:grid-cols-3">
             {[
               ['01', 'Share basic context', 'Age, sex assigned at birth, prior screening, and smoking history help summarize relevant guidance.'],
-              ['02', 'Review the summary', 'GEDI shows screening topics with status labels and the reason each one appears.'],
+              ['02', 'Review the summary', 'Screening topics are displayed with status labels and the reason each one appears.'],
               ['03', 'Prepare for care', 'Use the summary and plain-language prompts when speaking with a licensed clinician.'],
             ].map(([number, title, body]) => (
               <article key={title} className="rounded-3xl border border-[var(--color-line)] bg-white p-6 shadow-[var(--shadow-gedi)]">
@@ -159,20 +159,20 @@ export default function Home() {
             <p className="eyebrow text-[var(--color-brand-sky)]">Research context</p>
             <h2 className="display-md mt-4">Built to communicate evidence carefully</h2>
             <p className="mt-5 leading-7 text-white/75">
-              GEDI follows published screening guidelines and references peer-reviewed work on lung cancer screening eligibility, equity, and early detection.
+              Our approach follows USPSTF screening guidelines and references peer-reviewed research across multiple cancer types — including work on screening eligibility, health equity, and early detection.
             </p>
             <Link to="/research" className="btn mt-8 border border-[var(--color-brand-sky)] bg-[var(--color-brand-sky)] text-[var(--color-brand-navy)] hover:bg-white">
               See the research <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </Link>
           </div>
           <div className="grid gap-4">
-            {papers.slice(0, 3).map((paper) => (
-              <a key={paper.pmid} href={paper.url} target="_blank" rel="noreferrer" className="rounded-3xl border border-white/20 bg-white/10 p-5 text-white transition-colors hover:bg-white/15">
+            {researchSections.slice(0, 3).map((section) => (
+              <Link key={section.category} to="/research" className="rounded-3xl border border-white/20 bg-white/10 p-5 text-white transition-colors hover:bg-white/15">
                 <p className="text-sm font-bold text-[var(--color-brand-sky)]">
-                  {paper.journal} · {paper.year} · PMID {paper.pmid}
+                  {section.papers.length} papers · {section.category}
                 </p>
-                <h3 className="mt-2 text-lg font-black">{paper.title}</h3>
-              </a>
+                <h3 className="mt-2 text-lg font-black">{section.papers[0].title}</h3>
+              </Link>
             ))}
           </div>
         </div>

@@ -377,44 +377,6 @@ export function derivePlan(answers: Answers): Plan {
   return { recommendations: [...recommendations.values()], notes };
 }
 
-export const papers = [
-  {
-    title: 'Pack-Year Smoking History: An Inadequate and Biased Measure to Determine Lung Cancer Screening Eligibility.',
-    authors: 'Potter AL, Xu N, Senthil P, Srinivasan D, Lee H, Gazelle GS, et al.',
-    journal: 'Journal of Clinical Oncology',
-    year: 2024,
-    pmid: '38537159',
-    url: 'https://pubmed.ncbi.nlm.nih.gov/38537159/',
-    relevance: 'Explains why GEDI flags limitations in pack-year based lung screening eligibility.',
-  },
-  {
-    title: 'Cigarette package labels to promote lung cancer screening.',
-    authors: 'Bajaj SS, Pan M, Potter AL, Yang CJ.',
-    journal: 'Nature Medicine',
-    year: 2022,
-    pmid: '36229665',
-    url: 'https://pubmed.ncbi.nlm.nih.gov/36229665/',
-    relevance: 'Connects public messaging to lung cancer screening uptake.',
-  },
-  {
-    title: 'The Association of Computed Tomography Screening with Lung Cancer Stage Shift and Survival in the United States: A Quasi-experimental Study.',
-    authors: 'Potter AL, Rosenstein AL, Kiang MV, Shah S, Gaissert H, Chang DC, et al.',
-    journal: 'British Medical Journal',
-    year: 2022,
-    pmid: '35354556',
-    url: 'https://pubmed.ncbi.nlm.nih.gov/35354556/',
-    relevance: 'Supports the link between CT screening, earlier stage at diagnosis, and survival.',
-  },
-  {
-    title: 'Evaluating Eligibility of US Black Women Under USPSTF Lung Cancer Screening Guidelines.',
-    authors: 'Potter AL, Yang CJ, Woolpert KM, Puttaraju T, Suzuki K, Palmer JR.',
-    journal: 'JAMA Oncology',
-    year: 2022,
-    pmid: '34817564',
-    url: 'https://pubmed.ncbi.nlm.nih.gov/34817564/',
-    relevance: 'Documents how eligibility criteria can systematically miss Black women.',
-  },
-];
 
 export const trials = [
   {

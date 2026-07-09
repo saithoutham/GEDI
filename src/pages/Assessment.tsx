@@ -30,6 +30,16 @@ const initialAnswers: AssessmentAnswers = {
   ...emptyRiskAnswers,
 };
 
+type FamilyHistoryCancer = 'lung' | 'breast' | 'colorectal' | 'cervical' | 'prostate' | 'skin';
+const familyHistoryOptions: Array<{ key: FamilyHistoryCancer; label: string }> = [
+  { key: 'lung', label: 'Lung cancer' },
+  { key: 'breast', label: 'Breast cancer' },
+  { key: 'colorectal', label: 'Colorectal cancer' },
+  { key: 'cervical', label: 'Cervical cancer' },
+  { key: 'prostate', label: 'Prostate cancer' },
+  { key: 'skin', label: 'Skin cancer (melanoma)' },
+];
+
 const statusClasses: Record<ScreeningStatus, string> = {
   'appears-eligible': 'bg-[var(--color-eligible)] text-[var(--color-eligible-ink)]',
   'shared-decision': 'bg-[var(--color-discuss)] text-[var(--color-discuss-ink)]',
@@ -69,6 +79,7 @@ type StepKey =
   | 'race'
   | 'raceOther'
   | 'routineIntent'
+  | 'familyHistory'
   | 'priorCervical'
   | 'priorColorectal'
   | 'smokingStatus'
@@ -84,6 +95,8 @@ export default function Assessment() {
   const [answers, setAnswers] = useState<AssessmentAnswers>(initialAnswers);
   const [stepKey, setStepKey] = useState<StepKey>('contact');
   const [error, setError] = useState('');
+  const [familyHistorySelections, setFamilyHistorySelections] = useState<FamilyHistoryCancer[]>([]);
+  const [familyHistoryAlert, setFamilyHistoryAlert] = useState<string | null>(null);
 
   const packYears = calculatePackYears(answers.packsPerDay, answers.yearsSmoked);
   const evaluation = evaluateScreening(answers);
@@ -260,9 +273,48 @@ export default function Assessment() {
           </QuestionShell>
         );
 
+      case 'familyHistory':
+        return (
+          <QuestionShell title="Do you have a family history of any of these cancers?" hint="Select any cancers that a first-degree relative (parent, sibling, or child) has been diagnosed with. If none apply, proceed to the next step.">
+            <div className="grid gap-2">
+              {familyHistoryOptions.map((item) => (
+                <label key={item.key}>
+                  <input
+                    className="chip-input"
+                    type="checkbox"
+                    checked={familyHistorySelections.includes(item.key)}
+                    onChange={() => {
+                      setFamilyHistorySelections((prev) => {
+                        const next = prev.includes(item.key) ? prev.filter((k) => k !== item.key) : [...prev, item.key];
+                        if (!prev.includes(item.key)) {
+                          setFamilyHistoryAlert(item.label.toLowerCase());
+                        }
+                        return next;
+                      });
+                    }}
+                  />
+                  <span className="chip-label">{item.label}</span>
+                </label>
+              ))}
+            </div>
+            {familyHistoryAlert ? (
+              <div className="mt-4 flex gap-3 rounded-2xl bg-[var(--color-discuss)] p-4 text-[var(--color-discuss-ink)]">
+                <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0" />
+                <div className="text-sm font-bold leading-6">
+                  <p>Based on your family history of {familyHistoryAlert}, you may be at higher risk for this cancer.</p>
+                  <p className="mt-2 font-normal">USPSTF screening recommendations apply to individuals at average risk. Please discuss your family history and personalized screening recommendations with your healthcare provider.</p>
+                  <button type="button" className="mt-3 text-sm font-black text-[var(--color-brand-primary)] hover:underline" onClick={() => setFamilyHistoryAlert(null)}>
+                    I understand
+                  </button>
+                </div>
+              </div>
+            ) : null}
+          </QuestionShell>
+        );
+
       case 'priorCervical':
         return (
-          <QuestionShell title="Have you had regular normal Pap or HPV tests before?" hint="If you are not sure, choose Not sure.">
+          <QuestionShell title="Have you had regular normal Pap or HPV tests before?" hint="If you are not sure, choose Prefer not to answer.">
             <RadioRow
               label="Past Pap or HPV testing"
               value={answers.priorCervicalScreening}
@@ -270,7 +322,7 @@ export default function Assessment() {
               options={[
                 ['yes', 'Yes'],
                 ['no', 'No'],
-                ['not-sure', 'Not sure'],
+                ['not-sure', 'Prefer not to answer'],
               ]}
               required
             />
@@ -287,7 +339,7 @@ export default function Assessment() {
               options={[
                 ['yes', 'Yes'],
                 ['no', 'No'],
-                ['not-sure', 'Not sure'],
+                ['not-sure', 'Prefer not to answer'],
               ]}
               required
             />
@@ -302,10 +354,10 @@ export default function Assessment() {
               value={answers.smokingStatus}
               onChange={(value) => update({ smokingStatus: value })}
               options={[
-                ['current', 'Current smoker'],
-                ['former', 'Former smoker'],
+                ['current', 'Person who currently smokes'],
+                ['former', 'Person who formerly smoked'],
                 ['never', 'Never smoked'],
-                ['not-sure', 'Not sure'],
+                ['not-sure', 'Prefer not to answer'],
               ]}
               required
             />
@@ -315,6 +367,11 @@ export default function Assessment() {
       case 'smokingNumbers':
         return (
           <QuestionShell title="How much have you smoked?" hint="Pack-years are average packs per day times total years smoked.">
+            <div className="rounded-2xl border border-[var(--color-line)] bg-[var(--color-surface)] p-4">
+              <p className="text-sm font-black text-[var(--color-brand-aubergine)]">Pack-years key</p>
+              <p className="mt-1 text-sm leading-6 text-[var(--color-ink-muted)]">1 pack = 20 cigarettes, so 10 cigarettes per day = 0.5 packs per day.</p>
+              <p className="mt-1 text-sm leading-6 text-[var(--color-ink-muted)]">Example: 0.5 packs/day × 40 years = 20 pack-years.</p>
+            </div>
             <div className="grid gap-4 md:grid-cols-3">
               <NumberField label="Average packs per day" value={answers.packsPerDay ?? ''} onChange={(value) => update({ packsPerDay: numericValue(value) })} min={0} max={10} step={0.25} required />
               <NumberField label="Total years you smoked" value={answers.yearsSmoked ?? ''} onChange={(value) => update({ yearsSmoked: numericValue(value) })} min={0} max={100} step={0.5} required />
@@ -414,6 +471,7 @@ function buildSteps(answers: AssessmentAnswers): StepDefinition[] {
   }
 
   steps.push({ key: 'routineIntent', shortTitle: 'Screening context' });
+  steps.push({ key: 'familyHistory', shortTitle: 'Family history' });
 
   if (answers.sexAssignedAtBirth === 'female') {
     steps.push({ key: 'priorCervical', shortTitle: 'Past Pap or HPV testing' });

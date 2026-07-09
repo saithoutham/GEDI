@@ -1,16 +1,18 @@
-import { ArrowRight, ExternalLink } from 'lucide-react';
+import { useState } from 'react';
+import { ArrowRight, ChevronDown, ChevronRight, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { papers, trials } from '../lib/gedi';
+import { trials } from '../lib/gedi';
+import { researchSections } from '../lib/researchPapers';
 
 export default function Research() {
   return (
     <>
       <section className="bg-[var(--color-brand-navy)] py-16 text-white md:py-24">
         <div className="container-gedi">
-          <p className="eyebrow text-[var(--color-brand-sky)]">Yang Lab at Mass General</p>
-          <h1 className="display-lg mt-4 max-w-4xl">Research that informed GEDI’s approach</h1>
+          <p className="eyebrow text-[var(--color-brand-sky)]">Research that informs our approach</p>
+          <h1 className="display-lg mt-4 max-w-4xl">Evidence from across cancer screening</h1>
           <p className="body-lg mt-6 max-w-3xl text-white/75">
-            GEDI’s eligibility logic follows published screening guidelines where enough information is available. The project was built with inspiration from clinical research on lung cancer screening, equity, and early detection.
+            Our eligibility logic follows USPSTF screening guidelines. The platform is informed by peer-reviewed research across multiple cancer types — including work on screening eligibility, health equity, disparities in access, and early detection.
           </p>
         </div>
       </section>
@@ -25,10 +27,13 @@ export default function Research() {
             />
           </div>
           <div>
-            <p className="eyebrow text-[var(--color-brand-primary)]">About the lab</p>
+            <p className="eyebrow text-[var(--color-brand-primary)]">Founding research</p>
             <h2 className="display-md mt-3 text-[var(--color-brand-aubergine)]">Clinical research rooted in thoracic surgery and equity</h2>
             <p className="mt-5 leading-7 text-[var(--color-ink-muted)]">
-              Dr. Chi-Fu Jeffrey Yang is a thoracic surgeon at Massachusetts General Hospital and the Founding Director of CAIIRE. His lab’s work on lung cancer screening eligibility, screening equity, and earlier detection helped inspire GEDI’s focus on clear, guideline-based education.
+              Dr. Chi-Fu Jeffrey Yang is a thoracic surgeon at Massachusetts General Hospital and the Founding Director of CAIIRE. His lab’s work on lung cancer screening eligibility, screening equity, and earlier detection helped inspire the platform’s focus on clear, guideline-based education.
+            </p>
+            <p className="mt-4 leading-7 text-[var(--color-ink-muted)]">
+              Beyond lung cancer, our approach is informed by USPSTF recommendations and peer-reviewed research across breast, colorectal, cervical, and prostate cancer screening — as well as health disparities research on access barriers and community-based interventions.
             </p>
             <a href="https://yang-lab.mgh.harvard.edu/" target="_blank" rel="noreferrer" className="btn btn-secondary mt-6">
               Visit the lab <ExternalLink className="h-4 w-4" />
@@ -64,28 +69,23 @@ export default function Research() {
       </section>
 
       <section className="container-gedi pb-14 md:pb-20">
-        <p className="eyebrow text-[var(--color-brand-primary)]">Key publications</p>
+        <p className="eyebrow text-[var(--color-brand-primary)]">Key publications by cancer type</p>
+        <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--color-ink-muted)] sm:text-base">
+          Click a category to view the research that informs our screening guidance for each cancer type.
+        </p>
         <div className="mt-6 grid gap-4">
-          {papers.map((paper) => (
-            <a key={paper.pmid} href={paper.url} target="_blank" rel="noreferrer" className="card block p-6 transition-transform hover:-translate-y-1">
-              <p className="text-sm font-black text-[var(--color-brand-primary)]">{paper.journal} · {paper.year} · PMID {paper.pmid}</p>
-              <h2 className="mt-2 text-xl font-black text-[var(--color-brand-aubergine)]">{paper.title}</h2>
-              <p className="mt-2 text-sm text-[var(--color-ink-muted)]">{paper.authors}</p>
-              <p className="mt-4 leading-7 text-[var(--color-ink-muted)]">{paper.relevance}</p>
-            </a>
+          {researchSections.map((section) => (
+            <ResearchCategory key={section.category} section={section} />
           ))}
         </div>
-        <a href="https://www.ncbi.nlm.nih.gov/myncbi/chi-fu.yang.1/bibliography/public/" target="_blank" rel="noreferrer" className="btn btn-secondary mt-6">
-          See all publications <ExternalLink className="h-4 w-4" />
-        </a>
       </section>
 
       <section className="container-gedi pb-20">
         <div className="rounded-[32px] bg-[var(--color-brand-primary-soft)] p-7 md:p-10">
-          <p className="eyebrow text-[var(--color-brand-primary)]">Research context in GEDI</p>
+          <p className="eyebrow text-[var(--color-brand-primary)]">How research shapes our platform</p>
           <div className="mt-6 grid gap-5 md:grid-cols-3">
             {[
-              ['Pack-year context', 'GEDI keeps USPSTF eligibility visible while noting published concerns that pack-year rules can under-screen some groups.'],
+              ['Pack-year context', 'USPSTF eligibility is kept visible while noting published concerns that pack-year rules can under-screen some groups.'],
               ['Equity prompts', 'Family history and exposure risk create a doctor-discussion pathway instead of a hard no.'],
               ['Action design', 'The guide connects eligibility to call scripts so users can move from guideline information to a practical next step.'],
             ].map(([title, body]) => (
@@ -101,5 +101,41 @@ export default function Research() {
         </div>
       </section>
     </>
+  );
+}
+
+function ResearchCategory({ section }: { section: (typeof researchSections)[number] }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="card overflow-hidden">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="flex w-full items-center justify-between gap-4 p-6 text-left transition-colors hover:bg-[var(--color-surface)]"
+      >
+        <div className="flex items-center gap-3">
+          {open ? <ChevronDown className="h-5 w-5 text-[var(--color-brand-primary)]" /> : <ChevronRight className="h-5 w-5 text-[var(--color-brand-primary)]" />}
+          <h2 className="text-xl font-black text-[var(--color-brand-aubergine)]">{section.category}</h2>
+        </div>
+        <span className="shrink-0 rounded-full bg-[var(--color-brand-primary-soft)] px-3 py-1 text-xs font-black text-[var(--color-brand-primary)]">
+          {section.papers.length} {section.papers.length === 1 ? 'paper' : 'papers'}
+        </span>
+      </button>
+      {open ? (
+        <div className="border-t border-[var(--color-line)] px-6 pb-6 pt-4">
+          <div className="grid gap-4">
+            {section.papers.map((paper) => (
+              <a key={paper.pmid} href={paper.url} target="_blank" rel="noreferrer" className="block rounded-2xl border border-[var(--color-line)] bg-[var(--color-surface)] p-5 transition-transform hover:-translate-y-0.5">
+                <p className="text-xs font-black text-[var(--color-brand-primary)]">{paper.journal} · {paper.year} · PMID {paper.pmid}</p>
+                <h3 className="mt-2 text-base font-black leading-snug text-[var(--color-brand-aubergine)]">{paper.title}</h3>
+                <p className="mt-1 text-sm text-[var(--color-ink-muted)]">{paper.authors}</p>
+                <p className="mt-3 text-sm leading-6 text-[var(--color-ink-muted)]">{paper.relevance}</p>
+              </a>
+            ))}
+          </div>
+        </div>
+      ) : null}
+    </div>
   );
 }

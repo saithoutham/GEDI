@@ -4,10 +4,10 @@ export default function About() {
   return (
     <section className="container-gedi py-14 md:py-20">
       <div className="max-w-4xl">
-        <p className="eyebrow text-[var(--color-brand-primary)]">About GEDI</p>
-        <h1 className="display-lg mt-4 text-[var(--color-brand-aubergine)]">A public education tool for cancer screening conversations</h1>
+        <p className="eyebrow text-[var(--color-brand-primary)]">About</p>
+        <h1 className="display-lg mt-4 text-[var(--color-brand-aubergine)]">Advocacy, education, and awareness for cancer screening</h1>
         <p className="body-lg mt-6 text-[var(--color-ink-muted)]">
-          GEDI helps people review routine screening guidance, understand when a clinician conversation may be needed, and prepare careful questions. It follows published screening recommendations where enough information is available and was inspired in part by clinical research and ALCSI community outreach.
+          The Global Early Detection Initiative (GEDI) empowers individuals with evidence-based cancer screening education to promote informed decision-making, increase access to preventive care, and reduce the burden of cancer through early detection. It follows USPSTF screening recommendations and was inspired by clinical research and community outreach.
         </p>
       </div>
       <div className="mt-12 grid gap-5 md:grid-cols-3">
@@ -26,7 +26,13 @@ export default function About() {
         <section className="card p-7">
           <h2 className="display-md text-[var(--color-brand-aubergine)]">Contact</h2>
           <p className="mt-4 leading-7 text-[var(--color-ink-muted)]">
-            For lung screening education, ALCSI’s screening line is available at 1-844-YES-LUNG. For personal medical decisions, review your GEDI summary with a licensed clinician.
+            For questions, collaboration inquiries, or feedback:
+          </p>
+          <p className="mt-2 text-lg font-black text-[var(--color-brand-primary)]">
+            <a href="mailto:Info@globalearlydetection.org" className="hover:underline">Info@globalearlydetection.org</a>
+          </p>
+          <p className="mt-4 leading-7 text-[var(--color-ink-muted)]">
+            For lung screening education, ALCSI’s screening line is also available at 1-844-YES-LUNG. For personal medical decisions, review your summary with a licensed clinician.
           </p>
           <a href="tel:18449375864" className="btn btn-secondary mt-6">Call 1-844-YES-LUNG</a>
         </section>
